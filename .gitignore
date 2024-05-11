@@ -90,3 +90,24 @@ typings/
 
 # Electron-Forge
 out/
+
+
+
+# macOS
+.DS_Store
+
+# Xcode
+.DS_Store
+xcuserdata/
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build
+
+# Swift Package Manager
+.build/
+
+# Dependency directory
+Dependencies/
