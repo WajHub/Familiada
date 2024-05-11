@@ -3,13 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <title>Familiada</title>
-    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/questions.css" />
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'"/>
-    <script src="js/questions.js" defer></script>
+    <script src="js/questionsRender.js" defer></script>
     
   </head>
   <body>
 
-    <button onclick="backToStartPage()" type="button">Back</button>
+    <div class="container">
+        <h3>Questions</h3>
+    </div>
+    <div id="overlay">
+        <div class="windowToNewQuestion">
+
+            <form class="form_addNewQuestion">
+
+                <div class="questionContainer">
+                    
+                  <label for="question">Question:</label>
+                  <input type="text" id="questionInput" name="question" required><br><br>
+                </div>
+
+                <div class="answerContainer">
+                    <!-- <label for="answer">1:</label>
+                    <div class="answer"><input type="text" class="answerInput" name="answer"></div>
+                    <div class="answer"><input type="number" class="points" name="quantity" min="1" max="100"></div>                     -->
+                </div>
+                <div class = "newAnswerButton">
+                    <button id="newAnswerButton" onclick="addNewAnswer()" type="button">Add new answer</button>
+                </div>
+                
+                <input type="submit">
+                <button onclick="cancelAddNewQuestion()" type="button">Cancel</button>
+              </form>
+
+        </div>
+    </div>
+
+    <div class = "newQestionButton">
+        <button id="newQestionButton" onclick="displayNewQuestion()" type="button">Add new question</button>
+    </div>
+
+        <button onclick="backToStartPage()" type="button">Back</button>
+
   </body>
 </html>

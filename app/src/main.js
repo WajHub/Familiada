@@ -4,6 +4,7 @@ const fs = require('fs');
 const Question = require('../src/model/question');
 const Answer = require('../src/model/answer');
 const Team = require('../src/model/team');
+
 var mainWindow;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -22,7 +23,7 @@ const createWindow = () => {
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, 'render/index.html'));
+  mainWindow.loadFile(path.join(__dirname, 'render/formStart.html'));
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
@@ -59,14 +60,14 @@ app.on('window-all-closed', () => {
 // IPC handles
 ipcMain.on("createNewSet", createNewSet);
 ipcMain.on("toStartPage", ()=>{
-  mainWindow.loadURL(`file://${__dirname}/render/index.html`)
+  mainWindow.loadURL(`file://${__dirname}/render/formStart.html`)
 })
 
 function createNewSet(event, fileName){
   var path = "sets/"+fileName+".txt";
   fs.open(path, 'w', function (err, file) {
     if (err) throw err;
-    console.log('Saved!');
+    // console.log('Saved!');
   });
   mainWindow.loadURL(`file://${__dirname}/render/questions.html`)
 }
