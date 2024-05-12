@@ -2,10 +2,11 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const fs = require('fs');
 const Question = require('../src/model/question');
-const Answer = require('../src/model/answer');
 const Team = require('../src/model/team');
 
 var mainWindow;
+var questions = [];
+var teamRed, teamBlue;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -62,7 +63,9 @@ ipcMain.on("createNewSet", createNewSet);
 ipcMain.on("toStartPage", ()=>{
   mainWindow.loadURL(`file://${__dirname}/render/formStart.html`)
 })
+ipcMain.on("addNewQuestion", addNewQuestion);
 
+// IPC functions implementations
 function createNewSet(event, fileName){
   var path = "sets/"+fileName+".txt";
   fs.open(path, 'w', function (err, file) {
@@ -72,6 +75,9 @@ function createNewSet(event, fileName){
   mainWindow.loadURL(`file://${__dirname}/render/questions.html`)
 }
 
+function addNewQuestion(event, question, answers, points){
+  questions.push(new Question(question, answers, points));
+  console.log(questions);
+}
 
-var questions = [];
-var teamRed, teamBlue;
+

@@ -1,6 +1,9 @@
 class Question{
-    constructor(content, answer){
+    constructor(content, answers, points){
         this.content = content;
-        this.answer = answer;
+        this.answers = answers;
+        this.points = points;
     }
+    
 }
+module.exports = Question;

@@ -1,4 +1,4 @@
-const form = document.querySelector("#form_addNewQuestion");
+const form = document.querySelector(".form_addNewQuestion");
 form.addEventListener('submit', addQuestion);
 
 function backToStartPage(){
@@ -7,8 +7,10 @@ function backToStartPage(){
 
 function displayNewQuestion(){
     document.getElementById("overlay").style.display = "block";
-    addNewAnswer();
+    if(document.getElementsByClassName("answer").length==0) addNewAnswer();
+    
 }
+
 
 function cancelAddNewQuestion(){
     document.getElementById("overlay").style.display = "none";
@@ -16,7 +18,6 @@ function cancelAddNewQuestion(){
 
 function addNewAnswer(){
     var numberOfAnswers = document.getElementsByClassName("answer").length/2;
-    console.log(numberOfAnswers);
 
     // Create label element
     var label = document.createElement("label");    
@@ -40,7 +41,7 @@ function addNewAnswer(){
 
     var input2 = document.createElement("input");
     input2.type = "number";
-    input2.className = "points";
+    input2.className = "pointsInput";
     input2.name = "quantity";
     input2.min = "1";
     input2.max = "100";
@@ -53,6 +54,22 @@ function addNewAnswer(){
     answerContainer.appendChild(div2);
 }
 
-function addQuestion(){
-    
+function addQuestion(event){
+    event.preventDefault();
+
+    var question  = document.getElementById('questionInput').value;
+    var answersForm = document.getElementsByClassName("answerInput");
+    var pointsForm = document.getElementsByClassName("pointsInput");
+
+    var answers = [];
+    var asnwerPoints = [];
+
+    for (let i = 0; i<answersForm.length; i++){
+        var answerContent = answersForm[i].value;
+        var points = pointsForm[i].value;
+        answers.push(answerContent);
+        asnwerPoints.push(points);
+    }
+    window.api.addNewQuestion(question, answers, points);
+    location.reload();
 }
