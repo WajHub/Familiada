@@ -8,24 +8,23 @@ checkBoxNewSet.addEventListener('change', checkBoxChange);
 
 function getStarted(e){
     e.preventDefault(); 
-    let file = document.getElementById('myfile').value;
-    let teamRed = document.getElementById('teamRed').value;
-    let teamBlue = document.getElementById('teamBlue').value;
+    let fileSelected = document.getElementById('myfile').value;
     let fileName = document.getElementById('nameNewSet').value;
 
     const button = document.getElementsByClassName('error')[0];
-    if (checkBoxNewSet.checked==true && (fileName=="" || teamRed=="" || teamBlue=="") || 
-        (checkBoxNewSet.checked==false && (file=="" || teamRed=="" || teamBlue==""))
+    if (checkBoxNewSet.checked==true && (fileName=="" ) || 
+        (checkBoxNewSet.checked==false && (fileSelected==""))
     ) {
-        
         button.style.display = "block";
     }
     else{
         button.style.display = "none";
         if(checkBoxNewSet.checked==true ){
-            window.api.createNewSet(fileName);
+            window.api.setFilePath(fileName+".txt", true);
         }else{
-
+            var pieces = fileSelected.split('\\');
+            fileSelected = pieces[pieces.length-1];
+            window.api.setFilePath(fileName, false);
         }
     }
 }

@@ -4,9 +4,9 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 const API = {
-    createNewSet: (nameFile) => ipcRenderer.send("createNewSet", nameFile),
     toStartPage: () =>ipcRenderer.send("toStartPage"),
-    addNewQuestion: (question, answers, points) => ipcRenderer.send("addNewQuestion", question, answers, points)
+    addNewQuestion: (question, answers, points) => ipcRenderer.send("addNewQuestion", question, answers, points),
+    setFilePath: (path, isNewFile) => ipcRenderer.send("setFilePath", path, isNewFile)
 }
 
 contextBridge.exposeInMainWorld("api", API);

@@ -6,6 +6,7 @@ const Team = require('../src/model/team');
 
 var mainWindow;
 var questions = [];
+var fileName;
 var teamRed, teamBlue;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -59,25 +60,25 @@ app.on('window-all-closed', () => {
 // code. You can also put them in separate files and import them here.
 
 // IPC handles
-ipcMain.on("createNewSet", createNewSet);
 ipcMain.on("toStartPage", ()=>{
   mainWindow.loadURL(`file://${__dirname}/render/formStart.html`)
-})
-ipcMain.on("addNewQuestion", addNewQuestion);
+});
+ipcMain.on("setFilePath", setFilePath);
+ipcMain.on("addNewQuestion", (event, question, answers, points)=>{
+  questions.push(new Question(question, answers, points));
+});
 
 // IPC functions implementations
-function createNewSet(event, fileName){
-  var path = "sets/"+fileName+".txt";
-  fs.open(path, 'w', function (err, file) {
-    if (err) throw err;
-    // console.log('Saved!');
-  });
-  mainWindow.loadURL(`file://${__dirname}/render/questions.html`)
-}
-
-function addNewQuestion(event, question, answers, points){
-  questions.push(new Question(question, answers, points));
-  console.log(questions);
+function setFilePath(event, path, isNewFile) {
+  fileName = path;
+  if(isNewFile){
+    var path = "sets/"+fileName;
+    fs.open(path, 'w', function (err, file) {
+      if (err) throw err;
+      // console.log('Saved!');
+    });
+  }
+  mainWindow.loadURL(`file://${__dirname}/render/questions.html`);
 }
 
 
