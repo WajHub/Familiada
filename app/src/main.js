@@ -1,13 +1,20 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const fs = require('fs');
-const Question = require('../src/model/question');
-const Team = require('../src/model/team');
+const Question = require('../models/question');
+const Team = require('../models/team');
+const { Sequelize } = require('sequelize');
 
 var mainWindow;
 var questions = [];
 var fileName;
-var teamRed, teamBlue;
+
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: './database.sqlite'
+});
+
+
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -52,12 +59,14 @@ app.whenReady().then(() => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
+    sequelize.close() 
     app.quit();
   }
 });
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
 
 // IPC handles
 ipcMain.on("toStartPage", ()=>{
