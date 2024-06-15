@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const fs = require('fs');
 const Question = require('../models/question');
+const SetOfQuestions = require('../models/setOfQuestions');
 const Team = require('../models/team');
 const { Sequelize } = require('sequelize');
 
@@ -13,7 +14,6 @@ const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: './database.sqlite'
 });
-
 
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.

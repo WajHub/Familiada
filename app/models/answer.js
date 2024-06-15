@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false
       }
     });
+    
+    Answer.associate = function(models){
+      Answer.belongsTo(sequelize.define("Question"));
+    }
   
     return Answer;
   };

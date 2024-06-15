@@ -5,6 +5,9 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false
       }
     });
-    
+    Question.associate = function(models){
+      Question.belongsTo(sequelize.define("SetOfQuestions"));
+      Question.hasMany(sequelize.define("Answer"));
+    }
     return Question;
   };
