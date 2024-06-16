@@ -1,20 +1,32 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const fs = require('fs');
-const Question = require('../models/question');
-const SetOfQuestions = require('../models/setOfQuestions');
+// const dbmgr = require('../database/dbmgr');
+const sequelize = require('../database/sequelize');
+const { DataTypes } = require('sequelize');
+const Answer = require('../models/answer')(sequelize, DataTypes);
+const Question = require('../models/question')(sequelize, DataTypes);
+const SetOfQuestions = require('../models/setOfQuestions')(sequelize, DataTypes);
 const Team = require('../models/team');
-const { Sequelize } = require('sequelize');
+
 
 var mainWindow;
 var questions = [];
 var fileName;
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: './database.sqlite'
-});
-
+sequelize.sync()
+  .then(() => {
+    Answer.create({content: "answer", points: 10})
+      .then(answer => {
+        console.log(answer instanceof Answer); // true
+      })
+      .catch(err => {
+        console.error('Error occurred:', err);
+      });
+  })
+  .catch(err => {
+    console.error('Error occurred:', err);
+  });
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {

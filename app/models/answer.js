@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     
     Answer.associate = function(models){
-      Answer.belongsTo(sequelize.define("Question"));
+      Answer.belongsTo(models.Question);
     }
   
     return Answer;
