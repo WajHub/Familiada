@@ -10,33 +10,26 @@
   </head>
   <body>
 
-    <div class="getStarted">
-      <form id="form_getStarted">
+    <form id="form_new_set">
+      <button type="submit">Create new Set</button>
+    </form>
 
-        <div class="selectFile">
-          <label for="myfile">Select a file (set of questions):</label>
-          <input type="file" id="myfile" name="myfile"><br><br>
-        </div>
-        
-        Create new Set:
-        <input type="checkbox" id="newSetCheckBox" name="newSet"><br><br>
-
-        <div class="newFile">
-          <label for="nameNewSet">Name of set:</label>
-          <input type="text" id="nameNewSet" name="nameNewSet">
-          <br> <br> 
-        </div>
-        
-         <hr>  <br>
-        
-        <!-- <label for="teamRed">Team (RED) Name:</label>
-        <input type="text" id="teamRed" name="teamRed" required><br><br>
-        <label for="teamBlue">Team (BLUE) Name:</label>
-        <input type="text" id="teamBlue" name="teamBlue" required><br><br> -->
-          <div class="error">ERROR - wrong input!<br><br></div>
-        <input type="submit">
-      </form>
+    <div id="overlay">
+      <div id="form_new_set_container">
+        <form id="form_create_new_set">
+          <label for="title">Set name:</label>
+          <input type="text" id="title" name="title" required>
+          <button type="submit">Create</button>
+        </form>
+      </div>
     </div>
+
+    <form id="chose_set">
+      <select id="sets"></select>
+      <button type="submit">Chose Set</button>
+    </form>
+
+  
     
   </body>
 </html>

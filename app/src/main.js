@@ -1,32 +1,18 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const fs = require('fs');
-// const dbmgr = require('../database/dbmgr');
 const sequelize = require('../database/sequelize');
 const { DataTypes } = require('sequelize');
 const Answer = require('../models/answer')(sequelize, DataTypes);
 const Question = require('../models/question')(sequelize, DataTypes);
 const SetOfQuestions = require('../models/setOfQuestions')(sequelize, DataTypes);
+const SetOfQuestionsService = require('../service/setOfQuestionsService');
 const Team = require('../models/team');
 
 
 var mainWindow;
 var questions = [];
 var fileName;
-
-sequelize.sync()
-  .then(() => {
-    Answer.create({content: "answer", points: 10})
-      .then(answer => {
-        console.log(answer instanceof Answer); // true
-      })
-      .catch(err => {
-        console.error('Error occurred:', err);
-      });
-  })
-  .catch(err => {
-    console.error('Error occurred:', err);
-  });
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -81,6 +67,12 @@ app.on('window-all-closed', () => {
 
 
 // IPC handles
+ipcMain.on("save_new_set", async (event, title) => {
+  SetOfQuestions.create({title: title}).
+    then(set => {
+    });
+});
+
 ipcMain.on("toStartPage", ()=>{
   mainWindow.loadURL(`file://${__dirname}/render/formStart.html`)
 });
