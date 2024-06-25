@@ -11,8 +11,7 @@ const Team = require('../models/team');
 
 
 var mainWindow;
-var questions = [];
-var fileName;
+var setOfQuestions;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -69,6 +68,19 @@ app.on('window-all-closed', () => {
 // IPC handles
 ipcMain.handle('get_sets', async () => {
   return await SetOfQuestions.findAll()
+});
+ipcMain.handle('delete_set', async (event, id) => {
+  console.log("Deleting set with id: ", id);
+    await SetOfQuestions.destroy({
+      where: {
+        id: id
+      }
+    });
+});
+ipcMain.on("set_chosen_set", async (event, id) => {
+  console.log("Chosen set with id: ", id);
+  setOfQuestions = await SetOfQuestions.findByPk(id);
+  console.log("Set of questions: ", setOfQuestions);
 });
 
 ipcMain.on("save_new_set", async (event, title) => {
