@@ -67,7 +67,9 @@ app.on('window-all-closed', () => {
 
 
 // IPC handles
-ipcMain.handle('get_sets', handleGetSets);
+ipcMain.handle('get_sets', async () => {
+  return await SetOfQuestions.findAll()
+});
 
 ipcMain.on("save_new_set", async (event, title) => {
   SetOfQuestions.create({title: title}).
@@ -75,11 +77,7 @@ ipcMain.on("save_new_set", async (event, title) => {
       cosnole.log("Set created: ", set);
     });
 });
-ipcMain.on("get_sets", async(event) =>{
-  SetOfQuestions.findAll().then(sets => {
-    event.reply("get_sets_response", sets);
-  });
-})
+
 
 ipcMain.on("toStartPage", ()=>{
   mainWindow.loadURL(`file://${__dirname}/render/formStart.html`)
@@ -102,8 +100,5 @@ function setFilePath(event, path, isNewFile) {
   mainWindow.loadURL(`file://${__dirname}/render/questions.html`);
 }
 
-async function handleGetSets () {
-  return await SetOfQuestions.findAll();
-}
 
 
