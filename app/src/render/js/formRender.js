@@ -8,9 +8,6 @@ var container = document.getElementById("container");
 document.addEventListener("DOMContentLoaded", display_sets);
 
 // Event listeners
-// document.getElementById('form_create_new_set').addEventListener('submit', function() {
-//     document.getElementById('title').value = '';
-// });
 document.querySelector('#overlay > button').addEventListener('click', function() {
     document.getElementById("overlay").style.display = "none";
 });

@@ -1,16 +1,28 @@
-const form = document.querySelector(".form_addNewQuestion");
+const form = document.querySelector("#form_addNewQuestion");
+const titlediv = document.querySelector("#title");
+
+// Document ready
+document.addEventListener("DOMContentLoaded", display_title);
+document.addEventListener("DOMContentLoaded", display_questions);
+
+// Event listeners
 form.addEventListener('submit', addQuestion);
 
+// Functions implementations
 function backToStartPage(){
     window.api.toStartPage();
+}
+
+function display_title(){
+    window.api.get_title().then(title => {
+        titlediv.innerHTML = title;
+    });
 }
 
 function displayNewQuestion(){
     document.getElementById("overlay").style.display = "block";
     if(document.getElementsByClassName("answer").length==0) addNewAnswer();
-    
 }
-
 
 function cancelAddNewQuestion(){
     document.getElementById("overlay").style.display = "none";
@@ -70,6 +82,17 @@ function addQuestion(event){
         answers.push(answerContent);
         asnwerPoints.push(points);
     }
+
+    // console.log("Question: ", question);
+    // console.log("Answers: ", answers);
+    // console.log("Points: ", asnwerPoints);
+
     window.api.addNewQuestion(question, answers, points);
     location.reload();
+}
+
+function display_questions(){
+    window.api.get_questions().then(questions =>{
+        console.log("Questions: ", questions);
+    });
 }

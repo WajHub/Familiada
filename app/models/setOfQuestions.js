@@ -5,8 +5,8 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         }
     });
-    SetOfQuestions.associate = function(models){
-        SetOfQuestions.hasMany("Question");
-    }
+    SetOfQuestions.associate = function(models) {
+        SetOfQuestions.hasMany(models.Question, { foreignKey: 'setOfQuestionsId' });
+      };
     return SetOfQuestions;
 };

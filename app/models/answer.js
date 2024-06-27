@@ -7,6 +7,14 @@ module.exports = (sequelize, DataTypes) => {
       points: {
         type: DataTypes.INTEGER,
         allowNull: false
+      },
+      questionId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Question',
+          key: 'id'
+        }
       }
     });
     

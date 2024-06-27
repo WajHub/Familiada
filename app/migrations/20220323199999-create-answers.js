@@ -17,6 +17,13 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       },
+      questionId:{
+        type: Sequelize.INTEGER,
+        references:{
+          model: "Questions",
+          ky: "id"
+        }
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

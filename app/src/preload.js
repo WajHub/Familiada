@@ -4,14 +4,14 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 const API = {
-    toStartPage: () => ipcRenderer.send("toStartPage"),
-    addNewQuestion: (question, answers, points) => ipcRenderer.send("addNewQuestion", question, answers, points),
-    setFilePath: (path, isNewFile) => ipcRenderer.send("setFilePath", path, isNewFile),
-
     create_new_set: (title) => ipcRenderer.send("save_new_set", title),
     get_sets: () => ipcRenderer.invoke('get_sets'),
     delete_set: (id) => ipcRenderer.invoke("delete_set", id),
-    chose_set: (id) => ipcRenderer.send("set_chosen_set", id)
+    chose_set: (id) => ipcRenderer.send("set_chosen_set", id),
+    get_title: () => ipcRenderer.invoke("get_setOfQuestions_title"),
+    addNewQuestion: (question, answers, points) => ipcRenderer.send("addNewQuestion", question, answers, points),
+    toStartPage: () => ipcRenderer.send("toStartPage"),
+    get_questions: () => ipcRenderer.invoke("get_questions")
  }
 
 contextBridge.exposeInMainWorld("api", API);

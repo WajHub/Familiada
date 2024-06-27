@@ -66,6 +66,7 @@ app.on('window-all-closed', () => {
 
 
 // IPC handles
+// StartForm ---------------
 ipcMain.handle('get_sets', async () => {
   return await SetOfQuestions.findAll()
 });
@@ -82,7 +83,6 @@ ipcMain.on("set_chosen_set", async (event, id) => {
   setOfQuestions = await SetOfQuestions.findByPk(id);
   console.log("Set of questions: ", setOfQuestions);
 });
-
 ipcMain.on("save_new_set", async (event, title) => {
   SetOfQuestions.create({title: title}).
     then(set => {
@@ -90,27 +90,45 @@ ipcMain.on("save_new_set", async (event, title) => {
     });
 });
 
-
+// Questions ---------------
+ipcMain.handle("get_setOfQuestions_title", async () => {
+  return setOfQuestions.title;
+});
+ipcMain.handle("get_questions", async () => {
+  return await Question.findAll({
+  });
+});
 ipcMain.on("toStartPage", ()=>{
   mainWindow.loadURL(`file://${__dirname}/render/formStart.html`)
 });
-ipcMain.on("setFilePath", setFilePath);
 ipcMain.on("addNewQuestion", (event, question, answers, points)=>{
-  questions.push(new Question(question, answers, points));
+  Question.create({
+    content: question,
+    setOfQuestionsId: setOfQuestions.id
+  });
+  Question.findOne({
+    where:{
+      content: question
+    }
+  }).then(questionRespone => {
+    for (i=0; i<answers.length; i++){
+      Answer.create({
+        content: answers[i],
+        points: points[i],
+        questionId: questionRespone.id
+      });
+    }
+  });
 });
 
-// IPC functions implementations
-function setFilePath(event, path, isNewFile) {
-  fileName = path;
-  if(isNewFile){
-    var path = "sets/"+fileName;
-    fs.open(path, 'w', function (err, file) {
-      if (err) throw err;
-      // console.log('Saved!');
-    });
-  }
-  mainWindow.loadURL(`file://${__dirname}/render/questions.html`);
-}
+
+
+
+
+
+
+
+
 
 
 
