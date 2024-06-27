@@ -1,14 +1,14 @@
 const form_new_set = document.querySelector("#form_new_set");
 const form_create_new_set = document.querySelector("#form_create_new_set");
 const form_chose_set = document.querySelector("#form_chose_set");
-const selected_set = document.querySelector("#sets");
+const selected_set = document.querySelector(".form-select");
 var container = document.getElementById("container");
 
 // Document ready
 document.addEventListener("DOMContentLoaded", display_sets);
 
 // Event listeners
-document.querySelector('#overlay > button').addEventListener('click', function() {
+document.querySelector('.cancelButton').addEventListener('click', function() {
     document.getElementById("overlay").style.display = "none";
 });
 form_chose_set.addEventListener('submit', chosen_set);
@@ -51,7 +51,7 @@ async function create_new_set(e){
 }
 
 async function display_sets(){
-    var selectElement = document.getElementById('sets');
+    var selectElement = document.querySelector('.form-select');
 
     window.api.get_sets().then(sets => {
         // console.log("Sets: ", sets);

@@ -29,7 +29,7 @@ const createWindow = () => {
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, 'render/formStart.html'));
+  mainWindow.loadFile(path.join(__dirname, 'render/index.html'));
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
@@ -109,7 +109,7 @@ ipcMain.handle("get_answers", async (event, id) => {
   });
 });
 ipcMain.on("toStartPage", ()=>{
-  mainWindow.loadURL(`file://${__dirname}/render/formStart.html`)
+  mainWindow.loadURL(`file://${__dirname}/render/index.html`)
 });
 ipcMain.on("addNewQuestion", (event, question, answers, points)=>{
   Question.create({

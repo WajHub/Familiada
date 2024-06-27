@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Familiada</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
+    rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
+    crossorigin="anonymous">
+    <link rel="stylesheet" href="css/index.css" />
+    <script src="js/indexRender.js" defer></script>
+   
+  </head>
+  <body>
+    
+    <div class="container">
+
+      <div class="d-flex justify-content-center">
+        <h1 class="h1">Familiada</h1>
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <form id="form_new_set" style="margin-bottom: 20px;">
+          <button type="submit" class="btn btn-success">Create new Set</button>
+        </form>
+      </div>  
+
+      <div class="d-flex justify-content-center">
+        <form id="form_chose_set">
+          <div class="form-group">
+          <select class="form-select" style="margin-bottom: 10px;">
+
+          </select>
+          <button type="submit" name="action" value="Chose" class="btn btn-outline-success">Chose Set</button>
+          <button type="submit" name="action" value="Delete" class="btn btn-danger">Delete Set</button>
+          </div>
+        </form>
+      </div>  
+      
+    </div>
+
+    <div id="overlay">
+      <div class="h-100 d-flex align-items-center justify-content-center">
+        <form id="form_create_new_set">
+          <label for="title">Set name:</label>
+          <input type="text" id="title" name="title" required>
+          <button type="submit">Create</button>
+        </form>
+        <button type="submit" class="cancelButton">Cancel</button>
+      </div>
+      
+    </div>
+
+  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  </body>
+</html>

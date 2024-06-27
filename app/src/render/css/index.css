@@ -7,21 +7,9 @@ body {
   background-color: #1b1b1b;
 }
 
-.getStarted {
-  width: 300px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f2f2f2;
-  border-radius: 5px;
-}
-
-.error {
-  color: red;
-  display: none;
-}
-
-.newFile {
-  display: none;
+.h1{
+  color: white;
+  padding-bottom: 20px;
 }
 
 #overlay {
