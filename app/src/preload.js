@@ -11,7 +11,8 @@ const API = {
     get_title: () => ipcRenderer.invoke("get_setOfQuestions_title"),
     addNewQuestion: (question, answers, points) => ipcRenderer.send("addNewQuestion", question, answers, points),
     toStartPage: () => ipcRenderer.send("toStartPage"),
-    get_questions: () => ipcRenderer.invoke("get_questions")
+    get_questions: () => ipcRenderer.invoke("get_questions"),
+    get_answers: (id) => ipcRenderer.invoke("get_answers", id)
  }
 
 contextBridge.exposeInMainWorld("api", API);

@@ -93,6 +93,24 @@ function addQuestion(event){
 
 function display_questions(){
     window.api.get_questions().then(questions =>{
-        console.log("Questions: ", questions);
+        questions.forEach(question => {
+            const content = question.dataValues.content;
+            var containter = document.querySelector(".questionsContainer");
+            // create div for question
+            var divQuestion = document.createElement("div");
+            divQuestion.className = "question";
+            divQuestion.textContent = "Question: "+content;
+            containter.appendChild(divQuestion);
+            window.api.get_answers(question.dataValues.id).then(answers => {
+                answers.forEach(answer => {
+                    const content = answer.dataValues.content;
+                    const points = answer.dataValues.points;
+                    var div = document.createElement("div");
+                    div.className = "answerSaved";
+                    div.textContent = "Answer: "+content+" Points: "+points;
+                    divQuestion.appendChild(div);
+                });
+            });
+        });
     });
 }

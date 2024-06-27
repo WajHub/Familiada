@@ -96,6 +96,16 @@ ipcMain.handle("get_setOfQuestions_title", async () => {
 });
 ipcMain.handle("get_questions", async () => {
   return await Question.findAll({
+    where: {
+      setOfQuestionsId: setOfQuestions.id
+    }
+  });
+});
+ipcMain.handle("get_answers", async (event, id) => {
+  return await Answer.findAll({
+    where: {
+      questionId: id
+    }
   });
 });
 ipcMain.on("toStartPage", ()=>{
