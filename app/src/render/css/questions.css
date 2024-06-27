@@ -7,32 +7,11 @@ body {
   background-color: #1b1b1b;
 }
 
-.container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 45px;
-  background-color: #f2f2f2;
-  border-radius: 5px;
+#title{
+  color:white;
+  text-align: center;
 }
 
-.newQestionButton {
-  padding-top: 20px;
-  display: flex;
-  justify-content: center;
-}
-
-.newQestionButton button {
-  margin: 0;
-  background-color: rgb(23, 104, 226);
-  color: white;
-  display: inline-block;
-  margin-bottom: 20px;
-  padding: 10px 15px;
-  font-size: 14px;
-  border: 0;
-  border-radius: 5px;
-  width: 100%;
-}
 
 #overlay {
   position: fixed; /* Sit on top of the page content */

@@ -83,11 +83,8 @@ function addQuestion(event){
         asnwerPoints.push(points);
     }
 
-    // console.log("Question: ", question);
-    // console.log("Answers: ", answers);
-    // console.log("Points: ", asnwerPoints);
 
-    window.api.addNewQuestion(question, answers, points);
+    window.api.addNewQuestion(question, answers, asnwerPoints);
     location.reload();
 }
 
@@ -95,7 +92,7 @@ function display_questions(){
     window.api.get_questions().then(questions =>{
         questions.forEach(question => {
             const content = question.dataValues.content;
-            var containter = document.querySelector(".questionsContainer");
+            var containter = document.querySelector("#questionsContainer");
             // create div for question
             var divQuestion = document.createElement("div");
             divQuestion.className = "question";
