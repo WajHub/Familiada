@@ -20,12 +20,12 @@ function display_title(){
 }
 
 function displayNewQuestion(){
-    document.getElementById("overlay").style.display = "block";
+    document.getElementById("newQuestionOverlay").style.display = "block";
     if(document.getElementsByClassName("answer").length==0) addNewAnswer();
 }
 
 function cancelAddNewQuestion(){
-    document.getElementById("overlay").style.display = "none";
+    document.getElementById("newQuestionOverlay").style.display = "none";
 }
 
 function addNewAnswer(){
@@ -110,4 +110,18 @@ function display_questions(){
             });
         });
     });
+}
+
+function displaySetNameOfTeams(){
+    document.getElementById("nameTeamsOverlay").style.display = "block";
+}
+function hideNameOfTeams(){
+    document.getElementById("nameTeamsOverlay").style.display = "none";
+}
+
+function setNameTeams(){
+    var team1 = document.getElementById("team1").value;
+    var team2 = document.getElementById("team2").value;
+    window.api.setTeams(team1, team2);
+    hideNameOfTeams();
 }

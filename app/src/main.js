@@ -130,6 +130,9 @@ ipcMain.on("addNewQuestion", (event, question, answers, points)=>{
     }
   });
 });
+ipcMain.on("setTeams", (event, team1, team2) => {
+  console.log("Setting teams: ", team1, team2);
+});
 
 
 

@@ -13,7 +13,7 @@ body {
 }
 
 
-#overlay {
+.overlay {
   position: fixed; /* Sit on top of the page content */
   display: none; /* Hidden by default */
   width: 100%; /* Full width (cover the whole page) */
@@ -27,7 +27,7 @@ body {
   color: white;
 }
 
-.windowToNewQuestion{
+.windowOverlay{
   position: absolute;
   top: 50%;
   left: 50%;
@@ -38,6 +38,7 @@ body {
   border-radius: 5px;
   background-color: white;
   background-color: #3f3f3f;
+  padding: 20px;
 }
 
 .form_addNewQuestion {

@@ -20,8 +20,8 @@
   
     </div>
 
-    <div id="overlay">
-        <div class="windowToNewQuestion">
+    <div class="overlay" id="newQuestionOverlay">
+        <div class="windowOverlay">
 
             <form id="form_addNewQuestion">
 
@@ -43,13 +43,42 @@
         </div>
     </div>
 
+    <div class="overlay" id="nameTeamsOverlay">
+      <div class="windowOverlay">
+        <form id="nameOfTeamsForm">
+            <label for="team1">Name of team RED:</label>
+            <input type="text" id="team1" name="team1" required><br><br>
+            <label for="team2">Name of team BLUE:</label>
+            <input type="text" id="team2" name="team2" required><br><br>
+            <div class="row">
+              <div class="col d-flex justify-content-center">
+                <button onclick="hideNameOfTeams()" type="button" class="btn btn-secondary">Cancel</button>
+              </div>
+              <div class="col d-flex justify-content-center">
+                <button onclick="setNameTeams()" type="button" class="btn btn-success">Start</button>
+              </div>
+            </div>
+        </form>
+      </div>
+
+    </div>
+
     <div class="row">
       <button id="newQestionButton" onclick="displayNewQuestion()" type="button" class="btn btn-outline-primary">Add new question</button>
     </div>
-   
-    <div class="row" style="margin-top: 25px;">
-      <button onclick="backToStartPage()" type="button" class="btn btn-outline-secondary">Back</button>
+
+    <div class="container">
+      <div class="row" style="margin-top: 25px;">
+        <div class="col d-flex justify-content-center">
+          <button onclick="backToStartPage()" type="button" class="btn btn-outline-secondary">Back</button>
+        </div>
+        <div class="col d-flex justify-content-center">
+          <button onclick="displaySetNameOfTeams()" type="button" class="btn btn-outline-success">Next</button>
+        </div>
+      </div>
     </div>
+   
+   
    
 
   </div>

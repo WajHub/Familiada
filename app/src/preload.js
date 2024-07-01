@@ -12,7 +12,8 @@ const API = {
     addNewQuestion: (question, answers, points) => ipcRenderer.send("addNewQuestion", question, answers, points),
     toStartPage: () => ipcRenderer.send("toStartPage"),
     get_questions: () => ipcRenderer.invoke("get_questions"),
-    get_answers: (id) => ipcRenderer.invoke("get_answers", id)
+    get_answers: (id) => ipcRenderer.invoke("get_answers", id),
+    setTeams: (team1, team2) => ipcRenderer.send("setTeams", team1, team2)
  }
 
 contextBridge.exposeInMainWorld("api", API);
