@@ -8,10 +8,17 @@ const Question = require('../models/question')(sequelize, DataTypes);
 const SetOfQuestions = require('../models/setOfQuestions')(sequelize, DataTypes);
 const SetOfQuestionsService = require('../service/setOfQuestionsService');
 const Team = require('../models/team');
+const question = require('../models/question');
 
 
 var mainWindow;
+var boardWindow;
+
 var setOfQuestions;
+var questions;
+
+var teamRED;
+var teamBLUE;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -19,20 +26,32 @@ if (require('electron-squirrel-startup')) {
 }
 
 const createWindow = () => {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+  boardWindow = new BrowserWindow({
+    width: 600,
+    height: 400,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
 
-  // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, 'render/index.html'));
+  boardWindow.loadFile(path.join(__dirname, 'render/board.html'));
+
+    // Create the browser window.
+    mainWindow = new BrowserWindow({
+      width: 800,
+      height: 600,
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js'),
+      },
+    });
+  
+    // and load the index.html of the app.
+    mainWindow.loadFile(path.join(__dirname, 'render/index.html'));
 
   // Open the DevTools.
+  boardWindow.webContents.openDevTools();
   mainWindow.webContents.openDevTools();
+   
 };
 
 // This method will be called when Electron has finished
@@ -131,10 +150,37 @@ ipcMain.on("addNewQuestion", (event, question, answers, points)=>{
   });
 });
 ipcMain.on("setTeams", (event, team1, team2) => {
-  console.log("Setting teams: ", team1, team2);
+  teamRED = Object.create({
+    name: team1,
+    points: 0
+  });
+  teamBLUE = Object.create({
+    name: team2,
+    points: 0
+  });
+  mainWindow.loadURL(`file://${__dirname}/render/gamePanel.html`);
+  getQuestions();
+  game();
 });
 
+async function getQuestions(){
+  questions = await Question.findAll({
+    where: {
+      setOfQuestionsId: setOfQuestions.id
+    }
+  });
+}
 
+
+async function game(){
+  questions.forEach(question => {
+    console.log("TEST: ", question);
+    mainWindow.webContents.send('question', question);
+    while(true){
+
+    }
+  });
+}
 
 
 
