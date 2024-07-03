@@ -13,10 +13,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      setOfQuestionsId: {
+      collectionId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'SetOfQuestions',
+          model: 'Collections',
           key: 'id'
         },
         onUpdate: 'CASCADE',

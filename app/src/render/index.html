@@ -22,7 +22,7 @@
 
       <div class="d-flex justify-content-center">
         <form id="form_new_set" style="margin-bottom: 20px;">
-          <button type="submit" class="btn btn-success">Create new Set</button>
+          <button type="submit" onclick="displayOverlayForNewCollection(event)" class="btn btn-success">Create new Set</button>
         </form>
       </div>  
 
@@ -32,8 +32,8 @@
           <select class="form-select" style="margin-bottom: 10px;">
 
           </select>
-          <button type="submit" name="action" value="Chose" class="btn btn-outline-success">Chose Set</button>
-          <button type="submit" name="action" value="Delete" class="btn btn-danger">Delete Set</button>
+          <button type="submit" onclick="choseCollection(event)" class="btn btn-outline-success">Chose Set</button>
+          <button type="submit" onclick="deleteColletion(event)" class="btn btn-danger">Delete Set</button>
           </div>
         </form>
       </div>  
@@ -45,9 +45,9 @@
         <form id="form_create_new_set">
           <label for="title">Set name:</label>
           <input type="text" id="title" name="title" required>
-          <button type="submit">Create</button>
+          <button type="submit" onclick="createNewCollection(event)" class="btn btn-outline-success">Create</button>
         </form>
-        <button type="submit" class="cancelButton">Cancel</button>
+        <button type="submit" onclick="cancelCreatingCollection()" class="btn btn-danger" id="cancelButton">Cancel</button>
       </div>
       
     </div>

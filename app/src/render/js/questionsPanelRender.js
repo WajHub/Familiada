@@ -6,11 +6,11 @@ document.addEventListener("DOMContentLoaded", display_title);
 document.addEventListener("DOMContentLoaded", display_questions);
 
 // Event listeners
-form.addEventListener('submit', addQuestion);
+form.addEventListener('submit', displayFormToAddQuestion);
 
 // Functions implementations
 function backToStartPage(){
-    window.api.toStartPage();
+    window.location.href = "index.html";
 }
 
 function display_title(){
@@ -21,14 +21,23 @@ function display_title(){
 
 function displayNewQuestion(){
     document.getElementById("newQuestionOverlay").style.display = "block";
-    if(document.getElementsByClassName("answer").length==0) addNewAnswer();
+    if(document.getElementsByClassName("answer").length==0) displayAddingNewAnswer();
 }
 
 function cancelAddNewQuestion(){
     document.getElementById("newQuestionOverlay").style.display = "none";
+    // Remove all answers
+    var answers = document.getElementsByClassName("answer");
+    while(answers.length>0){
+        answers[0].remove();
+    }
+    var answerContainer = document.querySelector(".answerContainer");
+    answerContainer.innerHTML = "";
+    document.querySelector("#questionInput").value = "";
+    
 }
 
-function addNewAnswer(){
+function displayAddingNewAnswer(){
     var numberOfAnswers = document.getElementsByClassName("answer").length/2;
 
     // Create label element
@@ -119,7 +128,7 @@ function hideNameOfTeams(){
     document.getElementById("nameTeamsOverlay").style.display = "none";
 }
 
-function setNameTeams(){
+function startGame(){
     var team1 = document.getElementById("team1").value;
     var team2 = document.getElementById("team2").value;
     window.api.setTeams(team1, team2);

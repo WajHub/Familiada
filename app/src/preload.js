@@ -4,13 +4,13 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 const API = {
-    create_new_set: (title) => ipcRenderer.send("save_new_set", title),
-    get_sets: () => ipcRenderer.invoke('get_sets'),
-    delete_set: (id) => ipcRenderer.invoke("delete_set", id),
-    chose_set: (id) => ipcRenderer.send("set_chosen_set", id),
-    get_title: () => ipcRenderer.invoke("get_setOfQuestions_title"),
+    getCollections: () => ipcRenderer.invoke('getCollections'),
+    saveCollection: (title) => ipcRenderer.send("saveCollection", title),
+    deleteCollection: (id) => ipcRenderer.invoke("deleteCollection", id),
+    setCurrentCollection: (id) => ipcRenderer.send("setCurrentCollection", id),
+    get_title: () => ipcRenderer.invoke("getCollectionTitle"),
+
     addNewQuestion: (question, answers, points) => ipcRenderer.send("addNewQuestion", question, answers, points),
-    toStartPage: () => ipcRenderer.send("toStartPage"),
     get_questions: () => ipcRenderer.invoke("get_questions"),
     get_answers: (id) => ipcRenderer.invoke("get_answers", id),
     setTeams: (team1, team2) => ipcRenderer.send("setTeams", team1, team2)

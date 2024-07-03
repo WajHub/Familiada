@@ -1,59 +1,50 @@
-const form_new_set = document.querySelector("#form_new_set");
-const form_create_new_set = document.querySelector("#form_create_new_set");
-const form_chose_set = document.querySelector("#form_chose_set");
 const selected_set = document.querySelector(".form-select");
 var container = document.getElementById("container");
 
 // Document ready
-document.addEventListener("DOMContentLoaded", display_sets);
+document.addEventListener("DOMContentLoaded", displayCollections);
 
-// Event listeners
-document.querySelector('.cancelButton').addEventListener('click', function() {
-    document.getElementById("overlay").style.display = "none";
-});
-form_chose_set.addEventListener('submit', chosen_set);
-form_new_set.addEventListener('submit', new_set);
-form_create_new_set.addEventListener('submit', create_new_set);
 
 // Functions implementations
-function new_set(e){
-    e.preventDefault(); 
-    // create overlay for creating new set of questions
+function displayOverlayForNewCollection(event) {
+    event.preventDefault();
     document.getElementById("overlay").style.display = "block";
+    // Reszta logiki funkcji
+  }
+
+function choseCollection(event){
+    event.preventDefault();
+    window.api.setCurrentCollection(selected_set.value); // <----- POPRAWA FUNCKJI
+    window.location.href = "questionsPanel.html";
 }
 
-function chosen_set(e){
-    e.preventDefault();
-    const type_operation = event.submitter.value;
-    if(type_operation == "Chose" && selected_set.value != ""){
-        console.log("Chosen set: ", selected_set.value);
-        window.api.chose_set(selected_set.value)
-        window.location.href = "questions.html";
-    }
-    else if (type_operation == "Delete"){
-        window.api.delete_set(selected_set.value).then(
-            location.reload()
-        );   
-    }   
-    
+function deleteColletion(e) {
+    window.api.deleteCollection(selected_set.value).then(
+        location.reload()
+    );   
 }
 
-async function create_new_set(e){
-    e.preventDefault();
+async function createNewCollection(event){
+    event.preventDefault();
     var title = document.querySelector("#title").value;
     console.log("Title: ", title);
     document.getElementById("overlay").style.display = "none";
+    console.log("Creating new collection: ", title);
 
     // create new set of questions
-    window.api.create_new_set(title)
+    window.api.saveCollection(title)
     location.reload();
-
 }
 
-async function display_sets(){
+function cancelCreatingCollection(){
+    document.getElementById("title").value = "";
+    document.getElementById("overlay").style.display = "none";
+}
+
+async function displayCollections(){
     var selectElement = document.querySelector('.form-select');
 
-    window.api.get_sets().then(sets => {
+    window.api.getCollections().then(sets => {
         // console.log("Sets: ", sets);
         sets.forEach(set=> {
             const id = set.dataValues.id;

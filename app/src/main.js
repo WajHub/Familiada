@@ -1,24 +1,12 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
-const fs = require('fs');
 const sequelize = require('../database/sequelize');
-const { DataTypes } = require('sequelize');
-const Answer = require('../models/answer')(sequelize, DataTypes);
-const Question = require('../models/question')(sequelize, DataTypes);
-const SetOfQuestions = require('../models/setOfQuestions')(sequelize, DataTypes);
-const SetOfQuestionsService = require('../service/setOfQuestionsService');
-const Team = require('../models/team');
-const question = require('../models/question');
-
+const Service = require('./service');
+const gameLogic = require('./gameLogic');
 
 var mainWindow;
 var boardWindow;
 
-var setOfQuestions;
-var questions;
-
-var teamRED;
-var teamBLUE;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -84,106 +72,19 @@ app.on('window-all-closed', () => {
 // code. You can also put them in separate files and import them here.
 
 
-// IPC handles
-// StartForm ---------------
-ipcMain.handle('get_sets', async () => {
-  return await SetOfQuestions.findAll()
-});
-ipcMain.handle('delete_set', async (event, id) => {
-  console.log("Deleting set with id: ", id);
-    await SetOfQuestions.destroy({
-      where: {
-        id: id
-      }
-    });
-});
-ipcMain.on("set_chosen_set", async (event, id) => {
-  console.log("Chosen set with id: ", id);
-  setOfQuestions = await SetOfQuestions.findByPk(id);
-  console.log("Set of questions: ", setOfQuestions);
-});
-ipcMain.on("save_new_set", async (event, title) => {
-  SetOfQuestions.create({title: title}).
-    then(set => {
-      cosnole.log("Set created: ", set);
-    });
-});
-
-// Questions ---------------
-ipcMain.handle("get_setOfQuestions_title", async () => {
-  return setOfQuestions.title;
-});
-ipcMain.handle("get_questions", async () => {
-  return await Question.findAll({
-    where: {
-      setOfQuestionsId: setOfQuestions.id
-    }
-  });
-});
-ipcMain.handle("get_answers", async (event, id) => {
-  return await Answer.findAll({
-    where: {
-      questionId: id
-    }
-  });
-});
-ipcMain.on("toStartPage", ()=>{
-  mainWindow.loadURL(`file://${__dirname}/render/index.html`)
-});
-ipcMain.on("addNewQuestion", (event, question, answers, points)=>{
-  Question.create({
-    content: question,
-    setOfQuestionsId: setOfQuestions.id
-  });
-  Question.findOne({
-    where:{
-      content: question
-    }
-  }).then(questionRespone => {
-    for (i=0; i<answers.length; i++){
-      Answer.create({
-        content: answers[i],
-        points: points[i],
-        questionId: questionRespone.id
-      });
-    }
-  });
-});
-ipcMain.on("setTeams", (event, team1, team2) => {
-  teamRED = Object.create({
-    name: team1,
-    points: 0
-  });
-  teamBLUE = Object.create({
-    name: team2,
-    points: 0
-  });
-  mainWindow.loadURL(`file://${__dirname}/render/gamePanel.html`);
-  getQuestions();
-  game();
-});
-
-async function getQuestions(){
-  questions = await Question.findAll({
-    where: {
-      setOfQuestionsId: setOfQuestions.id
-    }
-  });
-}
+// IPC handles for index.html
+ipcMain.handle('getCollections', Service.getCollections);
+ipcMain.on("saveCollection", Service.saveCollection);
+ipcMain.handle('deleteCollection', Service.deleteCollection);
+ipcMain.on("setCurrentCollection", gameLogic.setCurrentCollection);
 
 
-async function game(){
-  questions.forEach(question => {
-    console.log("TEST: ", question);
-    mainWindow.webContents.send('question', question);
-    while(true){
-
-    }
-  });
-}
-
-
-
+// IPC handles for Questions.html
+ipcMain.handle("getCollectionTitle", gameLogic.getCollectionTitle);
+ipcMain.handle("get_questions", gameLogic.getQuestions);
+// ipcMain.handle("get_answers", Service.getAnswers);
+// ipcMain.on("setTeams", gameLogic.setTeams);
+// ipcMain.on("addNewQuestion", Service.addNewQuestion);
 
 
 
