@@ -5,8 +5,6 @@ const titlediv = document.querySelector("#title");
 document.addEventListener("DOMContentLoaded", display_title);
 document.addEventListener("DOMContentLoaded", display_questions);
 
-// Event listeners
-form.addEventListener('submit', displayFormToAddQuestion);
 
 // Functions implementations
 function backToStartPage(){
@@ -38,27 +36,28 @@ function cancelAddNewQuestion(){
 }
 
 function displayAddingNewAnswer(){
-    var numberOfAnswers = document.getElementsByClassName("answer").length/2;
+    var numberOfAnswers = document.getElementsByClassName("answer").length;
 
     // Create label element
     var label = document.createElement("label");    
     label.setAttribute("for", "answer");
+    label.className = "col";
     label.textContent = numberOfAnswers+1+":";
 
     // Create first div and input element
     var div1 = document.createElement("div");
-    div1.className = "answer";
+    div1.className = "col";
 
     var input1 = document.createElement("input");
     input1.type = "text";
-    input1.className = "answerInput";
+    input1.classList.add("col", "answer");
     input1.name = "answer";
 
     div1.appendChild(input1);
 
     // Create second div and input element
     var div2 = document.createElement("div");
-    div2.className = "answer";
+    div2.className = "col";
 
     var input2 = document.createElement("input");
     input2.type = "number";
@@ -68,11 +67,20 @@ function displayAddingNewAnswer(){
     input2.max = "100";
 
     div2.appendChild(input2);
+
+    // Create div class container and row (bootstrap)
+    var container = document.createElement("div");
+    container.className = "container";
+    var row = document.createElement("div");
+    row.className = "row p-3";
     var answerContainer =  document.querySelector(".answerContainer");
+
     // Append all elements to the body
-    answerContainer.appendChild(label);
-    answerContainer.appendChild(div1);
-    answerContainer.appendChild(div2);
+    row.appendChild(label);
+    row.appendChild(div1);
+    row.appendChild(div2);
+    container.appendChild(row);
+    answerContainer.appendChild(container);
 }
 
 function addQuestion(event){
