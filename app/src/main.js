@@ -71,6 +71,7 @@ app.on('window-all-closed', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 
+exports.boardWindow = boardWindow;
 
 // IPC handles for index.html
 ipcMain.handle('getCollections', Service.getCollections);
@@ -87,7 +88,8 @@ ipcMain.handle("get_questions", async (event) => {
   return await Service.getQuestions(collectionId);
 });
 ipcMain.handle("get_answers", Service.getAnswers);
-// ipcMain.on("setTeams", gameLogic.setTeams);
+ipcMain.on("setTeams", gameLogic.setTeams);
+ipcMain.on("startGame", gameLogic.startGame);
 
 
 

@@ -12,7 +12,6 @@ async function getCollections() {
 }
 
 async function getCollection(id) {
-  console.log("Getting set with id: !!!!!!--------", id);
   return await Collection.findOne({
     where: {
       id: id
@@ -22,7 +21,6 @@ async function getCollection(id) {
 
 
 async function getAnswers(event, id) {
-  console.log("Getting answers for question with id: ", id.va)
   return await Answer.findAll({
     where: {
       questionId: id
@@ -40,7 +38,6 @@ async function getQuestions(id) {
 
 // Insertion
 async function saveCollection(event, title) {
-  console.log("Creating set with title: ", title);
   Collection.create({ title: title })
     .then(set => {
       console.log("Set created: ", set);

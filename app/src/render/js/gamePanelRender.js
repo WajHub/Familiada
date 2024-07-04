@@ -7,9 +7,10 @@ function display_title(){
     window.api.get_title().then(title => {
         titlediv.innerHTML = title;
     });
+    window.api.startGame();
 }
 
 function backToStartPage(){
-    window.api.toStartPage();
+    window.location.href = "index.html";
 }
 

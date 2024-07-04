@@ -1,5 +1,6 @@
 // gameLogic.js
 const Service = require('./service');
+const boardWindow = require("./main")
 
 var collection;
 var teamRED;
@@ -16,22 +17,23 @@ async function getQuestions(){
 function setTeams(event, team1, team2) {
     teamRED = team1;
     teamBLUE = team2;
-    console.log(team1);
-    console.log(team2);
-    console.log("Teams set");
 }
 
 async function addNewQuestion(event, question, answers, points){
-    console.log("ADDING NEW QUESTION");
-    console.log(question);
-    console.log(answers);
-    console.log(points);
     const questionid = await Service.saveQuestion(question, collection.id);
     for(i=0; i<answers.length; i++){
         Service.saveAnswer(answers[i], points[i], questionid);
     }
 }
 
+function startGame(event){
+    const questions = getQuestions().then(questions => {
+        questions.forEach(question => {
+            boardWindow.webContents.send("questionMessage", question);
+        })  
+    });
+
+}
 
 module.exports = {
     getQuestions,
@@ -41,5 +43,6 @@ module.exports = {
     },
     addNewQuestion,
     setCurrentCollection,
-    setTeams
+    setTeams,
+    startGame
 };
