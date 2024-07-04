@@ -80,11 +80,15 @@ ipcMain.on("setCurrentCollection", gameLogic.setCurrentCollection);
 
 
 // IPC handles for Questions.html
+ipcMain.on("addNewQuestion", gameLogic.addNewQuestion);
 ipcMain.handle("getCollectionTitle", gameLogic.getCollectionTitle);
-ipcMain.handle("get_questions", gameLogic.getQuestions);
-// ipcMain.handle("get_answers", Service.getAnswers);
+ipcMain.handle("get_questions", async (event) => {
+  const collectionId = gameLogic.getCollectionId();
+  return await Service.getQuestions(collectionId);
+});
+ipcMain.handle("get_answers", Service.getAnswers);
 // ipcMain.on("setTeams", gameLogic.setTeams);
-// ipcMain.on("addNewQuestion", Service.addNewQuestion);
+
 
 
 

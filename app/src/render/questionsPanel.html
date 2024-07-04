@@ -16,26 +16,39 @@
     <div class="container">
         <h3 id="title"> </h3>
   
-    <div class="container text-center" id="questionsContainer" style="margin-bottom: 10px;">
+    <div class="container text-center pt-3 pl-3 pr-3" id="questionsContainer" style="margin-bottom: 10px;">
   
     </div>
 
     <div class="overlay" id="newQuestionOverlay">
         <div class="h-100 d-flex align-items-center justify-content-center">
             <form id="form_addNewQuestion">
-              <div class="row">
-                <label for="question">Question:</label>
-                <input type="text" id="questionInput" name="question" required>
+              <div class="pb-4">
+                <div class="col-xs-4">
+                  <label for="ex3">Question:</label>
+                  <input class="form-control questionInput" id="questionInput" type="text" required>
+                </div>
+               
               </div>
-             
 
               <div class="answerContainer">
 
               </div>
-
-              <button id="newAnswerButton" onclick="displayAddingNewAnswer()" type="button"  class="btn btn-light">Add new answer</button>
-              <input type="submit">
-              <button onclick="cancelAddNewQuestion()" type="button">Cancel</button>
+              <div class="container">
+                <div class="row">
+                  <div class="col d-flex justify-content-center">
+                    <button id="newAnswerButton" onclick="displayAddingNewAnswer()" type="button"  class="btn btn-light">Add new answer</button>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col d-flex justify-content-center p-2">
+                    <input type="submit" class="btn btn-success m-1">
+                    <button onclick="cancelAddNewQuestion()" type="button" class="btn btn-danger m-1">Cancel</button>
+                  </div>
+                </div>
+              </div>
+             
+             
             </form>
           </div>
     </div>

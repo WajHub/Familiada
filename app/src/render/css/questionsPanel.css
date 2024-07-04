@@ -25,3 +25,9 @@ body {
   z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
   color: white;
 }
+
+#questionsContainer{
+  color: aliceblue;
+  background-color: #2e2e2e;
+  border-radius: 20px;
+}

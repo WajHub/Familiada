@@ -21,11 +21,25 @@ function setTeams(event, team1, team2) {
     console.log("Teams set");
 }
 
+async function addNewQuestion(event, question, answers, points){
+    console.log("ADDING NEW QUESTION");
+    console.log(question);
+    console.log(answers);
+    console.log(points);
+    const questionid = await Service.saveQuestion(question, collection.id);
+    for(i=0; i<answers.length; i++){
+        Service.saveAnswer(answers[i], points[i], questionid);
+    }
+}
 
 
 module.exports = {
     getQuestions,
     getCollectionTitle: () => collection.title,
+    getCollectionId: () => {
+        return collection.id;
+    },
+    addNewQuestion,
     setCurrentCollection,
     setTeams
 };

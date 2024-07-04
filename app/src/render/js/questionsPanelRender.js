@@ -5,6 +5,8 @@ const titlediv = document.querySelector("#title");
 document.addEventListener("DOMContentLoaded", display_title);
 document.addEventListener("DOMContentLoaded", display_questions);
 
+// Event listeners
+form.addEventListener('submit', addQuestion);
 
 // Functions implementations
 function backToStartPage(){
@@ -31,7 +33,7 @@ function cancelAddNewQuestion(){
     }
     var answerContainer = document.querySelector(".answerContainer");
     answerContainer.innerHTML = "";
-    document.querySelector("#questionInput").value = "";
+    document.querySelector(".questionInput").value = "";
     
 }
 
@@ -50,7 +52,7 @@ function displayAddingNewAnswer(){
 
     var input1 = document.createElement("input");
     input1.type = "text";
-    input1.classList.add("col", "answer");
+    input1.classList.add("col", "answer", "answerInput");
     input1.name = "answer";
 
     div1.appendChild(input1);
@@ -100,7 +102,6 @@ function addQuestion(event){
         asnwerPoints.push(points);
     }
 
-
     window.api.addNewQuestion(question, answers, asnwerPoints);
     location.reload();
 }
@@ -110,21 +111,31 @@ function display_questions(){
         questions.forEach(question => {
             const content = question.dataValues.content;
             var containter = document.querySelector("#questionsContainer");
+            var containerForOneQuestion = document.createElement("div");
+            containerForOneQuestion.classList.add("pb-4");
             // create div for question
-            var divQuestion = document.createElement("div");
-            divQuestion.className = "question";
-            divQuestion.textContent = "Question: "+content;
-            containter.appendChild(divQuestion);
-            window.api.get_answers(question.dataValues.id).then(answers => {
-                answers.forEach(answer => {
-                    const content = answer.dataValues.content;
-                    const points = answer.dataValues.points;
-                    var div = document.createElement("div");
-                    div.className = "answerSaved";
-                    div.textContent = "Answer: "+content+" Points: "+points;
-                    divQuestion.appendChild(div);
-                });
-            });
+            var rowQuestion = document.createElement("div");
+            rowQuestion.classList.add("questionRow", "row");
+            var colQuestion = document.createElement("div");
+            colQuestion.classList.add("questionCol","col", "pb-2");
+            colQuestion.innerHTML = "Question:  <strong>" + content + "</strong>";
+            rowQuestion.appendChild(colQuestion);
+            containerForOneQuestion.appendChild(rowQuestion);
+            displayAnswers(question.dataValues.id, rowQuestion);
+            containter.appendChild(containerForOneQuestion);
+        });
+    });
+}
+
+function displayAnswers(id, rowQuestion){
+    window.api.get_answers(id).then(answers => {
+        answers.forEach(answer => {
+            const content = answer.dataValues.content;
+            const points = answer.dataValues.points;
+            var div = document.createElement("div");
+            div.className = "answerSaved";
+            div.innerHTML = "Answer: <strong>"+content+" ("+points+")</strong>";
+            rowQuestion.appendChild(div);
         });
     });
 }
@@ -132,6 +143,7 @@ function display_questions(){
 function displaySetNameOfTeams(){
     document.getElementById("nameTeamsOverlay").style.display = "block";
 }
+
 function hideNameOfTeams(){
     document.getElementById("nameTeamsOverlay").style.display = "none";
 }

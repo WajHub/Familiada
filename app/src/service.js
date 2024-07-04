@@ -21,7 +21,8 @@ async function getCollection(id) {
 }
 
 
-async function getAnswers(id) {
+async function getAnswers(event, id) {
+  console.log("Getting answers for question with id: ", id.va)
   return await Answer.findAll({
     where: {
       questionId: id
@@ -37,10 +38,9 @@ async function getQuestions(id) {
   });
 }
 
-
-
 // Insertion
-async function saveCollection(title) {
+async function saveCollection(event, title) {
+  console.log("Creating set with title: ", title);
   Collection.create({ title: title })
     .then(set => {
       console.log("Set created: ", set);
@@ -49,10 +49,11 @@ async function saveCollection(title) {
 }
 
 async function saveQuestion(question, collectionId){
-  Question.create({
+  const createdQuestion = await Question.create({
     content: question,
     collectionId: collectionId
   });
+  return createdQuestion.id;
 }
 
 async function saveAnswer(answer, points, questionId){
@@ -85,7 +86,7 @@ async function saveNewQuestion(question, answers, points) {
 }
 
 // Deletion
-async function deleteCollection(id) {
+async function deleteCollection(event, id) {
   console.log("Deleting set with id: ", id);
   await Collection.destroy({
     where: {
@@ -106,5 +107,6 @@ module.exports = {
   saveCollection,
   saveQuestion,
   saveAnswer,
+  saveNewQuestion,
   deleteCollection
 };

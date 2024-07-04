@@ -27,9 +27,7 @@ function deleteColletion(e) {
 async function createNewCollection(event){
     event.preventDefault();
     var title = document.querySelector("#title").value;
-    console.log("Title: ", title);
     document.getElementById("overlay").style.display = "none";
-    console.log("Creating new collection: ", title);
 
     // create new set of questions
     window.api.saveCollection(title)
