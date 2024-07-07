@@ -28,6 +28,7 @@ async function getAnswers(event, id) {
   });
 }
 
+
 async function getQuestions(id) {
   return await Question.findAll({
     where: {

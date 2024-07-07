@@ -1,13 +1,27 @@
-import { ipcRenderer } from 'electron';
 const questionContent = document.querySelector(".question");
+const answerContainer = document.querySelector("#answerContainer");
 
-ipcRenderer.on('questionMessage', displayQuestion);
+window.api.onDisplayQuestion((question) => {
+  questionContent.innerHTML = "";
+  answerContainer.innerHTML = "";
+  questionContent.innerHTML = question;
+})
 
+window.api.onDisplayHiddenAnswer((index) => {
+  console.log(index)
+    // div row
+  const row = document.createElement("div");
+  row.classList.add("row");
+    // div col
+  const col = document.createElement("div");
+  col.classList.add("col");
 
-async function displayQuestion(event, question){
-  console.log("TEST");
-  console.log(question);
+  row.appendChild(col);
+  col.innerHTML = index + ". __________________";
+  answerContainer.appendChild(row);
+  
+})
 
+function nextQuestion(){
+  window.api.counterValue("NEXT_QUESTION");
 }
-
-

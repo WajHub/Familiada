@@ -39,7 +39,8 @@ const createWindow = () => {
   // Open the DevTools.
   boardWindow.webContents.openDevTools();
   mainWindow.webContents.openDevTools();
-   
+
+  module.exports = { boardWindow };
 };
 
 // This method will be called when Electron has finished
@@ -71,7 +72,7 @@ app.on('window-all-closed', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 
-exports.boardWindow = boardWindow;
+
 
 // IPC handles for index.html
 ipcMain.handle('getCollections', Service.getCollections);
@@ -89,9 +90,48 @@ ipcMain.handle("get_questions", async (event) => {
 });
 ipcMain.handle("get_answers", Service.getAnswers);
 ipcMain.on("setTeams", gameLogic.setTeams);
-ipcMain.on("startGame", gameLogic.startGame);
+ipcMain.on("startGame", startGame);
 
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
+async function startGame(event) {
+  var nextQuestion = false;
+  var indexOfQuestion = 0;
+
+  ipcMain.on("nextQuestion", (event) => {
+    nextQuestion = true;
+    indexOfQuestion++;
+  });
+  ipcMain.on("prevQuestion", (event) => {
+    nextQuestion = true;
+    indexOfQuestion--;
+  });
+
+  gameLogic.getQuestions().then(async (questions) => { 
+    for (; indexOfQuestion < questions.length; ) {
+      var question = questions[indexOfQuestion];
+  
+      boardWindow.webContents.send("displayQuestion", question.content);
+      mainWindow.webContents.send("displayQuestion", question.content);
+
+      var index = 0;
+      Service.getAnswers(null, question.id).then((answers) => {
+        for (const answer of answers) {
+          mainWindow.webContents.send("displayAnswer", answer.content, index);
+          index++;
+          boardWindow.webContents.send("displayHiddenAnswer", index);
+        }
+      });
+    
+      nextQuestion = false;
+      while (!nextQuestion) {
+        await delay(1000); 
+      }
+    }
+  });
+}
 
 
 

@@ -152,6 +152,5 @@ function startGame(){
     var team1 = document.getElementById("team1").value;
     var team2 = document.getElementById("team2").value;
     window.api.setTeams(team1, team2);
-    hideNameOfTeams();
     window.location.href = "gamePanel.html";
 }

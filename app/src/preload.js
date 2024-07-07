@@ -15,7 +15,12 @@ const API = {
     get_answers: (id) => ipcRenderer.invoke("get_answers", id),
     setTeams: (team1, team2) => ipcRenderer.send("setTeams", team1, team2),
 
-    startGame: () => ipcRenderer.send("startGame")
+    startGame: () => ipcRenderer.send("startGame"),
+    onDisplayQuestion: (callback) => ipcRenderer.on('displayQuestion', (_event, value) => callback(value)),
+    onDisplayAnswer: (callback) => ipcRenderer.on('displayAnswer', (_event, value, index) => callback(value, index)),
+    onDisplayHiddenAnswer: (callback) => ipcRenderer.on('displayHiddenAnswer', (_event, index) => callback(index)),
+    nextQuestion: () => ipcRenderer.send('nextQuestion'),
+    prevQuestion: () => ipcRenderer.send('prevQuestion')
  }
 
 contextBridge.exposeInMainWorld("api", API);
