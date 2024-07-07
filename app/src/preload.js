@@ -17,6 +17,7 @@ const API = {
 
     startGame: () => ipcRenderer.send("startGame"),
     onDisplayQuestion: (callback) => ipcRenderer.on('displayQuestion', (_event, value) => callback(value)),
+    onDisplayQuestionMain: (callback) => ipcRenderer.on('displayQuestionMain', (_event, content, last, first) => callback(content, last, first)),
     onDisplayAnswer: (callback) => ipcRenderer.on('displayAnswer', (_event, value, index) => callback(value, index)),
     onDisplayHiddenAnswer: (callback) => ipcRenderer.on('displayHiddenAnswer', (_event, index) => callback(index)),
     nextQuestion: () => ipcRenderer.send('nextQuestion'),

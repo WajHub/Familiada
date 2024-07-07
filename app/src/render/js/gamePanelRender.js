@@ -4,8 +4,21 @@ const answerdiv = document.querySelector(".answerContainer");
 
 // Document ready
 document.addEventListener("DOMContentLoaded", display_title);
-window.api.onDisplayQuestion((question) => {
+
+window.api.onDisplayQuestionMain((question, first, last) => {
     questiondiv.innerHTML = question;
+    if(first){
+        document.querySelector("#prev").classList.add("disabled");
+    }
+    else {
+        document.querySelector("#prev").classList.remove("disabled");
+    }
+    if(last){
+        document.querySelector("#next").classList.add("disabled");
+    }
+    else {
+        document.querySelector("#next").classList.remove("disabled");
+    }
 });
 
 window.api.onDisplayAnswer((answer, index) => {
@@ -17,7 +30,13 @@ window.api.onDisplayAnswer((answer, index) => {
     col.classList.add("col");
 
     row.appendChild(col);
-    col.innerHTML = index + ". "+answer;
+    
+    const btn = document.createElement("button");
+    btn.classList.add("btn", "m-1");
+    btn.classList.add("btn-primary");
+    btn.classList.add("ansewr-"+index);
+    btn.innerHTML = index+". "+answer;
+    col.appendChild(btn);
     questiondiv.appendChild(row);
 }); 
 

@@ -8,7 +8,6 @@ window.api.onDisplayQuestion((question) => {
 })
 
 window.api.onDisplayHiddenAnswer((index) => {
-  console.log(index)
     // div row
   const row = document.createElement("div");
   row.classList.add("row");

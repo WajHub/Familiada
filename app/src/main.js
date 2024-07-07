@@ -109,22 +109,26 @@ async function startGame(event) {
     indexOfQuestion--;
   });
 
+
   gameLogic.getQuestions().then(async (questions) => { 
     for (; indexOfQuestion < questions.length; ) {
       var question = questions[indexOfQuestion];
   
       boardWindow.webContents.send("displayQuestion", question.content);
-      mainWindow.webContents.send("displayQuestion", question.content);
+      mainWindow.webContents.send("displayQuestionMain", question.content, indexOfQuestion == 0, indexOfQuestion == questions.length - 1);
 
       var index = 0;
+
       Service.getAnswers(null, question.id).then((answers) => {
         for (const answer of answers) {
-          mainWindow.webContents.send("displayAnswer", answer.content, index);
           index++;
+          mainWindow.webContents.send("displayAnswer", answer.content, index);
           boardWindow.webContents.send("displayHiddenAnswer", index);
         }
       });
+      
     
+
       nextQuestion = false;
       while (!nextQuestion) {
         await delay(1000); 
@@ -132,6 +136,7 @@ async function startGame(event) {
     }
   });
 }
+
 
 
 
