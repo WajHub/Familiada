@@ -115,7 +115,6 @@ async function startGame(event) {
       boardWindow.webContents.send("exposeAnswerOnBoard", answer.content, answer.id, answer.points);
     });
   });
-  console.log("Teams", gameLogic.getTeamRed(), gameLogic.getTeamBlue());
 
 
   gameLogic.getQuestions().then(async (questions) => { 
@@ -138,8 +137,8 @@ async function startGame(event) {
           else {
             return 0;
           }
-        }
-        );
+        });
+
         for (const answer of answers) {
           index++;
           mainWindow.webContents.send("displayAnswer", answer.content, answer.id, index);

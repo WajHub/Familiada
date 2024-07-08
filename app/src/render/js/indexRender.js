@@ -18,10 +18,19 @@ function choseCollection(event){
     window.location.href = "questionsPanel.html";
 }
 
-function deleteColletion(e) {
+function displayOverlayForDeleteCollection(event){
+    event.preventDefault();
+    document.querySelector("#overlayDeletion").style.display = "block";
+}
+
+function deleteCollection(e) {
     window.api.deleteCollection(selected_set.value).then(
         location.reload()
     );   
+}
+
+function cancelDeleteCollection(){
+    document.querySelector("#overlayDeletion").style.display = "none";
 }
 
 async function createNewCollection(event){

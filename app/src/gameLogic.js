@@ -1,5 +1,6 @@
 // gameLogic.js
 const Service = require('./service');
+const Team = require('../models/team');
 
 
 var collection;
@@ -15,8 +16,8 @@ async function getQuestions(){
 }
 
 function setTeams(event, team1, team2) {
-    teamRED = team1;
-    teamBLUE = team2;
+    teamRED = new Team(team1, 0);
+    teamBLUE = new Team(team2, 0);
 }
 
 async function addNewQuestion(event, question, answers, points){
