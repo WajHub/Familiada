@@ -3,6 +3,7 @@ const path = require('node:path');
 const sequelize = require('../database/sequelize');
 const Service = require('./service');
 const gameLogic = require('./gameLogic');
+const Answer = require('../models/answer');
 
 var mainWindow;
 var boardWindow;
@@ -108,6 +109,13 @@ async function startGame(event) {
     nextQuestion = true;
     indexOfQuestion--;
   });
+  ipcMain.on("exposeAnswer", (event, id) => {
+    Service.getAnswer(id).then((answer) =>{
+      // console.log("exposing answer: ", answer);
+      boardWindow.webContents.send("exposeAnswerOnBoard", answer.content, answer.id, answer.points);
+    });
+  });
+  console.log("Teams", gameLogic.getTeamRed(), gameLogic.getTeamBlue());
 
 
   gameLogic.getQuestions().then(async (questions) => { 
@@ -118,12 +126,24 @@ async function startGame(event) {
       mainWindow.webContents.send("displayQuestionMain", question.content, indexOfQuestion == 0, indexOfQuestion == questions.length - 1);
 
       var index = 0;
-
+      
       Service.getAnswers(null, question.id).then((answers) => {
+        answers.sort( (a, b) => {
+          if(a.points > b.points) {
+            return -1;
+          }
+          else if(a.points < b.points){
+            return 1;
+          }
+          else {
+            return 0;
+          }
+        }
+        );
         for (const answer of answers) {
           index++;
-          mainWindow.webContents.send("displayAnswer", answer.content, index);
-          boardWindow.webContents.send("displayHiddenAnswer", index);
+          mainWindow.webContents.send("displayAnswer", answer.content, answer.id, index);
+          boardWindow.webContents.send("displayHiddenAnswer", index, answer.id);
         }
       });
       
@@ -131,7 +151,7 @@ async function startGame(event) {
 
       nextQuestion = false;
       while (!nextQuestion) {
-        await delay(1000); 
+        await delay(500); 
       }
     }
   });

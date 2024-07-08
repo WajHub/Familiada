@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", display_title);
 
 window.api.onDisplayQuestionMain((question, first, last) => {
     questiondiv.innerHTML = question;
+    answerdiv.innerHTML = "";
     if(first){
         document.querySelector("#prev").classList.add("disabled");
     }
@@ -21,7 +22,7 @@ window.api.onDisplayQuestionMain((question, first, last) => {
     }
 });
 
-window.api.onDisplayAnswer((answer, index) => {
+window.api.onDisplayAnswer((answer, answerId, index) => {
     // div row
     const row = document.createElement("div");
     row.classList.add("row");
@@ -35,10 +36,17 @@ window.api.onDisplayAnswer((answer, index) => {
     btn.classList.add("btn", "m-1");
     btn.classList.add("btn-primary");
     btn.classList.add("ansewr-"+index);
+    btn.id = answerId;
+    btn.addEventListener("click", exposeAnswer);
     btn.innerHTML = index+". "+answer;
     col.appendChild(btn);
-    questiondiv.appendChild(row);
+    answerdiv.appendChild(row);
 }); 
+
+function exposeAnswer(event){
+    event.target.disabled = true;
+    window.api.exposeAnswer(event.target.id);
+}
 
 function display_title(){
     window.api.get_title().then(title => {

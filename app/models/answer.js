@@ -21,6 +21,18 @@ module.exports = (sequelize, DataTypes) => {
     Answer.associate = function(models){
       Answer.belongsTo(models.Question);
     }
+
+    Answer.compareByPointsFn = function(a, b){
+      if(a.points > b.points) {
+        return -1;
+      }
+      else if(a.points < b.points){
+        return 1;
+      }
+      else {
+        return 0;
+      }
+    }
   
     return Answer;
   };

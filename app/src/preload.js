@@ -18,10 +18,12 @@ const API = {
     startGame: () => ipcRenderer.send("startGame"),
     onDisplayQuestion: (callback) => ipcRenderer.on('displayQuestion', (_event, value) => callback(value)),
     onDisplayQuestionMain: (callback) => ipcRenderer.on('displayQuestionMain', (_event, content, last, first) => callback(content, last, first)),
-    onDisplayAnswer: (callback) => ipcRenderer.on('displayAnswer', (_event, value, index) => callback(value, index)),
-    onDisplayHiddenAnswer: (callback) => ipcRenderer.on('displayHiddenAnswer', (_event, index) => callback(index)),
+    onDisplayAnswer: (callback) => ipcRenderer.on('displayAnswer', (_event, value, idAnswer, index) => callback(value, idAnswer, index)),
+    onDisplayHiddenAnswer: (callback) => ipcRenderer.on('displayHiddenAnswer', (_event, index, idAnswer) => callback(index, idAnswer)),
     nextQuestion: () => ipcRenderer.send('nextQuestion'),
-    prevQuestion: () => ipcRenderer.send('prevQuestion')
+    prevQuestion: () => ipcRenderer.send('prevQuestion'),
+    exposeAnswer: (id) => ipcRenderer.send('exposeAnswer', id),
+    onExposeAnswerOnBoard: (callback) => ipcRenderer.on('exposeAnswerOnBoard', (_event, answer, idAnswer, points) => callback(answer, idAnswer, points))
  }
 
 contextBridge.exposeInMainWorld("api", API);

@@ -34,6 +34,8 @@ module.exports = {
     getCollectionId: () => {
         return collection.id;
     },
+    getTeamRed: () => teamRED.name,
+    getTeamBlue: () => teamBLUE.name,
     addNewQuestion,
     setCurrentCollection,
     setTeams

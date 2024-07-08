@@ -19,6 +19,13 @@ async function getCollection(id) {
   });
 }
 
+async function getAnswer(id){
+  return await Answer.findOne({
+    where: {
+      id: id
+    }
+  });
+}
 
 async function getAnswers(event, id) {
   return await Answer.findAll({
@@ -101,6 +108,7 @@ module.exports = {
   getCollection,
   getQuestions,
   getAnswers,
+  getAnswer,
   getCollection,
   saveCollection,
   saveQuestion,
