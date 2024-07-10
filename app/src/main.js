@@ -16,8 +16,8 @@ if (require('electron-squirrel-startup')) {
 
 const createWindow = () => {
   boardWindow = new BrowserWindow({
-    width: 600,
-    height: 400,
+    width: 800,
+    height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -93,35 +93,55 @@ ipcMain.handle("get_answers", Service.getAnswers);
 ipcMain.on("setTeams", gameLogic.setTeams);
 ipcMain.on("startGame", startGame);
 
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+
+// GAME LOGIC
+var nextQuestion = false;
+var indexOfQuestion = 0;
+var pointsForQuestion = 0;
+
+ipcMain.on("nextQuestion", (event) => {
+  nextQuestion = true;
+  indexOfQuestion++;
+});
+ipcMain.on("prevQuestion", (event) => {
+  nextQuestion = true;
+  indexOfQuestion--;
+});
+ipcMain.on("guessAnswer", (event, id) => {
+  Service.getAnswer(id).then((answer) =>{
+    boardWindow.webContents.send("exposeAnswerOnBoard", answer.content, answer.id, answer.points);
+    pointsForQuestion += answer.points;
+    boardWindow.webContents.send("displayPointsForQuestion", pointsForQuestion);
+  });
+
+});
+ipcMain.on("exposeAnswer", (event, id) => {
+  Service.getAnswer(id).then((answer) =>{
+    boardWindow.webContents.send("exposeAnswerOnBoard", answer.content, answer.id, answer.points);
+  });
+});
+
+ipcMain.on("wrongAnswer", (event, team) => {
+  if(team == "red") {
+    boardWindow.webContents.send("wrongAnswer", "red");
+  }
+  else {
+    boardWindow.webContents.send("wrongAnswer", "blue");
+  }
+});
+
 
 async function startGame(event) {
-  var nextQuestion = false;
-  var indexOfQuestion = 0;
 
-  ipcMain.on("nextQuestion", (event) => {
-    nextQuestion = true;
-    indexOfQuestion++;
-  });
-  ipcMain.on("prevQuestion", (event) => {
-    nextQuestion = true;
-    indexOfQuestion--;
-  });
-  ipcMain.on("exposeAnswer", (event, id) => {
-    Service.getAnswer(id).then((answer) =>{
-      // console.log("exposing answer: ", answer);
-      boardWindow.webContents.send("exposeAnswerOnBoard", answer.content, answer.id, answer.points);
-    });
-  });
-
-
-  gameLogic.getQuestions().then(async (questions) => { 
+  gameLogic.getQuestions().then(async (questions) => {
+    console.log(questions); 
     for (; indexOfQuestion < questions.length; ) {
       var question = questions[indexOfQuestion];
+      pointsForQuestion = 0;
   
       boardWindow.webContents.send("displayQuestion", question.content);
+      boardWindow.webContents.send("displayPointsForQuestion", pointsForQuestion);
+      mainWindow.send("displayPointsForQuestion", pointsForQuestion);
       mainWindow.webContents.send("displayQuestionMain", question.content, indexOfQuestion == 0, indexOfQuestion == questions.length - 1);
 
       var index = 0;
@@ -146,8 +166,6 @@ async function startGame(event) {
         }
       });
       
-    
-
       nextQuestion = false;
       while (!nextQuestion) {
         await delay(500); 
@@ -156,9 +174,6 @@ async function startGame(event) {
   });
 }
 
-
-
-
-
-
-
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

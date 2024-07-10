@@ -14,7 +14,7 @@ function displayOverlayForNewCollection(event) {
 
 function choseCollection(event){
     event.preventDefault();
-    window.api.setCurrentCollection(selected_set.value); // <----- POPRAWA FUNCKJI
+    window.api.setCurrentCollection(selected_set.value); 
     window.location.href = "questionsPanel.html";
 }
 

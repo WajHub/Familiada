@@ -34,18 +34,48 @@ window.api.onDisplayAnswer((answer, answerId, index) => {
     
     const btn = document.createElement("button");
     btn.classList.add("btn", "m-1");
-    btn.classList.add("btn-primary");
-    btn.classList.add("ansewr-"+index);
+    btn.classList.add("btn-secondary");
+    btn.classList.add("answer-"+index);
     btn.id = answerId;
     btn.addEventListener("click", exposeAnswer);
     btn.innerHTML = index+". "+answer;
     col.appendChild(btn);
+    const btn2 = document.createElement("button");
+    btn2.classList.add("btn", "m-1");
+    btn2.classList.add("btn-outline-success");
+    btn2.classList.add("answer-"+index);
+    btn2.id = answerId;
+    btn2.addEventListener("click", guessAnswer); 
+    btn2.innerHTML = "Correct Answer";
+    col.appendChild(btn2);
     answerdiv.appendChild(row);
 }); 
 
+window.api.onDisplayPointsForQuestion((points) => {
+    const pointsDiv = document.querySelector(".points");
+    pointsDiv.innerHTML = "Suma " + points;
+  });
+
 function exposeAnswer(event){
     event.target.disabled = true;
+    // Prefix the ID with a string to make it a valid selector
+    const selector = "[id='" + event.target.id + "']";
+    const buttons = document.querySelectorAll(selector);
+    buttons.forEach(button => {
+        button.disabled = true;
+    });
     window.api.exposeAnswer(event.target.id);
+}
+
+function guessAnswer(event){
+    event.target.disabled = true;
+
+    const selector = "[id='" + event.target.id +"']";
+    const buttons = document.querySelectorAll(selector);
+    buttons.forEach(button => {
+        button.disabled = true;
+    });
+    window.api.guessAnswer(event.target.id);
 }
 
 function display_title(){
@@ -67,6 +97,12 @@ function prevQuestion(){
     window.api.prevQuestion();
 }
 
+function wrongAnswerRed(){
+    window.api.wrongAnswer("red");
+}
 
+function wrongAnswerBlue(){
+    window.api.wrongAnswer("blue");
+}
 
 

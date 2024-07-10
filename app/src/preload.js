@@ -23,7 +23,11 @@ const API = {
     nextQuestion: () => ipcRenderer.send('nextQuestion'),
     prevQuestion: () => ipcRenderer.send('prevQuestion'),
     exposeAnswer: (id) => ipcRenderer.send('exposeAnswer', id),
-    onExposeAnswerOnBoard: (callback) => ipcRenderer.on('exposeAnswerOnBoard', (_event, answer, idAnswer, points) => callback(answer, idAnswer, points))
+    guessAnswer: (id) => ipcRenderer.send('guessAnswer', id),
+    onExposeAnswerOnBoard: (callback) => ipcRenderer.on('exposeAnswerOnBoard', (_event, answer, idAnswer, points) => callback(answer, idAnswer, points)),
+    onDisplayPointsForQuestion: (callback) => ipcRenderer.on('displayPointsForQuestion', (_event, points) =>callback(points)),
+    wrongAnswer: (team) => ipcRenderer.send('wrongAnswer', team),
+    onWrongAnswer: (callback) => ipcRenderer.on('wrongAnswer', (_event, team) => callback(team))
  }
 
 contextBridge.exposeInMainWorld("api", API);
