@@ -16,14 +16,14 @@
     <div class="container">
     <h3 class="display-3" id="title"> </h3>
   
-    <div class="container text-center display-4 mt-5" id="questionsContainer" style="margin-bottom: 10px;">
+    <div class="container text-center display-4 mt-2" id="questionsContainer" style="margin-bottom: 10px;">
   
     </div>
     <div class="container answerContainer text-center">
 
     </div>
 
-    <div class="container points text-center mt-2">
+    <div class="container points text-center mt-2 h3" >
 
     </div>
 
@@ -31,15 +31,43 @@
     <div class="container p-4">
       <div class="row">
         <div class="col">
-          <div class="wrongAnswerRed">
+          <div class="wrongAnswerRed text-center">
             <button onclick="wrongAnswerRed()" type="button" class="btn btn-danger">Wrong Answer RED</button>
           </div>
             
         </div>
         <div class="col">
-          <div class="wrongAnswerBlue">
+          <div class="wrongAnswerBlue text-center">
             <button onclick="wrongAnswerBlue()" type="button" class="btn btn-primary">Wrong Answer Blue</button>
           </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="container p-4">
+      <div class="row">
+        <div class="col">
+          <div class="text-center">
+            <button onclick="winRed()" type="button" class="btn btn-danger win" id="winRed">Win RED</button>
+          </div>
+            
+        </div>
+        <div class="col">
+          <div class="text-center">
+            <button onclick="winBlue()" type="button" class="btn btn-primary win" id="winBlue">Win Blue</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="container pb-4">
+      <div class="row">
+        <div class="col" id="redTeam">
+
+        </div>
+        <div class="col" id="blueTeam">
 
         </div>
       </div>

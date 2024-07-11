@@ -3,6 +3,9 @@ class Team {
         this.name = name;
         this.points = points;
     }
+    addPoints(points) {
+        this.points += points;
+    }
 }
 
 module.exports = Team;

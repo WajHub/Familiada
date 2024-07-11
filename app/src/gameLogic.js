@@ -37,7 +37,11 @@ module.exports = {
     },
     getTeamRed: () => teamRED.name,
     getTeamBlue: () => teamBLUE.name,
+    getRedPoints: () => teamRED.points,
+    getBluePoints: () => teamBLUE.points,
     addNewQuestion,
+    addPointsToRed: (points) => teamRED.addPoints(points),
+    addPointsToBlue: (points) => teamBLUE.addPoints(points),
     setCurrentCollection,
     setTeams
 };

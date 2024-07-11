@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", display_title);
 window.api.onDisplayQuestionMain((question, first, last) => {
     questiondiv.innerHTML = question;
     answerdiv.innerHTML = "";
+    document.querySelector("#winRed").disabled = false;
+    document.querySelector("#winBlue").disabled = false;
     if(first){
         document.querySelector("#prev").classList.add("disabled");
     }
@@ -55,6 +57,14 @@ window.api.onDisplayPointsForQuestion((points) => {
     const pointsDiv = document.querySelector(".points");
     pointsDiv.innerHTML = "Suma " + points;
   });
+
+
+window.api.onStatsTeam((redName, blueName, redPoints, bluePoints) => {
+    const redTeam = document.querySelector("#redTeam");
+    const blueTeam = document.querySelector("#blueTeam");
+    redTeam.innerHTML = redName+": "+redPoints;
+    blueTeam.innerHTML = blueName+": "+bluePoints;
+});
 
 function exposeAnswer(event){
     event.target.disabled = true;
@@ -105,4 +115,16 @@ function wrongAnswerBlue(){
     window.api.wrongAnswer("blue");
 }
 
+
+function winRed(){
+    document.querySelector("#winRed").disabled = true;
+    document.querySelector("#winBlue").disabled = true;
+    window.api.win("red");
+}
+
+function winBlue(){
+    document.querySelector("#winRed").disabled = true;
+    document.querySelector("#winBlue").disabled = true;
+    window.api.win("blue");
+}
 

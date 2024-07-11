@@ -27,7 +27,9 @@ const API = {
     onExposeAnswerOnBoard: (callback) => ipcRenderer.on('exposeAnswerOnBoard', (_event, answer, idAnswer, points) => callback(answer, idAnswer, points)),
     onDisplayPointsForQuestion: (callback) => ipcRenderer.on('displayPointsForQuestion', (_event, points) =>callback(points)),
     wrongAnswer: (team) => ipcRenderer.send('wrongAnswer', team),
-    onWrongAnswer: (callback) => ipcRenderer.on('wrongAnswer', (_event, team) => callback(team))
+    onWrongAnswer: (callback) => ipcRenderer.on('wrongAnswer', (_event, team) => callback(team)),
+    onStatsTeam: (callback) => ipcRenderer.on('statsTeam', (_event, redName, blueName, redPoints, bluePoints) => callback(redName, blueName, redPoints, bluePoints)),
+    win: (team) => ipcRenderer.send('win', team)
  }
 
 contextBridge.exposeInMainWorld("api", API);

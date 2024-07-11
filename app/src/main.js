@@ -112,6 +112,7 @@ ipcMain.on("guessAnswer", (event, id) => {
     boardWindow.webContents.send("exposeAnswerOnBoard", answer.content, answer.id, answer.points);
     pointsForQuestion += answer.points;
     boardWindow.webContents.send("displayPointsForQuestion", pointsForQuestion);
+    mainWindow.send("displayPointsForQuestion", pointsForQuestion);
   });
 
 });
@@ -130,12 +131,23 @@ ipcMain.on("wrongAnswer", (event, team) => {
   }
 });
 
+ipcMain.on("win", (event, team) => {
+  if(team == "red") {
+    gameLogic.addPointsToRed(pointsForQuestion);
+  }
+  else {
+    gameLogic.addPointsToBlue(pointsForQuestion);
+  }
+  mainWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
+  boardWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
+});
+
 
 async function startGame(event) {
 
   gameLogic.getQuestions().then(async (questions) => {
-    console.log(questions); 
     for (; indexOfQuestion < questions.length; ) {
+
       var question = questions[indexOfQuestion];
       pointsForQuestion = 0;
   
@@ -143,7 +155,8 @@ async function startGame(event) {
       boardWindow.webContents.send("displayPointsForQuestion", pointsForQuestion);
       mainWindow.send("displayPointsForQuestion", pointsForQuestion);
       mainWindow.webContents.send("displayQuestionMain", question.content, indexOfQuestion == 0, indexOfQuestion == questions.length - 1);
-
+      mainWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
+      boardWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
       var index = 0;
       
       Service.getAnswers(null, question.id).then((answers) => {

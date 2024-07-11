@@ -55,6 +55,17 @@ window.api.onDisplayPointsForQuestion((points) => {
   pointsDiv.innerHTML = "Suma " + points;
 });
 
+window.api.onStatsTeam((redName, blueName, redPoints, bluePoints) => { 
+  const redTeam = document.querySelector("#redTeamPoints");
+  const blueTeam = document.querySelector("#blueTeamPoints");
+  const redTeamName = document.querySelector("#redTeamName");
+  const blueTeamName = document.querySelector("#blueTeamName");
+  redTeam.innerHTML = redPoints;
+  blueTeam.innerHTML = bluePoints;
+  redTeamName.innerHTML = redName;
+  blueTeamName.innerHTML = blueName;
+});
+
 function nextQuestion(){
   window.api.counterValue("NEXT_QUESTION");  // TODO: zmiana nazw funkcji !
 }
