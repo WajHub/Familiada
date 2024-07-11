@@ -1,7 +1,9 @@
 const titlediv = document.querySelector("#title");
 const questiondiv = document.querySelector("#questionsContainer");
 const answerdiv = document.querySelector(".answerContainer");
-
+var correctAnswerAudio = new Audio('../audio/CorrectAnswer.mp3');
+var wrongAnswerAudio = new Audio('../audio/WrongAnswer.mp3');
+var showAnswerAudio = new Audio('../audio/ShowAnswer.mp3');
 // Document ready
 document.addEventListener("DOMContentLoaded", display_title);
 
@@ -74,6 +76,7 @@ function exposeAnswer(event){
     buttons.forEach(button => {
         button.disabled = true;
     });
+    showAnswerAudio.play();
     window.api.exposeAnswer(event.target.id);
 }
 
@@ -85,6 +88,8 @@ function guessAnswer(event){
     buttons.forEach(button => {
         button.disabled = true;
     });
+
+    correctAnswerAudio.play();
     window.api.guessAnswer(event.target.id);
 }
 
@@ -108,10 +113,12 @@ function prevQuestion(){
 }
 
 function wrongAnswerRed(){
+    wrongAnswerAudio.play();
     window.api.wrongAnswer("red");
 }
 
 function wrongAnswerBlue(){
+    wrongAnswerAudio.play();
     window.api.wrongAnswer("blue");
 }
 
