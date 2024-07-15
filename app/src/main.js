@@ -4,6 +4,7 @@ const sequelize = require('../database/sequelize');
 const Service = require('./service');
 const gameLogic = require('./gameLogic');
 const Answer = require('../models/answer');
+const question = require('../models/question');
 
 var mainWindow;
 var boardWindow;
@@ -97,7 +98,8 @@ ipcMain.on("startGame", startGame);
 // GAME LOGIC
 var nextQuestion = false;
 var indexOfQuestion = 0;
-var pointsForQuestion = 0;
+var pointsForQuestion = 0; 
+var gameActive = false;
 
 ipcMain.on("nextQuestion", (event) => {
   nextQuestion = true;
@@ -144,14 +146,9 @@ ipcMain.on("win", (event, team) => {
 
 
 async function startGame(event) {
-  console.log("Start game!!!");  
-  gameLogic.getQuestions().then( (questions) => {
-    questions.forEach(question => {
-      console.log(question.content);
-    });
-  });
+  gameActive = true;
   gameLogic.getQuestions().then(async (questions) => {
-    for (; indexOfQuestion < questions.length; ) {
+    for (; indexOfQuestion < questions.length && gameActive;) {
 
       var question = questions[indexOfQuestion];
       pointsForQuestion = 0;
@@ -193,6 +190,10 @@ async function startGame(event) {
 }
 
 ipcMain.on("deleteCurrentCollection" ,() => {
+  gameActive = false;
+  nextQuestion = false; 
+  indexOfQuestion = 0;
+  pointsForQuestion = 0;
   gameLogic.clearData();
 })
 

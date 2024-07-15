@@ -104,6 +104,7 @@ function backToStartPage(){
     // delete questions
     window.api.deleteCurrentCollection();
     window.location.href = "index.html";
+    
 }
 
 function nextQuestion(){
