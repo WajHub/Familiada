@@ -144,7 +144,12 @@ ipcMain.on("win", (event, team) => {
 
 
 async function startGame(event) {
-
+  console.log("Start game!!!");  
+  gameLogic.getQuestions().then( (questions) => {
+    questions.forEach(question => {
+      console.log(question.content);
+    });
+  });
   gameLogic.getQuestions().then(async (questions) => {
     for (; indexOfQuestion < questions.length; ) {
 

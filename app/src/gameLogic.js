@@ -16,12 +16,11 @@ async function getQuestions(){
     return questions; 
 }
 
-function setGameData(event, team1, team2, questionsId) {
+async function setGameData(event, team1, team2, questionsId) {
     teamRED = new Team(team1, 0);
     teamBLUE = new Team(team2, 0);
     for(i=0; i<questionsId.length; i++){
-        Service.getQuestion(questionsId[i]).then((question) => {
-            console.log("Question:", question);
+        await Service.getQuestion(questionsId[i]).then((question) => {
             questions.push(question);
         });
     }
@@ -35,10 +34,7 @@ async function addNewQuestion(event, question, answers, points){
 }
 
 function clearData(){
-var collection;
-var questions = [];
-var teamRED;
-var teamBLUE;
+    questions = [];
 }
 
 
