@@ -1,9 +1,11 @@
 const form = document.querySelector("#form_addNewQuestion");
 const titlediv = document.querySelector("#title");
+var containerOfQuestions = document.querySelector("#questionsContainer");
 
 // Document ready
 document.addEventListener("DOMContentLoaded", display_title);
 document.addEventListener("DOMContentLoaded", display_questions);
+document.addEventListener("DOMContentLoaded", changePositionOfQuestion);
 
 // Event listeners
 form.addEventListener('submit', addQuestion);
@@ -106,23 +108,54 @@ function addQuestion(event){
     location.reload();
 }
 
+function changePositionOfQuestion(){
+    containerOfQuestions.addEventListener('click', function(event){
+        if (event.target.classList.contains('move-up') || event.target.classList.contains('move-down')){
+            const item = event.target.parentElement.parentElement;
+            if (event.target.classList.contains('move-up')) {
+                const sibling = item.previousElementSibling;
+                if (sibling) {
+                    containerOfQuestions.insertBefore(item, sibling);
+                }
+            } else { // Przesuwanie w dół
+                const sibling = item.nextElementSibling;
+                if (sibling) {
+                    // Zmiana polega na wstawieniu `item` przed `sibling.nextSibling`
+                    containerOfQuestions.insertBefore(item, sibling.nextSibling);
+                }
+            }
+        }
+    });
+}
+
 function display_questions(){
+
     window.api.get_questions().then(questions =>{
         questions.forEach(question => {
             const content = question.dataValues.content;
-            var containter = document.querySelector("#questionsContainer");
-            var containerForOneQuestion = document.createElement("div");
-            containerForOneQuestion.classList.add("pb-4");
+
             // create div for question
             var rowQuestion = document.createElement("div");
-            rowQuestion.classList.add("questionRow", "row");
+            rowQuestion.classList.add("questionRow", "row", "pb-4");
+            rowQuestion.id = question.dataValues.id;
+
             var colQuestion = document.createElement("div");
             colQuestion.classList.add("questionCol","col", "pb-2");
             colQuestion.innerHTML = "Question:  <strong>" + content + "</strong>";
+            
+             // create button for moving questions
+            var btnUp = document.createElement("button");
+            btnUp.classList.add("btn", "btn-light", "btn-sm", "mr-2","move-up");
+            btnUp.innerHTML = "Up";
+            
+            // Append elements to the body
+            colQuestion.appendChild(btnUp);
             rowQuestion.appendChild(colQuestion);
-            containerForOneQuestion.appendChild(rowQuestion);
             displayAnswers(question.dataValues.id, rowQuestion);
-            containter.appendChild(containerForOneQuestion);
+            containerOfQuestions.appendChild(rowQuestion);
+
+           
+
         });
     });
 }
@@ -148,9 +181,20 @@ function hideNameOfTeams(){
     document.getElementById("nameTeamsOverlay").style.display = "none";
 }
 
+ async function  getQuestionsId(){
+    var questionsId = [];
+    var questions = document.getElementsByClassName("questionRow");
+    for(i=0; i<questions.length; i++){
+        questionsId.push(questions[i].id);
+    }
+    return questionsId;
+}
+
 function startGame(){
     var team1 = document.getElementById("team1").value;
     var team2 = document.getElementById("team2").value;
-    window.api.setTeams(team1, team2);
+    getQuestionsId().then((questionsId) => {
+        window.api.setGameData(team1, team2, questionsId)
+    });
     window.location.href = "gamePanel.html";
 }

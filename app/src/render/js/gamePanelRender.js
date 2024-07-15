@@ -101,6 +101,8 @@ function display_title(){
 }
 
 function backToStartPage(){
+    // delete questions
+    window.api.deleteCurrentCollection();
     window.location.href = "index.html";
 }
 

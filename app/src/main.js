@@ -90,7 +90,7 @@ ipcMain.handle("get_questions", async (event) => {
   return await Service.getQuestions(collectionId);
 });
 ipcMain.handle("get_answers", Service.getAnswers);
-ipcMain.on("setTeams", gameLogic.setTeams);
+ipcMain.on("setGameData", gameLogic.setGameData);
 ipcMain.on("startGame", startGame);
 
 
@@ -186,6 +186,10 @@ async function startGame(event) {
     }
   });
 }
+
+ipcMain.on("deleteCurrentCollection" ,() => {
+  gameLogic.clearData();
+})
 
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

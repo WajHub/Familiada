@@ -36,10 +36,18 @@ async function getAnswers(event, id) {
 }
 
 
-async function getQuestions(id) {
+async function getQuestions(idCollection) {
   return await Question.findAll({
     where: {
-      collectionId: id
+      collectionId: idCollection
+    }
+  });
+}
+
+async function getQuestion(id){
+  return await Question.findOne({
+    where: {
+      id: id
     }
   });
 }
@@ -107,6 +115,7 @@ module.exports = {
   getCollections,
   getCollection,
   getQuestions,
+  getQuestion,
   getAnswers,
   getAnswer,
   getCollection,

@@ -13,7 +13,7 @@ const API = {
     addNewQuestion: (question, answers, points) => ipcRenderer.send("addNewQuestion", question, answers, points),
     get_questions: () => ipcRenderer.invoke("get_questions"),
     get_answers: (id) => ipcRenderer.invoke("get_answers", id),
-    setTeams: (team1, team2) => ipcRenderer.send("setTeams", team1, team2),
+    setGameData: (team1, team2, questionsId) => ipcRenderer.send("setGameData", team1, team2, questionsId),
 
     startGame: () => ipcRenderer.send("startGame"),
     onDisplayQuestion: (callback) => ipcRenderer.on('displayQuestion', (_event, value) => callback(value)),
@@ -29,7 +29,8 @@ const API = {
     wrongAnswer: (team) => ipcRenderer.send('wrongAnswer', team),
     onWrongAnswer: (callback) => ipcRenderer.on('wrongAnswer', (_event, team) => callback(team)),
     onStatsTeam: (callback) => ipcRenderer.on('statsTeam', (_event, redName, blueName, redPoints, bluePoints) => callback(redName, blueName, redPoints, bluePoints)),
-    win: (team) => ipcRenderer.send('win', team)
+    win: (team) => ipcRenderer.send('win', team),
+    deleteCurrentCollection: () => ipcRenderer.send('deleteCurrentCollection')
  }
 
 contextBridge.exposeInMainWorld("api", API);

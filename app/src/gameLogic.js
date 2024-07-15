@@ -4,6 +4,7 @@ const Team = require('../models/team');
 
 
 var collection;
+var questions = [];
 var teamRED;
 var teamBLUE;
 
@@ -12,12 +13,18 @@ async function setCurrentCollection(event, id) {
 }
 
 async function getQuestions(){
-    return Service.getQuestions(collection.id); 
+    return questions; 
 }
 
-function setTeams(event, team1, team2) {
+function setGameData(event, team1, team2, questionsId) {
     teamRED = new Team(team1, 0);
     teamBLUE = new Team(team2, 0);
+    for(i=0; i<questionsId.length; i++){
+        Service.getQuestion(questionsId[i]).then((question) => {
+            console.log("Question:", question);
+            questions.push(question);
+        });
+    }
 }
 
 async function addNewQuestion(event, question, answers, points){
@@ -25,6 +32,13 @@ async function addNewQuestion(event, question, answers, points){
     for(i=0; i<answers.length; i++){
         Service.saveAnswer(answers[i], points[i], questionid);
     }
+}
+
+function clearData(){
+var collection;
+var questions = [];
+var teamRED;
+var teamBLUE;
 }
 
 
@@ -43,5 +57,6 @@ module.exports = {
     addPointsToRed: (points) => teamRED.addPoints(points),
     addPointsToBlue: (points) => teamBLUE.addPoints(points),
     setCurrentCollection,
-    setTeams
+    setGameData,
+    clearData
 };
