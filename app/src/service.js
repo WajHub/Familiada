@@ -100,8 +100,20 @@ async function saveNewQuestion(question, answers, points) {
 
 // Deletion
 async function deleteCollection(event, id) {
-  console.log("Deleting set with id: ", id);
   await Collection.destroy({
+    where: {
+      id: id
+    }
+  });
+}
+
+async function deleteQuestion(id){
+  await Answer.destroy({
+    where: {
+      questionId: id
+    }
+  });
+  await Question.destroy({
     where: {
       id: id
     }
@@ -123,5 +135,6 @@ module.exports = {
   saveQuestion,
   saveAnswer,
   saveNewQuestion,
-  deleteCollection
+  deleteCollection,
+  deleteQuestion
 };

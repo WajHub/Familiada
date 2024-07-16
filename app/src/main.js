@@ -144,6 +144,19 @@ ipcMain.on("win", (event, team) => {
   boardWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
 });
 
+ipcMain.on("deleteQuestion", (_event, id) => {
+  Service.deleteQuestion(id);
+})
+
+ipcMain.on("deleteCurrentCollection" ,() => {
+  gameActive = false;
+  nextQuestion = false; 
+  indexOfQuestion = 0;
+  pointsForQuestion = 0;
+  gameLogic.clearData();
+})
+
+
 
 async function startGame(event) {
   gameActive = true;
@@ -189,13 +202,6 @@ async function startGame(event) {
   });
 }
 
-ipcMain.on("deleteCurrentCollection" ,() => {
-  gameActive = false;
-  nextQuestion = false; 
-  indexOfQuestion = 0;
-  pointsForQuestion = 0;
-  gameLogic.clearData();
-})
 
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

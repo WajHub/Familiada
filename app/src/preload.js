@@ -30,7 +30,8 @@ const API = {
     onWrongAnswer: (callback) => ipcRenderer.on('wrongAnswer', (_event, team) => callback(team)),
     onStatsTeam: (callback) => ipcRenderer.on('statsTeam', (_event, redName, blueName, redPoints, bluePoints) => callback(redName, blueName, redPoints, bluePoints)),
     win: (team) => ipcRenderer.send('win', team),
-    deleteCurrentCollection: () => ipcRenderer.send('deleteCurrentCollection')
+    deleteCurrentCollection: () => ipcRenderer.send('deleteCurrentCollection'),
+    deleteQuestion: (_event, id) => ipcRenderer.send('deleteQuestion', _event, id)
  }
 
 contextBridge.exposeInMainWorld("api", API);

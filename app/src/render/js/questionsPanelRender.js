@@ -53,6 +53,7 @@ function displayAddingNewAnswer(){
     div1.className = "col";
 
     var input1 = document.createElement("input");
+    input1.required = true;
     input1.type = "text";
     input1.classList.add("col", "answer", "answerInput");
     input1.name = "answer";
@@ -64,6 +65,7 @@ function displayAddingNewAnswer(){
     div2.className = "col";
 
     var input2 = document.createElement("input");
+    input2.required = true;
     input2.type = "number";
     input2.className = "pointsInput";
     input2.name = "quantity";
@@ -145,11 +147,24 @@ function display_questions(){
             
              // create button for moving questions
             var btnUp = document.createElement("button");
-            btnUp.classList.add("btn", "btn-light", "btn-sm", "mr-2","move-up");
+            btnUp.classList.add("btn", "btn-light", "btn-sm", "m-2","move-up");
             btnUp.innerHTML = "Up";
+
+            var btnDown = document.createElement("button");
+            btnDown.classList.add("btn", "btn-light", "btn-sm","m-2", "move-down");
+            btnDown.innerHTML = "Down";
+
+            // create button for delete and edit questions 
+            var btnDelete = document.createElement("button");
+            btnDelete.classList.add("btn", "btn-danger", "btn-sm", "m-2");
+            btnDelete.id = question.dataValues.id;
+            btnDelete.innerHTML = "Delete";
+            btnDelete.addEventListener('click', deleteQuestion);
             
             // Append elements to the body
             colQuestion.appendChild(btnUp);
+            colQuestion.appendChild(btnDown);
+            colQuestion.appendChild(btnDelete);
             rowQuestion.appendChild(colQuestion);
             displayAnswers(question.dataValues.id, rowQuestion);
             containerOfQuestions.appendChild(rowQuestion);
@@ -158,6 +173,13 @@ function display_questions(){
 
         });
     });
+}
+
+function deleteQuestion(event){
+    window.api.deleteQuestion(event.currentTarget.id);
+    const question = document.getElementById(event.currentTarget.id);
+    question.parentNode.removeChild(question);
+    // location.reload();
 }
 
 function displayAnswers(id, rowQuestion){
