@@ -4,7 +4,6 @@ const sequelize = require('../database/sequelize');
 const Service = require('./service');
 const gameLogic = require('./gameLogic');
 const Answer = require('../models/answer');
-const question = require('../models/question');
 
 var mainWindow;
 var boardWindow;
@@ -71,19 +70,14 @@ app.on('window-all-closed', () => {
   }
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
 
-
-
-// IPC handles for index.html
+// IPC handles for index
 ipcMain.handle('getCollections', Service.getCollections);
 ipcMain.on("saveCollection", Service.saveCollection);
 ipcMain.handle('deleteCollection', Service.deleteCollection);
 ipcMain.on("setCurrentCollection", gameLogic.setCurrentCollection);
 
-
-// IPC handles for Questions.html
+// IPC handles for Questions
 ipcMain.on("addNewQuestion", gameLogic.addNewQuestion);
 ipcMain.handle("getCollectionTitle", gameLogic.getCollectionTitle);
 ipcMain.handle("get_questions", async (event) => {
@@ -94,13 +88,7 @@ ipcMain.handle("get_answers", Service.getAnswers);
 ipcMain.on("setGameData", gameLogic.setGameData);
 ipcMain.on("startGame", startGame);
 
-
-// GAME LOGIC
-var nextQuestion = false;
-var indexOfQuestion = 0;
-var pointsForQuestion = 0; 
-var gameActive = false;
-
+// IPC handles for GamePanel
 ipcMain.on("nextQuestion", (event) => {
   nextQuestion = true;
   indexOfQuestion++;
@@ -123,7 +111,6 @@ ipcMain.on("exposeAnswer", (event, id) => {
     boardWindow.webContents.send("exposeAnswerOnBoard", answer.content, answer.id, answer.points);
   });
 });
-
 ipcMain.on("wrongAnswer", (event, team) => {
   if(team == "red") {
     boardWindow.webContents.send("wrongAnswer", "red");
@@ -132,7 +119,6 @@ ipcMain.on("wrongAnswer", (event, team) => {
     boardWindow.webContents.send("wrongAnswer", "blue");
   }
 });
-
 ipcMain.on("win", (event, team) => {
   if(team == "red") {
     gameLogic.addPointsToRed(pointsForQuestion);
@@ -143,65 +129,64 @@ ipcMain.on("win", (event, team) => {
   mainWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
   boardWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
 });
-
 ipcMain.on("deleteQuestion", (_event, id) => {
   Service.deleteQuestion(id);
-})
-
+});
 ipcMain.on("deleteCurrentCollection" ,() => {
   gameActive = false;
   nextQuestion = false; 
   indexOfQuestion = 0;
   pointsForQuestion = 0;
   gameLogic.clearData();
-})
+});
 
 
+// GAME 
+var nextQuestion = false;
+var indexOfQuestion = 0;
+var pointsForQuestion = 0; 
+var gameActive = false;
 
 async function startGame(event) {
+
   gameActive = true;
   gameLogic.getQuestions().then(async (questions) => {
+    
     for (; indexOfQuestion < questions.length && gameActive;) {
 
-      var question = questions[indexOfQuestion];
-      pointsForQuestion = 0;
-  
-      boardWindow.webContents.send("displayQuestion", question.content);
-      boardWindow.webContents.send("displayPointsForQuestion", pointsForQuestion);
-      mainWindow.send("displayPointsForQuestion", pointsForQuestion);
-      mainWindow.webContents.send("displayQuestionMain", question.content, indexOfQuestion == 0, indexOfQuestion == questions.length - 1);
-      mainWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
-      boardWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
-      var index = 0;
-      
-      Service.getAnswers(null, question.id).then((answers) => {
-        answers.sort( (a, b) => {
-          if(a.points > b.points) {
-            return -1;
-          }
-          else if(a.points < b.points){
-            return 1;
-          }
-          else {
-            return 0;
-          }
-        });
-
-        for (const answer of answers) {
-          index++;
-          mainWindow.webContents.send("displayAnswer", answer.content, answer.id, index);
-          boardWindow.webContents.send("displayHiddenAnswer", index, answer.id);
-        }
-      });
+      sendQuestionsPointsTeamsToRender(questions[indexOfQuestion], questions.length);
+      sendAnswersToRender(questions[indexOfQuestion].id);
       
       nextQuestion = false;
-      while (!nextQuestion) {
-        await delay(500); 
-      }
+      while (!nextQuestion) { await delay(500); }
     }
   });
 }
 
+// Send Data to Render
+function sendQuestionsPointsTeamsToRender(question, length) {
+  pointsForQuestion = 0;
+
+  boardWindow.webContents.send("displayQuestion", question.content);
+  boardWindow.webContents.send("displayPointsForQuestion", pointsForQuestion);
+  mainWindow.send("displayPointsForQuestion", pointsForQuestion);
+  mainWindow.webContents.send("displayQuestionMain", question.content, indexOfQuestion == 0, indexOfQuestion == length - 1);
+  mainWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
+  boardWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
+}
+
+function sendAnswersToRender(QuestionId){
+  var index = 0;
+  Service.getAnswers(null, QuestionId).then((answers) => {
+    answers.sort(Answer.compareByPointsFn);
+
+    for (const answer of answers) {
+      index++;
+      mainWindow.webContents.send("displayAnswer", answer.content, answer.id, index);
+      boardWindow.webContents.send("displayHiddenAnswer", index, answer.id);
+    }
+  });
+}
 
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

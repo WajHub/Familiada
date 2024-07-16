@@ -11,10 +11,6 @@ document.addEventListener("DOMContentLoaded", changePositionOfQuestion);
 form.addEventListener('submit', addQuestion);
 
 // Functions implementations
-function backToStartPage(){
-    window.location.href = "index.html";
-}
-
 function display_title(){
     window.api.get_title().then(title => {
         titlediv.innerHTML = title;
@@ -40,53 +36,47 @@ function cancelAddNewQuestion(){
 }
 
 function displayAddingNewAnswer(){
+    var answerContainer =  document.querySelector(".answerContainer");
     var numberOfAnswers = document.getElementsByClassName("answer").length;
 
-    // Create label element
+    // Col: label
     var label = document.createElement("label");    
     label.setAttribute("for", "answer");
-    label.className = "col";
+    label.classList.add("col", "mt-2", "mb-2");
     label.textContent = numberOfAnswers+1+":";
 
-    // Create first div and input element
-    var div1 = document.createElement("div");
-    div1.className = "col";
+    // Col: answer
+    var inputAnswerContent = document.createElement("input");
+    inputAnswerContent.required = true;
+    inputAnswerContent.type = "text";
+    inputAnswerContent.classList.add("col-6", "answer", "answerInput", "m-2");
+    inputAnswerContent.name = "answer";
 
-    var input1 = document.createElement("input");
-    input1.required = true;
-    input1.type = "text";
-    input1.classList.add("col", "answer", "answerInput");
-    input1.name = "answer";
+    // Col: points
+    var inputAnswerPoints = document.createElement("input");
+    inputAnswerPoints.required = true;
+    inputAnswerPoints.type = "number";
+    inputAnswerPoints.classList.add("pointsInput", "col", "m-2");
+    inputAnswerPoints.name = "quantity";
+    inputAnswerPoints.min = "1";
+    inputAnswerPoints.max = "100";
 
-    div1.appendChild(input1);
+    // Col: delete button 
+    var btnDelete = document.createElement("button");
+    btnDelete.classList.add("btn", "btn-danger", "btn-sm", "col", "m-2");
+    btnDelete.innerHTML = "Delete";
+    btnDelete.addEventListener('click', removeAnswer);
 
-    // Create second div and input element
-    var div2 = document.createElement("div");
-    div2.className = "col";
-
-    var input2 = document.createElement("input");
-    input2.required = true;
-    input2.type = "number";
-    input2.className = "pointsInput";
-    input2.name = "quantity";
-    input2.min = "1";
-    input2.max = "100";
-
-    div2.appendChild(input2);
-
-    // Create div class container and row (bootstrap)
-    var container = document.createElement("div");
-    container.className = "container";
+    // Row
     var row = document.createElement("div");
     row.className = "row p-3";
-    var answerContainer =  document.querySelector(".answerContainer");
 
     // Append all elements to the body
     row.appendChild(label);
-    row.appendChild(div1);
-    row.appendChild(div2);
-    container.appendChild(row);
-    answerContainer.appendChild(container);
+    row.appendChild(inputAnswerContent);
+    row.appendChild(inputAnswerPoints);
+    row.appendChild(btnDelete);
+    answerContainer.appendChild(row);
 }
 
 function addQuestion(event){
@@ -154,25 +144,40 @@ function display_questions(){
             btnDown.classList.add("btn", "btn-light", "btn-sm","m-2", "move-down");
             btnDown.innerHTML = "Down";
 
-            // create button for delete and edit questions 
+            // create button for delete questions 
             var btnDelete = document.createElement("button");
             btnDelete.classList.add("btn", "btn-danger", "btn-sm", "m-2");
             btnDelete.id = question.dataValues.id;
             btnDelete.innerHTML = "Delete";
             btnDelete.addEventListener('click', deleteQuestion);
+
+            // create button for edit question
+            var btnEdit = document.createElement("button");
+            btnEdit.classList.add("btn", "btn-primary", "btn-sm", "m-2");
+            btnEdit.innerHTML = "Edit";
+            btnEdit.id = question.dataValues.id;
+            btnEdit.addEventListener('click', editQuestion);
             
             // Append elements to the body
             colQuestion.appendChild(btnUp);
             colQuestion.appendChild(btnDown);
             colQuestion.appendChild(btnDelete);
+            colQuestion.appendChild(btnEdit);
             rowQuestion.appendChild(colQuestion);
             displayAnswers(question.dataValues.id, rowQuestion);
             containerOfQuestions.appendChild(rowQuestion);
 
-           
 
         });
     });
+}
+
+function editQuestion(event){
+    console.log(event.currentTarget.id);
+}
+
+function removeAnswer(_event){
+    console.log("remove");
 }
 
 function deleteQuestion(event){
@@ -219,4 +224,8 @@ function startGame(){
         window.api.setGameData(team1, team2, questionsId)
     });
     window.location.href = "gamePanel.html";
+}
+
+function backToStartPage(){
+    window.location.href = "index.html";
 }

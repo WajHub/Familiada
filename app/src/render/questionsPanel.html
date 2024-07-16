@@ -20,26 +20,32 @@
   
     </div>
 
-    <div class="overlay" id="newQuestionOverlay">
+
+
+    <div class="overlay container" id="newQuestionOverlay">
         <div class="h-100 d-flex align-items-center justify-content-center">
             <form id="form_addNewQuestion">
-              <div class="pb-4">
-                <div class="col-xs-4">
+
+              <!-- QUESTION -->
+                <div class="col-xs-4 pb-4">
                   <label for="ex3">Question:</label>
                   <input class="form-control questionInput" id="questionInput" type="text" required>
                 </div>
                
-              </div>
+              <!-- ANSWERS  -->
+              <div class="answerContainer container"> </div>
 
-              <div class="answerContainer">
-
-              </div>
+              <!-- BUTTONS -->
               <div class="container">
+
+                  <!-- NEW ANSWER -->
                 <div class="row">
                   <div class="col d-flex justify-content-center">
                     <button id="newAnswerButton" onclick="displayAddingNewAnswer()" type="button"  class="btn btn-light">Add new answer</button>
                   </div>
                 </div>
+
+                  <!-- SUBMIT AND CANCEL -->
                 <div class="row">
                   <div class="col d-flex justify-content-center p-2">
                     <input type="submit" class="btn btn-success m-1">
@@ -48,7 +54,7 @@
                 </div>
               </div>
              
-             
+
             </form>
           </div>
     </div>

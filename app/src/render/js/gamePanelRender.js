@@ -4,6 +4,7 @@ const answerdiv = document.querySelector(".answerContainer");
 var correctAnswerAudio = new Audio('../audio/CorrectAnswer.mp3');
 var wrongAnswerAudio = new Audio('../audio/WrongAnswer.mp3');
 var showAnswerAudio = new Audio('../audio/ShowAnswer.mp3');
+
 // Document ready
 document.addEventListener("DOMContentLoaded", display_title);
 
