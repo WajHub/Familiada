@@ -3,125 +3,23 @@ const titlediv = document.querySelector("#title");
 var containerOfQuestions = document.querySelector("#questionsContainer");
 
 // Document ready
-document.addEventListener("DOMContentLoaded", display_title);
-document.addEventListener("DOMContentLoaded", display_questions);
+document.addEventListener("DOMContentLoaded", displayTitle);
+document.addEventListener("DOMContentLoaded", displayQuestions);
 document.addEventListener("DOMContentLoaded", changePositionOfQuestion);
 
 // Event listeners
 form.addEventListener('submit', addQuestion);
 
 // Functions implementations
-function display_title(){
+
+// Creating Dynamic HTML ---------
+function displayTitle(){
     window.api.get_title().then(title => {
         titlediv.innerHTML = title;
     });
 }
 
-function displayNewQuestion(){
-    document.getElementById("newQuestionOverlay").style.display = "block";
-    if(document.getElementsByClassName("answer").length==0) displayAddingNewAnswer();
-}
-
-function cancelAddNewQuestion(){
-    document.getElementById("newQuestionOverlay").style.display = "none";
-    // Remove all answers
-    var answers = document.getElementsByClassName("answer");
-    while(answers.length>0){
-        answers[0].remove();
-    }
-    var answerContainer = document.querySelector(".answerContainer");
-    answerContainer.innerHTML = "";
-    document.querySelector(".questionInput").value = "";
-    
-}
-
-function displayAddingNewAnswer(){
-    var answerContainer =  document.querySelector(".answerContainer");
-    var numberOfAnswers = document.getElementsByClassName("answer").length;
-
-    // Col: label
-    var label = document.createElement("label");    
-    label.setAttribute("for", "answer");
-    label.classList.add("col", "mt-2", "mb-2");
-    label.textContent = numberOfAnswers+1+":";
-
-    // Col: answer
-    var inputAnswerContent = document.createElement("input");
-    inputAnswerContent.required = true;
-    inputAnswerContent.type = "text";
-    inputAnswerContent.classList.add("col-6", "answer", "answerInput", "m-2");
-    inputAnswerContent.name = "answer";
-
-    // Col: points
-    var inputAnswerPoints = document.createElement("input");
-    inputAnswerPoints.required = true;
-    inputAnswerPoints.type = "number";
-    inputAnswerPoints.classList.add("pointsInput", "col", "m-2");
-    inputAnswerPoints.name = "quantity";
-    inputAnswerPoints.min = "1";
-    inputAnswerPoints.max = "100";
-
-    // Col: delete button 
-    var btnDelete = document.createElement("button");
-    btnDelete.classList.add("btn", "btn-danger", "btn-sm", "col", "m-2");
-    btnDelete.innerHTML = "Delete";
-    btnDelete.addEventListener('click', removeAnswer);
-
-    // Row
-    var row = document.createElement("div");
-    row.className = "row p-3";
-
-    // Append all elements to the body
-    row.appendChild(label);
-    row.appendChild(inputAnswerContent);
-    row.appendChild(inputAnswerPoints);
-    row.appendChild(btnDelete);
-    answerContainer.appendChild(row);
-}
-
-function addQuestion(event){
-    event.preventDefault();
-
-    var question  = document.getElementById('questionInput').value;
-    var answersForm = document.getElementsByClassName("answerInput");
-    var pointsForm = document.getElementsByClassName("pointsInput");
-
-    var answers = [];
-    var asnwerPoints = [];
-
-    for (let i = 0; i<answersForm.length; i++){
-        var answerContent = answersForm[i].value;
-        var points = pointsForm[i].value;
-        answers.push(answerContent);
-        asnwerPoints.push(points);
-    }
-
-    window.api.addNewQuestion(question, answers, asnwerPoints);
-    location.reload();
-}
-
-function changePositionOfQuestion(){
-    containerOfQuestions.addEventListener('click', function(event){
-        if (event.target.classList.contains('move-up') || event.target.classList.contains('move-down')){
-            const item = event.target.parentElement.parentElement;
-            if (event.target.classList.contains('move-up')) {
-                const sibling = item.previousElementSibling;
-                if (sibling) {
-                    containerOfQuestions.insertBefore(item, sibling);
-                }
-            } else { // Przesuwanie w dół
-                const sibling = item.nextElementSibling;
-                if (sibling) {
-                    // Zmiana polega na wstawieniu `item` przed `sibling.nextSibling`
-                    containerOfQuestions.insertBefore(item, sibling.nextSibling);
-                }
-            }
-        }
-    });
-}
-
-function display_questions(){
-
+function displayQuestions(){
     window.api.get_questions().then(questions =>{
         questions.forEach(question => {
             const content = question.dataValues.content;
@@ -166,25 +64,8 @@ function display_questions(){
             rowQuestion.appendChild(colQuestion);
             displayAnswers(question.dataValues.id, rowQuestion);
             containerOfQuestions.appendChild(rowQuestion);
-
-
         });
     });
-}
-
-function editQuestion(event){
-    console.log(event.currentTarget.id);
-}
-
-function removeAnswer(_event){
-    console.log("remove");
-}
-
-function deleteQuestion(event){
-    window.api.deleteQuestion(event.currentTarget.id);
-    const question = document.getElementById(event.currentTarget.id);
-    question.parentNode.removeChild(question);
-    // location.reload();
 }
 
 function displayAnswers(id, rowQuestion){
@@ -200,15 +81,161 @@ function displayAnswers(id, rowQuestion){
     });
 }
 
+function displayOverlayForNewQuestion(){
+    document.getElementById("newQuestionOverlay").style.display = "block";
+    form.newQuestion = true;
+    if(document.getElementsByClassName("answer").length==0) displayAddingNewAnswer();
+}
+
+function displayOverlayEditQuestion(questionContent, answersContent, answersPoints, id){
+    displayOverlayForNewQuestion();
+    form.newQuestion = false;
+    document.querySelector(".questionInput").value = questionContent;
+    form.questionId = id;
+    for (let i = 0; i<answersContent.length; i++){
+        if(i<answersContent.length-1) displayAddingNewAnswer();
+        document.getElementsByClassName("answerInput")[i].value = answersContent[i];
+        document.getElementsByClassName("pointsInput")[i].value = answersPoints[i];
+    }
+}
+
+function displayAddingNewAnswer(){
+    var answerContainer =  document.querySelector(".answerContainer");
+    // var numberOfAnswers = document.getElementsByClassName("answer").length;
+
+    // Col: label
+    var label = document.createElement("label");    
+    label.setAttribute("for", "answer");
+    label.classList.add("col-2", "mt-1", "mb-1");
+    label.textContent = "Answer:";
+
+    // Col: answer
+    var inputAnswerContent = document.createElement("input");
+    inputAnswerContent.required = true;
+    inputAnswerContent.type = "text";
+    inputAnswerContent.classList.add("col-5", "answer", "answerInput", "m-1");
+    inputAnswerContent.name = "answer";
+
+    // Col: points
+    var inputAnswerPoints = document.createElement("input");
+    inputAnswerPoints.required = true;
+    inputAnswerPoints.type = "number";
+    inputAnswerPoints.classList.add("pointsInput", "col-2", "m-1");
+    inputAnswerPoints.name = "quantity";
+    inputAnswerPoints.min = "1";
+    inputAnswerPoints.max = "100";
+
+    // Col: delete button 
+    var btnDelete = document.createElement("button");
+    btnDelete.classList.add("btn", "btn-danger", "btn-sm", "col-2", "m-1");
+    btnDelete.innerHTML = "Delete";
+    btnDelete.addEventListener('click', (_event) => {
+        _event.currentTarget.parentNode.remove();
+    });
+
+    // Row
+    var row = document.createElement("div");
+    row.className = "row p-3 answerRow";
+
+    // Append all elements to the body
+    row.appendChild(label);
+    row.appendChild(inputAnswerContent);
+    row.appendChild(inputAnswerPoints);
+    row.appendChild(btnDelete);
+    answerContainer.appendChild(row);
+}
+
 function displaySetNameOfTeams(){
     document.getElementById("nameTeamsOverlay").style.display = "block";
 }
 
-function hideNameOfTeams(){
-    document.getElementById("nameTeamsOverlay").style.display = "none";
+function cancelAddNewQuestion(){
+    document.getElementById("newQuestionOverlay").style.display = "none";
+    // Remove all answers
+    var answers = document.getElementsByClassName("answer");
+    while(answers.length>0){
+        answers[0].remove();
+    }
+    var answerContainer = document.querySelector(".answerContainer");
+    answerContainer.innerHTML = "";
+    document.querySelector(".questionInput").value = ""; 
+}
+// --------------------------------
+
+
+// Edit Dynamic HTML --------------
+function changePositionOfQuestion(){
+    containerOfQuestions.addEventListener('click', function(event){
+        if (event.target.classList.contains('move-up') || event.target.classList.contains('move-down')){
+            const item = event.target.parentElement.parentElement;
+            if (event.target.classList.contains('move-up')) {
+                const sibling = item.previousElementSibling;
+                if (sibling) {
+                    containerOfQuestions.insertBefore(item, sibling);
+                }
+            } else { // Przesuwanie w dół
+                const sibling = item.nextElementSibling;
+                if (sibling) {
+                    // Zmiana polega na wstawieniu `item` przed `sibling.nextSibling`
+                    containerOfQuestions.insertBefore(item, sibling.nextSibling);
+                }
+            }
+        }
+    });
+}
+// --------------------------------
+
+
+// Service functions ---------------
+function addQuestion(event){
+    event.preventDefault();
+
+    var question  = document.getElementById('questionInput').value;
+    var answersForm = document.getElementsByClassName("answerInput");
+    var pointsForm = document.getElementsByClassName("pointsInput");
+    var id = form.questionId;
+
+    var answers = [];
+    var asnwerPoints = [];
+
+    for (let i = 0; i<answersForm.length; i++){
+        var answerContent = answersForm[i].value;
+        var points = pointsForm[i].value;
+        answers.push(answerContent);
+        asnwerPoints.push(points);
+    }
+    if(form.newQuestion) window.api.addNewQuestion(question, answers, asnwerPoints);
+    else window.api.updateQuestion(id, question, answers, asnwerPoints);
+    location.reload();
 }
 
- async function  getQuestionsId(){
+function editQuestion(_event){
+    var id = _event.currentTarget.id;
+    window.api.getQuestions(id).then(question => {
+        var questionContent = question.dataValues.content; 
+        window.api.get_answers(id).then(answers => {
+            var answersContent = [];
+            var answersPoints = [];
+            answers.forEach(answer => {
+                answersContent.push(answer.dataValues.content);
+                answersPoints.push(answer.dataValues.points);
+            });
+            displayOverlayEditQuestion(questionContent, answersContent, answersPoints, id);
+        });
+    });
+}
+
+function deleteQuestion(event){
+    window.api.deleteQuestion(event.currentTarget.id);
+    const question = document.getElementById(event.currentTarget.id);
+    question.parentNode.removeChild(question);
+    // location.reload();
+}
+// ---------------------------------
+
+
+// Getting correct sequence of questions
+async function getQuestionsId(){
     var questionsId = [];
     var questions = document.getElementsByClassName("questionRow");
     for(i=0; i<questions.length; i++){
@@ -225,6 +252,12 @@ function startGame(){
     });
     window.location.href = "gamePanel.html";
 }
+
+function cancelStartGame(){
+    document.getElementById("nameTeamsOverlay").style.display = "none";
+}
+
+
 
 function backToStartPage(){
     window.location.href = "index.html";

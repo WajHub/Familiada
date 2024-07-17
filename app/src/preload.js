@@ -14,16 +14,18 @@ const API = {
     onStatsTeam: (callback) => ipcRenderer.on('statsTeam', (_event, redName, blueName, redPoints, bluePoints) => callback(redName, blueName, redPoints, bluePoints)),
     onExposeAnswerOnBoard: (callback) => ipcRenderer.on('exposeAnswerOnBoard', (_event, answer, idAnswer, points) => callback(answer, idAnswer, points)),
    
-    // Renderer ---> Main (invokes)
+    // Renderer <---> Main (invokes)
     getCollections: () => ipcRenderer.invoke('getCollections'),
     get_questions: () => ipcRenderer.invoke("get_questions"),
+    getQuestions: (_event, id) => ipcRenderer.invoke("getQuestion", _event, id),
     get_answers: (id) => ipcRenderer.invoke("get_answers", id),
     get_title: () => ipcRenderer.invoke("getCollectionTitle"),
     deleteCollection: (id) => ipcRenderer.invoke("deleteCollection", id),
 
-    // Main <---> Renderer (sends)
+    // Renderer ---> Main (sends)
     startGame: () => ipcRenderer.send("startGame"),
     saveCollection: (title) => ipcRenderer.send("saveCollection", title),
+    updateQuestion: (id, questionContent, answersContent, answersPoints) => ipcRenderer.send("updateQuestion", id, questionContent, answersContent, answersPoints),
     addNewQuestion: (question, answers, points) => ipcRenderer.send("addNewQuestion", question, answers, points),
     setCurrentCollection: (id) => ipcRenderer.send("setCurrentCollection", id),
     setGameData: (team1, team2, questionsId) => ipcRenderer.send("setGameData", team1, team2, questionsId),

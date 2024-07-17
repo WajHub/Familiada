@@ -24,7 +24,8 @@
 
     <div class="overlay container" id="newQuestionOverlay">
         <div class="h-100 d-flex align-items-center justify-content-center">
-            <form id="form_addNewQuestion">
+
+            <form id="form_addNewQuestion" newQuestion=true questionId="-1">
 
               <!-- QUESTION -->
                 <div class="col-xs-4 pb-4">
@@ -53,9 +54,9 @@
                   </div>
                 </div>
               </div>
-             
 
             </form>
+
           </div>
     </div>
 
@@ -68,7 +69,7 @@
               <input type="text" id="team2" name="team2" required><br><br>
               <div class="row">
                 <div class="col d-flex justify-content-center">
-                  <button onclick="hideNameOfTeams()" type="button" class="btn btn-secondary">Cancel</button>
+                  <button onclick="cancelStartGame()" type="button" class="btn btn-secondary">Cancel</button>
                 </div>
                 <div class="col d-flex justify-content-center">
                   <button onclick="startGame()" type="button" class="btn btn-success">Start</button>
@@ -79,7 +80,7 @@
     </div>
 
     <div class="row">
-      <button id="newQestionButton" onclick="displayNewQuestion()" type="button" class="btn btn-outline-primary">Add new question</button>
+      <button id="newQestionButton" onclick="displayOverlayForNewQuestion()" type="button" class="btn btn-outline-primary">Add new question</button>
     </div>
 
     <div class="container">

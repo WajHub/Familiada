@@ -27,10 +27,10 @@ async function getAnswer(id){
   });
 }
 
-async function getAnswers(event, id) {
+async function getAnswers(event, idQuestion) {
   return await Answer.findAll({
     where: {
-      questionId: id
+      questionId: idQuestion
     }
   });
 }
@@ -120,6 +120,29 @@ async function deleteQuestion(id){
   });
 }
 
+// Update
+
+async function updateQuestion(_event, id, questionContent, answersContent, answersPoints) {
+  Question.findOne({
+    where: {
+      id: id
+    }
+  }).then(question => {
+    question.content = questionContent;
+    question.save();
+    Answer.findAll({
+      where: {
+        questionId: id
+      }
+  }).then(answers => {
+    answers.forEach((answer, index) => {
+      answer.content = answersContent[index];
+      answer.points = answersPoints[index];
+      answer.save();
+    });
+  });
+  });
+}
 
 
 
@@ -136,5 +159,6 @@ module.exports = {
   saveAnswer,
   saveNewQuestion,
   deleteCollection,
-  deleteQuestion
+  deleteQuestion,
+  updateQuestion
 };

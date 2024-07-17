@@ -87,6 +87,7 @@ ipcMain.handle("get_questions", async (event) => {
 ipcMain.handle("get_answers", Service.getAnswers);
 ipcMain.on("setGameData", gameLogic.setGameData);
 ipcMain.on("startGame", startGame);
+ipcMain.on("updateQuestion", Service.updateQuestion);
 
 // IPC handles for GamePanel
 ipcMain.on("nextQuestion", (event) => {
@@ -138,6 +139,9 @@ ipcMain.on("deleteCurrentCollection" ,() => {
   indexOfQuestion = 0;
   pointsForQuestion = 0;
   gameLogic.clearData();
+});
+ipcMain.handle("getQuestion", (event, id) => {
+  return Service.getQuestion(id);
 });
 
 
