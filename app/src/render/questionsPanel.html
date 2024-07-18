@@ -24,44 +24,44 @@
   
     </div>
 
-    
+    <div class="overlay pt-4" id="newQuestionOverlay">
+      <div class="container" >
+          <div class="h-100 d-flex align-items-center justify-content-center">
 
-    <div class="overlay container" id="newQuestionOverlay">
-        <div class="h-100 d-flex align-items-center justify-content-center">
+              <form id="form_addNewQuestion" newQuestion=true questionId="-1">
 
-            <form id="form_addNewQuestion" newQuestion=true questionId="-1">
+                <!-- QUESTION -->
+                  <div class="col-xs-4 pb-4">
+                    <label for="ex3">Question:</label>
+                    <input class="form-control questionInput" id="questionInput" type="text" required>
+                  </div>
+                
+                <!-- ANSWERS  -->
+                <div class="answerContainer container"> </div>
 
-              <!-- QUESTION -->
-                <div class="col-xs-4 pb-4">
-                  <label for="ex3">Question:</label>
-                  <input class="form-control questionInput" id="questionInput" type="text" required>
-                </div>
-               
-              <!-- ANSWERS  -->
-              <div class="answerContainer container"> </div>
+                <!-- BUTTONS -->
+                <div class="container">
 
-              <!-- BUTTONS -->
-              <div class="container">
+                    <!-- NEW ANSWER -->
+                  <div class="row">
+                    <div class="col d-flex justify-content-center">
+                      <button id="newAnswerButton" onclick="displayAddingNewAnswer()" type="button"  class="btn btn-light">Add new answer</button>
+                    </div>
+                  </div>
 
-                  <!-- NEW ANSWER -->
-                <div class="row">
-                  <div class="col d-flex justify-content-center">
-                    <button id="newAnswerButton" onclick="displayAddingNewAnswer()" type="button"  class="btn btn-light">Add new answer</button>
+                    <!-- SUBMIT AND CANCEL -->
+                  <div class="row">
+                    <div class="col d-flex justify-content-center p-2">
+                      <input type="submit" class="btn btn-success m-1">
+                      <button onclick="cancelAddNewQuestion()" type="button" class="btn btn-danger m-1">Cancel</button>
+                    </div>
                   </div>
                 </div>
 
-                  <!-- SUBMIT AND CANCEL -->
-                <div class="row">
-                  <div class="col d-flex justify-content-center p-2">
-                    <input type="submit" class="btn btn-success m-1">
-                    <button onclick="cancelAddNewQuestion()" type="button" class="btn btn-danger m-1">Cancel</button>
-                  </div>
-                </div>
-              </div>
+              </form>
 
-            </form>
-
-          </div>
+            </div>
+      </div>
     </div>
 
     <div class="overlay" id="nameTeamsOverlay">
