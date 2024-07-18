@@ -25,7 +25,8 @@ function displayQuestions(){
             const content = question.dataValues.content;
             
             var contentRow = document.createElement("div");
-            contentRow.classList.add("row", "m-0", "mb-3", "d-flex", "justify-content-center");
+            contentRow.classList.add("row", "m-0", "mb-3", "d-flex", 
+                "justify-content-center", "border-bottom", "border-dark");
             containerOfQuestions.appendChild(contentRow);
 
             var movingButtonCol = document.createElement("div");
@@ -75,7 +76,7 @@ function displayQuestions(){
                 editButtonCol.appendChild(buttonRow);
                 
                     var btnDelete = document.createElement("button");
-                    btnDelete.classList.add("btn", "btn-danger", "btn-sm");
+                    btnDelete.classList.add("btn", "btn-danger", "btn-sm", "mb-2");
                     btnDelete.id = question.dataValues.id;
                     btnDelete.innerHTML = '<i class="bi bi-trash"></i>';
                     btnDelete.addEventListener('click', deleteQuestion);
