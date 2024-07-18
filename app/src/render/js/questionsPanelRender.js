@@ -5,7 +5,7 @@ var containerOfQuestions = document.querySelector("#questionsContainer");
 // Document ready
 document.addEventListener("DOMContentLoaded", displayTitle);
 document.addEventListener("DOMContentLoaded", displayQuestions);
-document.addEventListener("DOMContentLoaded", changePositionOfQuestion);
+// document.addEventListener("DOMContentLoaded", changePositionOfQuestion);
 
 // Event listeners
 form.addEventListener('submit', addQuestion);
@@ -23,47 +23,73 @@ function displayQuestions(){
     window.api.get_questions().then(questions =>{
         questions.forEach(question => {
             const content = question.dataValues.content;
-
-            // create div for question
-            var rowQuestion = document.createElement("div");
-            rowQuestion.classList.add("questionRow", "row", "pb-4");
-            rowQuestion.id = question.dataValues.id;
-
-            var colQuestion = document.createElement("div");
-            colQuestion.classList.add("questionCol","col", "pb-2");
-            colQuestion.innerHTML = "Question:  <strong>" + content + "</strong>";
             
-             // create button for moving questions
-            var btnUp = document.createElement("button");
-            btnUp.classList.add("btn", "btn-light", "btn-sm", "m-2","move-up");
-            btnUp.innerHTML = "Up";
+            var contentRow = document.createElement("div");
+            contentRow.classList.add("row", "m-0", "mb-3", "d-flex", "justify-content-center");
+            containerOfQuestions.appendChild(contentRow);
 
-            var btnDown = document.createElement("button");
-            btnDown.classList.add("btn", "btn-light", "btn-sm","m-2", "move-down");
-            btnDown.innerHTML = "Down";
+            var movingButtonCol = document.createElement("div");
+            movingButtonCol.classList.add("col-1", "p-0","d-flex","align-items-center");
+            contentRow.appendChild(movingButtonCol);
 
-            // create button for delete questions 
-            var btnDelete = document.createElement("button");
-            btnDelete.classList.add("btn", "btn-danger", "btn-sm", "m-2");
-            btnDelete.id = question.dataValues.id;
-            btnDelete.innerHTML = "Delete";
-            btnDelete.addEventListener('click', deleteQuestion);
+                var buttonRow = document.createElement("div");
+                buttonRow.classList.add("row", "p-1", "m-0",);
+                movingButtonCol.appendChild(buttonRow);
 
-            // create button for edit question
-            var btnEdit = document.createElement("button");
-            btnEdit.classList.add("btn", "btn-primary", "btn-sm", "m-2");
-            btnEdit.innerHTML = "Edit";
-            btnEdit.id = question.dataValues.id;
-            btnEdit.addEventListener('click', editQuestion);
-            
-            // Append elements to the body
-            colQuestion.appendChild(btnUp);
-            colQuestion.appendChild(btnDown);
-            colQuestion.appendChild(btnDelete);
-            colQuestion.appendChild(btnEdit);
-            rowQuestion.appendChild(colQuestion);
+                    var btnUp = document.createElement("button");
+                    btnUp.classList.add("btn", "btn-light", "btn-sm","move-up", "border-0", "m-0", "p-0", "mb-1");
+                    btnUp.innerHTML = '<i class="bi bi-arrow-up-circle-fill text-dark h5"></i> ';
+
+                    var btnDown = document.createElement("button");
+                    btnDown.classList.add("btn", "btn-light", "btn-sm", "move-down", "border-0", "m-0", "p-0","mt-1");
+                    btnDown.innerHTML = '<i class="bi bi-arrow-down-circle-fill text-dark h5"></i> ';
+
+                    btnUp.addEventListener('click', changePositionOfQuestion);
+                    btnDown.addEventListener('click', changePositionOfQuestion);
+
+                    buttonRow.appendChild(btnUp);
+                    buttonRow.appendChild(btnDown);
+
+            var questionCol = document.createElement("div");
+            questionCol.classList.add("col-9");
+            contentRow.appendChild(questionCol);
+
+                var rowQuestion = document.createElement("div");
+                rowQuestion.classList.add("questionRow", "row");
+                rowQuestion.id = question.dataValues.id;
+                questionCol.appendChild(rowQuestion);
+
+                    var colQuestion = document.createElement("div");
+                    colQuestion.classList.add("questionCol","col");
+                    colQuestion.innerHTML = "Question:  <strong>" + content + "</strong>";
+                    rowQuestion.appendChild(colQuestion);
+
+
+
+            var editButtonCol = document.createElement("div");
+            editButtonCol.classList.add("col-1","d-flex","align-items-center", "m-1");
+            contentRow.appendChild(editButtonCol);
+
+                var buttonRow = document.createElement("div");
+                buttonRow.classList.add("row");
+                editButtonCol.appendChild(buttonRow);
+                
+                    var btnDelete = document.createElement("button");
+                    btnDelete.classList.add("btn", "btn-danger", "btn-sm");
+                    btnDelete.id = question.dataValues.id;
+                    btnDelete.innerHTML = '<i class="bi bi-trash"></i>';
+                    btnDelete.addEventListener('click', deleteQuestion);
+                    buttonRow.appendChild(btnDelete);
+                    
+                    var btnEdit = document.createElement("button");
+                    btnEdit.classList.add("btn", "btn-primary", "btn-sm");
+                    btnEdit.innerHTML = '<i class="bi bi-pencil"></i>';
+                    btnEdit.id = question.dataValues.id;
+                    btnEdit.addEventListener('click', editQuestion);
+                    buttonRow.appendChild(btnEdit);
+
             displayAnswers(question.dataValues.id, rowQuestion);
-            containerOfQuestions.appendChild(rowQuestion);
+            
         });
     });
 }
@@ -80,6 +106,7 @@ function displayAnswers(id, rowQuestion){
         });
     });
 }
+
 
 function displayOverlayForNewQuestion(){
     document.getElementById("newQuestionOverlay").style.display = "block";
@@ -164,24 +191,21 @@ function cancelAddNewQuestion(){
 
 
 // Edit Dynamic HTML --------------
-function changePositionOfQuestion(){
-    containerOfQuestions.addEventListener('click', function(event){
-        if (event.target.classList.contains('move-up') || event.target.classList.contains('move-down')){
-            const item = event.target.parentElement.parentElement;
-            if (event.target.classList.contains('move-up')) {
-                const sibling = item.previousElementSibling;
-                if (sibling) {
-                    containerOfQuestions.insertBefore(item, sibling);
-                }
-            } else { // Przesuwanie w dół
-                const sibling = item.nextElementSibling;
-                if (sibling) {
-                    // Zmiana polega na wstawieniu `item` przed `sibling.nextSibling`
-                    containerOfQuestions.insertBefore(item, sibling.nextSibling);
-                }
-            }
+function changePositionOfQuestion(_event){
+    const item = _event.target.parentNode.parentNode.parentNode.parentNode;
+    console.log(item);
+    if (_event.target.classList.contains('bi-arrow-up-circle-fill')) {
+        const sibling = item.previousElementSibling;
+        if (sibling) {
+            containerOfQuestions.insertBefore(item, sibling);
         }
-    });
+    } else { // Przesuwanie w dół
+        const sibling = item.nextElementSibling;
+        if (sibling) {
+            // Zmiana polega na wstawieniu `item` przed `sibling.nextSibling`
+            containerOfQuestions.insertBefore(item, sibling.nextSibling);
+        }
+    }  
 }
 // --------------------------------
 

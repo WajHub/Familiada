@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", displayCollections);
 function displayOverlayForNewCollection(event) {
     event.preventDefault();
     document.getElementById("overlay").style.display = "block";
-    // Reszta logiki funkcji
   }
 
 function choseCollection(event){

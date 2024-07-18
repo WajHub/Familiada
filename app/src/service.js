@@ -134,17 +134,15 @@ async function updateQuestion(_event, id, questionContent, answersContent, answe
       where: {
         questionId: id
       }
-  }).then(answers => {
-    answers.forEach((answer, index) => {
-      answer.content = answersContent[index];
-      answer.points = answersPoints[index];
-      answer.save();
+    }).then(answers => {
+      answers.forEach((answer, index) => {
+        answer.content = answersContent[index];
+        answer.points = answersPoints[index];
+        answer.save();
+      });
     });
   });
-  });
 }
-
-
 
 module.exports = {
   getCollections,
