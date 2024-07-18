@@ -141,6 +141,22 @@ async function updateQuestion(_event, id, questionContent, answersContent, answe
         answer.save();
       });
     });
+    answersContent.forEach((answer, index) => {
+      Answer.findOne({
+        where:  {
+          questionId: id,
+          content: answer
+        }
+      }).then(answer =>{
+        if(answer == null){
+          Answer.create({
+            content: answersContent[index],
+            points: answersPoints[index],
+            questionId: id
+          });
+        }
+      });
+    });
   });
 }
 

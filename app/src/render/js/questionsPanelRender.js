@@ -254,7 +254,7 @@ function deleteQuestion(event){
     window.api.deleteQuestion(event.currentTarget.id);
     const question = document.getElementById(event.currentTarget.id);
     question.parentNode.removeChild(question);
-    // location.reload();
+    location.reload();
 }
 // ---------------------------------
 
