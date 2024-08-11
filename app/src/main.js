@@ -34,8 +34,7 @@ const createWindow = () => {
       },
     });
   
-    // and load the index.html of the app.
-    mainWindow.loadFile(path.join(__dirname, 'render/index.html'));
+    mainWindow.loadURL('http://localhost:9000');
 
   // Open the DevTools.
   boardWindow.webContents.openDevTools();
