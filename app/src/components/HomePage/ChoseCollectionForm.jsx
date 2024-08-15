@@ -1,14 +1,12 @@
 import React from "react";
+import CollectionsSelect from "./CollectionsSelect.jsx";
 
 const ChooseSetForm = () => {
   return (
     <div className="d-flex justify-content-center">
       <form id="form_chose_set">
         <div className="form-group">
-          <select
-            className="form-select"
-            style={{ marginBottom: "10px" }}
-          ></select>
+          <CollectionsSelect />
           <button
             type="submit"
             onClick={(e) => choseCollection(e)}

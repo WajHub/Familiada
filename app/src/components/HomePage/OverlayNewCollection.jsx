@@ -5,7 +5,7 @@ const OverlayNewCollection = ({ isVisible, onClose }) => {
     event.preventDefault();
     var title = document.querySelector("#title").value;
     window.api.saveCollection(title);
-    location.reload(); // TODO: useState() instead of location.reload() !!!
+    onClose();
   };
 
   if (!isVisible) {
