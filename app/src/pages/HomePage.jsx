@@ -17,7 +17,7 @@ const HomePage = () => {
 
   useEffect(() => {
     updateCollections();
-  }, []); // Pusta tablica oznacza, że efekt zostanie wywołany tylko raz, przy montowaniu komponentu
+  }, []);
 
   return (
     <div>
@@ -26,7 +26,7 @@ const HomePage = () => {
       </div>
 
       <NewCollectionButton onCollectionAdd={updateCollections} />
-      <CollectionsSelect myCollections={myCollections} />
+      {myCollections && <CollectionsSelect myCollections={myCollections} />}
 
       <div className="d-flex justify-content-center">
         <ChoseCollectionButton />
