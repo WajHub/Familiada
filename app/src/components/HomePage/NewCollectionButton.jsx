@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import OverlayNewCollection from "./OverlayNewCollection.jsx";
+import Overlay from "../Overlay.jsx";
+import NewCollectionForm from "./NewCollectionForm.jsx";
 
-const NewCollectionButton = () => {
+const NewCollectionButton = ({ onCollectionAdd }) => {
   const [isVisibleOverlay, setOverlay] = useState(false);
 
   const displayOverlay = () => {
@@ -13,23 +14,17 @@ const NewCollectionButton = () => {
   };
 
   return (
-    <>
-      <div className="d-flex justify-content-center">
-        <button
-          style={{ marginBottom: "20px" }}
-          type="submit"
-          onClick={displayOverlay}
-          className="btn btn-success"
-        >
-          Create new Collection
-        </button>
-      </div>
-
-      <OverlayNewCollection
-        isVisible={isVisibleOverlay}
-        onClose={hideOverlay}
-      />
-    </>
+    <div className="d-flex justify-content-center mb-2">
+      <button onClick={displayOverlay} className="btn btn-success">
+        Create new Collection
+      </button>
+      <Overlay isVisible={isVisibleOverlay} hideOverlay={hideOverlay}>
+        <NewCollectionForm
+          closeOverlay={hideOverlay}
+          updateCollections={onCollectionAdd}
+        />
+      </Overlay>
+    </div>
   );
 };
 

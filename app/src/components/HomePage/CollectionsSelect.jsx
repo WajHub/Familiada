@@ -1,16 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-function CollectionsSelect() {
-  const [myCollections, setCollections] = useState([]);
-
-  useEffect(() => {
-    window.api.getCollections().then((collections) => {
-      setCollections(collections);
-    });
-  }, []);
-
+function CollectionsSelect({ myCollections }) {
   return (
-    <select className="form-select" style={{ marginBottom: "10px" }}>
+    <select className="form-select">
       {myCollections.map((collection) => {
         return (
           <option
