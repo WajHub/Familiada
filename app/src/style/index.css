@@ -11,6 +11,12 @@ body {
     color: white;
     padding-bottom: 20px;
   }
+
+  #title{
+    color:white;
+    text-align: center;
+  }
+  
   
   .overlay {
     position: fixed; /* Sit on top of the page content */

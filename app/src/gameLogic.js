@@ -8,7 +8,7 @@ var teamRED;
 var teamBLUE;
 
 async function setCurrentCollection(event, id) {
-  collection = await Service.getCollection(id);
+  collection = Service.getCollection(id);
 }
 
 async function getQuestions() {
@@ -38,7 +38,12 @@ function clearData() {
 
 module.exports = {
   getQuestions,
-  getCollectionTitle: () => collection.title,
+  getCollectionTitle: () => {
+    collection.then((collection) => {
+      console.log(collection);
+    });
+    return collection;
+  },
   getCollectionId: () => {
     return collection.id;
   },
