@@ -24,10 +24,8 @@ const HomePage = () => {
       <div className="d-flex justify-content-center">
         <h1 className="h1">Familiada</h1>
       </div>
-
       <NewCollectionButton onCollectionAdd={updateCollections} />
       {myCollections && <CollectionsSelect myCollections={myCollections} />}
-
       <div className="d-flex justify-content-center">
         <ChoseCollectionButton />
         <DeleteCollectionButton onCollectionDelete={updateCollections} />

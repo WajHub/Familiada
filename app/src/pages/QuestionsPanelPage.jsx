@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Nav from "../components/QuestionPanelPage.jsx/nav.jsx";
 
 function QuestionsPanelPage() {
   const [title, setTitle] = useState("");
@@ -9,7 +10,12 @@ function QuestionsPanelPage() {
     });
   });
 
-  return <h3 id="title">{title}</h3>;
+  return (
+    <div>
+      <h3 id="title">{title}</h3>
+      <Nav />
+    </div>
+  );
 }
 
 export default QuestionsPanelPage;

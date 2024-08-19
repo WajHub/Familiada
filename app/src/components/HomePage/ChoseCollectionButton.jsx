@@ -18,7 +18,6 @@ function ChoseCollectionButton() {
         >
           Chose Collection
         </button>
-        \
       </Link>
     </div>
   );

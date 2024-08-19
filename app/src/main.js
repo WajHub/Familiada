@@ -1,16 +1,15 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
-const path = require('node:path');
-const sequelize = require('../database/sequelize');
-const Service = require('./service');
-const gameLogic = require('./gameLogic');
-const Answer = require('../models/answer');
+const { app, BrowserWindow, ipcMain } = require("electron");
+const path = require("node:path");
+const sequelize = require("../database/sequelize");
+const Service = require("./service");
+const gameLogic = require("./gameLogic");
+const Answer = require("../models/answer");
 
 var mainWindow;
 var boardWindow;
 
-
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
+if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
@@ -19,22 +18,22 @@ const createWindow = () => {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, "preload.js"),
     },
   });
 
-  boardWindow.loadFile(path.join(__dirname, 'render/board.html'));
+  boardWindow.loadFile(path.join(__dirname, "render/board.html"));
 
-    // Create the browser window.
-    mainWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
-      webPreferences: {
-        preload: path.join(__dirname, 'preload.js'),
-      },
-    });
-  
-    mainWindow.loadURL('http://localhost:9000');
+  // Create the browser window.
+  mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+    },
+  });
+
+  mainWindow.loadURL("http://localhost:9000");
 
   // Open the DevTools.
   boardWindow.webContents.openDevTools();
@@ -47,12 +46,11 @@ const createWindow = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-
   createWindow();
 
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  app.on('activate', () => {
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     }
@@ -62,18 +60,17 @@ app.whenReady().then(() => {
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    sequelize.close() 
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    sequelize.close();
     app.quit();
   }
 });
 
-
 // IPC handles for index
-ipcMain.handle('getCollections', Service.getCollections);
+ipcMain.handle("getCollections", Service.getCollections);
 ipcMain.on("saveCollection", Service.saveCollection);
-ipcMain.handle('deleteCollection', Service.deleteCollection);
+ipcMain.handle("deleteCollection", Service.deleteCollection);
 ipcMain.on("setCurrentCollection", gameLogic.setCurrentCollection);
 
 // IPC handles for Questions
@@ -98,43 +95,62 @@ ipcMain.on("prevQuestion", (event) => {
   indexOfQuestion--;
 });
 ipcMain.on("guessAnswer", (event, id) => {
-  Service.getAnswer(id).then((answer) =>{
-    boardWindow.webContents.send("exposeAnswerOnBoard", answer.content, answer.id, answer.points);
+  Service.getAnswer(id).then((answer) => {
+    boardWindow.webContents.send(
+      "exposeAnswerOnBoard",
+      answer.content,
+      answer.id,
+      answer.points
+    );
     pointsForQuestion += answer.points;
     boardWindow.webContents.send("displayPointsForQuestion", pointsForQuestion);
     mainWindow.send("displayPointsForQuestion", pointsForQuestion);
   });
-
 });
 ipcMain.on("exposeAnswer", (event, id) => {
-  Service.getAnswer(id).then((answer) =>{
-    boardWindow.webContents.send("exposeAnswerOnBoard", answer.content, answer.id, answer.points);
+  Service.getAnswer(id).then((answer) => {
+    boardWindow.webContents.send(
+      "exposeAnswerOnBoard",
+      answer.content,
+      answer.id,
+      answer.points
+    );
   });
 });
 ipcMain.on("wrongAnswer", (event, team) => {
-  if(team == "red") {
+  if (team == "red") {
     boardWindow.webContents.send("wrongAnswer", "red");
-  }
-  else {
+  } else {
     boardWindow.webContents.send("wrongAnswer", "blue");
   }
 });
 ipcMain.on("win", (event, team) => {
-  if(team == "red") {
+  if (team == "red") {
     gameLogic.addPointsToRed(pointsForQuestion);
-  }
-  else {
+  } else {
     gameLogic.addPointsToBlue(pointsForQuestion);
   }
-  mainWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
-  boardWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
+  mainWindow.webContents.send(
+    "statsTeam",
+    gameLogic.getTeamRed(),
+    gameLogic.getTeamBlue(),
+    gameLogic.getRedPoints(),
+    gameLogic.getBluePoints()
+  );
+  boardWindow.webContents.send(
+    "statsTeam",
+    gameLogic.getTeamRed(),
+    gameLogic.getTeamBlue(),
+    gameLogic.getRedPoints(),
+    gameLogic.getBluePoints()
+  );
 });
 ipcMain.on("deleteQuestion", (_event, id) => {
   Service.deleteQuestion(id);
 });
-ipcMain.on("deleteCurrentCollection" ,() => {
+ipcMain.on("deleteCurrentCollection", () => {
   gameActive = false;
-  nextQuestion = false; 
+  nextQuestion = false;
   indexOfQuestion = 0;
   pointsForQuestion = 0;
   gameLogic.clearData();
@@ -143,25 +159,26 @@ ipcMain.handle("getQuestion", (event, id) => {
   return Service.getQuestion(id);
 });
 
-
-// GAME 
+// GAME
 var nextQuestion = false;
 var indexOfQuestion = 0;
-var pointsForQuestion = 0; 
+var pointsForQuestion = 0;
 var gameActive = false;
 
 async function startGame(event) {
-
   gameActive = true;
   gameLogic.getQuestions().then(async (questions) => {
-    
-    for (; indexOfQuestion < questions.length && gameActive;) {
-
-      sendQuestionsPointsTeamsToRender(questions[indexOfQuestion], questions.length);
+    for (; indexOfQuestion < questions.length && gameActive; ) {
+      sendQuestionsPointsTeamsToRender(
+        questions[indexOfQuestion],
+        questions.length
+      );
       sendAnswersToRender(questions[indexOfQuestion].id);
-      
+
       nextQuestion = false;
-      while (!nextQuestion) { await delay(500); }
+      while (!nextQuestion) {
+        await delay(500);
+      }
     }
   });
 }
@@ -173,24 +190,46 @@ function sendQuestionsPointsTeamsToRender(question, length) {
   boardWindow.webContents.send("displayQuestion", question.content);
   boardWindow.webContents.send("displayPointsForQuestion", pointsForQuestion);
   mainWindow.send("displayPointsForQuestion", pointsForQuestion);
-  mainWindow.webContents.send("displayQuestionMain", question.content, indexOfQuestion == 0, indexOfQuestion == length - 1);
-  mainWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
-  boardWindow.webContents.send("statsTeam", gameLogic.getTeamRed(), gameLogic.getTeamBlue(), gameLogic.getRedPoints(), gameLogic.getBluePoints());
+  mainWindow.webContents.send(
+    "displayQuestionMain",
+    question.content,
+    indexOfQuestion == 0,
+    indexOfQuestion == length - 1
+  );
+  mainWindow.webContents.send(
+    "statsTeam",
+    gameLogic.getTeamRed(),
+    gameLogic.getTeamBlue(),
+    gameLogic.getRedPoints(),
+    gameLogic.getBluePoints()
+  );
+  boardWindow.webContents.send(
+    "statsTeam",
+    gameLogic.getTeamRed(),
+    gameLogic.getTeamBlue(),
+    gameLogic.getRedPoints(),
+    gameLogic.getBluePoints()
+  );
 }
 
-function sendAnswersToRender(QuestionId){
+function sendAnswersToRender(QuestionId) {
   var index = 0;
   Service.getAnswers(null, QuestionId).then((answers) => {
     answers.sort(Answer.compareByPointsFn);
 
     for (const answer of answers) {
       index++;
-      mainWindow.webContents.send("displayAnswer", answer.content, answer.id, index);
+      mainWindow.webContents.send(
+        "displayAnswer",
+        answer.content,
+        answer.id,
+        index
+      );
       boardWindow.webContents.send("displayHiddenAnswer", index, answer.id);
     }
   });
 }
 
 function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
