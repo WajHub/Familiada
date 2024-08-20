@@ -10,18 +10,18 @@ function QuestionsContainer({ questions }) {
       id="questionsContainer"
       style={{ marginBottom: 10 }}
     >
-      {questions.map(
-        (question, index) => () => (
-          console.log(question, index),
-          (
-            <div className="row m-0 mb-3 d-flex justify-content-center border-bottom border-dark">
-              <ArrowsButtons />
-              <Question />
-              <EditDeleteButtons />
-            </div>
-          )
-        )
-      )}
+      {questions.map((question, index) => {
+        return (
+          <div
+            key={question.dataValues.id}
+            className="row m-0 mb-3 d-flex justify-content-center border-bottom border-dark"
+          >
+            <ArrowsButtons />
+            <Question question={question} />
+            <EditDeleteButtons />
+          </div>
+        );
+      })}
     </div>
   );
 }

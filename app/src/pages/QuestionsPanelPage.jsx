@@ -8,8 +8,6 @@ function QuestionsPanelPage() {
 
   const updateQuestions = () => {
     window.api.get_questions().then((response) => {
-      console.log("updateQuestions");
-      console.log(response);
       setQuestions(response);
     });
   };
@@ -21,7 +19,6 @@ function QuestionsPanelPage() {
   });
 
   useEffect(() => {
-    console.log("useEffect");
     updateQuestions();
   }, []);
 
