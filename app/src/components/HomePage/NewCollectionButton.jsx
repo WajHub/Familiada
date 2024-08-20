@@ -6,6 +6,7 @@ const NewCollectionButton = ({ onCollectionAdd }) => {
   const [isVisibleOverlay, setOverlay] = useState(false);
 
   const displayOverlay = () => {
+    console.log("displayOverlay");
     setOverlay(true);
   };
 

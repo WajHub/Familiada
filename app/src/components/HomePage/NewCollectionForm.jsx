@@ -11,7 +11,13 @@ function NewCollectionForm({ closeOverlay, updateCollections }) {
   return (
     <form id="form_create_new_set">
       <label htmlFor="title">Collection name:</label>
-      <input type="text" id="title" name="title" required />
+      <input
+        type="text"
+        id="title"
+        name="title"
+        required
+        style={{ color: "black" }}
+      />
       <button
         onClick={(e) => {
           e.preventDefault();

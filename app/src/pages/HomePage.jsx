@@ -20,7 +20,7 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div>
+    <div className="content">
       <div className="d-flex justify-content-center">
         <h1 className="h1">Familiada</h1>
       </div>

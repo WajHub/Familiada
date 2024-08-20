@@ -4,6 +4,15 @@ import QuestionsContainer from "../components/QuestionPanelPage/QuestionsContain
 
 function QuestionsPanelPage() {
   const [title, setTitle] = useState("");
+  const [questions, setQuestions] = useState([]);
+
+  const updateQuestions = () => {
+    window.api.get_questions().then((response) => {
+      console.log("updateQuestions");
+      console.log(response);
+      setQuestions(response);
+    });
+  };
 
   useEffect(() => {
     window.api.get_title().then((response) => {
@@ -11,10 +20,15 @@ function QuestionsPanelPage() {
     });
   });
 
+  useEffect(() => {
+    console.log("useEffect");
+    updateQuestions();
+  }, []);
+
   return (
-    <div>
+    <div className="content">
       <h3 id="title">{title}</h3>
-      <QuestionsContainer />
+      <QuestionsContainer questions={questions} />
       <Nav />
     </div>
   );
