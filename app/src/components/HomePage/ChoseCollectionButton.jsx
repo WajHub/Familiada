@@ -16,7 +16,7 @@ function ChoseCollectionButton() {
           }}
           className="btn btn-outline-success"
         >
-          Chose Collection
+          Select
         </button>
       </Link>
     </div>

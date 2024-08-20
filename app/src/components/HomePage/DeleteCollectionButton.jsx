@@ -25,7 +25,7 @@ function DeleteCollectionButton({ onCollectionDelete }) {
   return (
     <div className="d-flex justify-content-center">
       <button type="submit" onClick={displayOverlay} className="btn btn-danger">
-        Delete Set
+        Delete
       </button>
       <Overlay isVisible={isVisibleOverlay} hideOverlay={hideOverlay}>
         <ConfirmButton onAccept={deleteCollection} />
