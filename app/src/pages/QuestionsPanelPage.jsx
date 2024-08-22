@@ -10,7 +10,6 @@ function QuestionsPanelPage() {
   const [isVisibleOverlay, setOverlay] = useState(false);
 
   const displayOverlay = () => {
-    console.log("displayOverlay");
     setOverlay(true);
   };
 
@@ -19,6 +18,7 @@ function QuestionsPanelPage() {
   };
 
   const updateQuestions = () => {
+    hideOverlay();
     window.api.get_questions().then((response) => {
       setQuestions(response);
     });
@@ -49,7 +49,7 @@ function QuestionsPanelPage() {
         </button>
       </div>
       <Overlay isVisible={isVisibleOverlay} hideOverlay={hideOverlay}>
-        <NewQuestionForm />
+        <NewQuestionForm newForm={true} update={updateQuestions} />
       </Overlay>
       <Nav />
     </div>
