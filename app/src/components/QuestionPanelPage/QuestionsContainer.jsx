@@ -3,7 +3,7 @@ import ArrowsButtons from "./ArrowsButtons.jsx";
 import Question from "./Question.jsx";
 import EditDeleteButtons from "./EditDeleteButtons.jsx";
 
-function QuestionsContainer({ questions }) {
+function QuestionsContainer({ questions, update }) {
   return (
     <div
       className="container text-center pt-3 pl-3  mainContainer"
@@ -18,7 +18,7 @@ function QuestionsContainer({ questions }) {
           >
             <ArrowsButtons />
             <Question question={question} />
-            <EditDeleteButtons />
+            <EditDeleteButtons update={update} id={question.dataValues.id} />
           </div>
         );
       })}

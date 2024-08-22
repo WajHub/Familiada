@@ -37,7 +37,7 @@ function QuestionsPanelPage() {
   return (
     <div className="content">
       <h3 id="title">{title}</h3>
-      <QuestionsContainer questions={questions} />
+      <QuestionsContainer questions={questions} update={updateQuestions} />
       <div className="row m-0">
         <button
           id="newQestionButton"
