@@ -3,21 +3,32 @@ import Nav from "../components/QuestionPanelPage/Nav.jsx";
 import QuestionsContainer from "../components/QuestionPanelPage/QuestionsContainer.jsx";
 import Overlay from "../components/Overlay.jsx";
 import NewQuestionForm from "../components/QuestionPanelPage/NewQuestionForm.jsx";
+import TeamNamesFormOverlay from "../components/QuestionPanelPage/TeamNamesFormOverlay.jsx";
 
 function QuestionsPanelPage() {
   const [title, setTitle] = useState("");
   const [questions, setQuestions] = useState([]);
-  const [isVisibleOverlay, setOverlay] = useState(false);
+  const [isVisibleOverlayFormNewQuestion, setOverlayFormNewQuestion] =
+    useState(false);
+  const [isVisibleOverlayNameOfTeam, setOverlayNameOfTeam] = useState(false);
   const [isNewQuestion, setNewQuestion] = useState(true);
   const [idQuestion, setIdQuestion] = useState(-1);
 
   const displayOverlay = () => {
-    setOverlay(true);
+    setOverlayFormNewQuestion(true);
   };
 
   const hideOverlay = () => {
     setNewQuestion(true);
-    setOverlay(false);
+    setOverlayFormNewQuestion(false);
+  };
+
+  const displayOverlayNameOfTeams = () => {
+    setOverlayNameOfTeam(true);
+  };
+
+  const hideOverlayNameOfTeam = () => {
+    setOverlayNameOfTeam(false);
   };
 
   const updateQuestions = () => {
@@ -61,14 +72,23 @@ function QuestionsPanelPage() {
           Add new question
         </button>
       </div>
-      <Overlay isVisible={isVisibleOverlay} hideOverlay={hideOverlay}>
+      <Overlay
+        isVisible={isVisibleOverlayFormNewQuestion}
+        hideOverlay={hideOverlay}
+      >
         <NewQuestionForm
           newForm={isNewQuestion}
           update={updateQuestions}
           id={idQuestion}
         />
       </Overlay>
-      <Nav />
+      <Overlay
+        isVisible={isVisibleOverlayNameOfTeam}
+        hideOverlay={hideOverlayNameOfTeam}
+      >
+        <TeamNamesFormOverlay />
+      </Overlay>
+      <Nav displayOverlayNameOfTeams={displayOverlayNameOfTeams} />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function nav() {
+function nav({ displayOverlayNameOfTeams }) {
   return (
     <div className="container">
       <div className="row" style={{ marginTop: "25px" }}>
@@ -14,9 +14,7 @@ function nav() {
         </div>
         <div className="col d-flex justify-content-center">
           <button
-            onClick={() => {
-              console.log("Next");
-            }}
+            onClick={displayOverlayNameOfTeams}
             type="button"
             className="btn btn-outline-success"
           >
