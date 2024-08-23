@@ -2,10 +2,10 @@ import React from "react";
 
 function EditDeleteButtons({ id, editQuestion }) {
   const handleDeleteQuestion = (event) => {
-    // window.api.deleteQuestion(event.currentTarget.id);
+    window.api.deleteQuestion(event.currentTarget.id);
     const question = document.getElementById(event.currentTarget.id).parentNode
       .parentNode;
-    question.remove();
+    question.parentNode.removeChild(question);
   };
 
   return (

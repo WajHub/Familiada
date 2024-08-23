@@ -10,7 +10,7 @@ function QuestionsContainer({ questions, update, handleEditQuestion }) {
       id="questionsContainer"
       style={{ marginBottom: 10 }}
     >
-      {questions.map((question, index) => {
+      {questions.map((question) => {
         return (
           <div
             key={question.dataValues.id}
