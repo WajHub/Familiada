@@ -117,6 +117,14 @@ async function deleteQuestion(id) {
   });
 }
 
+async function deleteAnswers(idQuestion) {
+  await Answer.destroy({
+    where: {
+      questionId: idQuestion,
+    },
+  });
+}
+
 // Update
 
 async function updateQuestion(
@@ -134,32 +142,12 @@ async function updateQuestion(
   }).then((question) => {
     question.content = questionContent;
     question.save();
-    Answer.findAll({
-      where: {
-        questionId: id,
-      },
-    }).then((answers) => {
-      answers.forEach((answer, index) => {
-        answer.content = answersContent[index];
-        answer.points = answersPoints[index];
-        answer.save();
-      });
-    });
+
+    //Delete all of answers for this question
+    deleteAnswers(id);
+    //Add new answers
     answersContent.forEach((answer, index) => {
-      Answer.findOne({
-        where: {
-          questionId: id,
-          content: answer,
-        },
-      }).then((answer) => {
-        if (answer == null) {
-          Answer.create({
-            content: answersContent[index],
-            points: answersPoints[index],
-            questionId: id,
-          });
-        }
-      });
+      saveAnswer(answer, answersPoints[index], id);
     });
   });
 }
