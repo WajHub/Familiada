@@ -1,10 +1,11 @@
 import React from "react";
 
-function EditDeleteButtons({ id }) {
+function EditDeleteButtons({ id, editQuestion }) {
   const handleDeleteQuestion = (event) => {
-    window.api.deleteQuestion(event.currentTarget.id);
-    const question = document.getElementById(event.currentTarget.id);
-    question.parentNode.removeChild(question);
+    // window.api.deleteQuestion(event.currentTarget.id);
+    const question = document.getElementById(event.currentTarget.id).parentNode
+      .parentNode;
+    question.remove();
   };
 
   return (
@@ -17,7 +18,14 @@ function EditDeleteButtons({ id }) {
         >
           <i className="bi bi-trash"></i>
         </button>
-        <button className="btn btn-primary btn-sm m-0" id={id}>
+        <button
+          onClick={(event) => {
+            const id = event.currentTarget.id;
+            editQuestion(id);
+          }}
+          className="btn btn-primary btn-sm m-0"
+          id={id}
+        >
           <i className="bi bi-pencil"></i>
         </button>
       </div>

@@ -1,6 +1,6 @@
 import React from "react";
 
-function NewAnswer() {
+function NewAnswer({ answer, points }) {
   const handleDeleteAnswer = (event) => {
     event.currentTarget.parentNode.remove();
   };
@@ -14,6 +14,7 @@ function NewAnswer() {
         type="text"
         className="col-5 answer answerInput m-1"
         name="answer"
+        defaultValue={answer}
       />
       <input
         required=""
@@ -22,6 +23,7 @@ function NewAnswer() {
         name="quantity"
         min="1"
         max="100"
+        defaultValue={points}
       />
       <button
         className="btn btn-danger btn-sm col-2 m-1"

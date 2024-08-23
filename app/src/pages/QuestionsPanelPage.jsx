@@ -8,12 +8,15 @@ function QuestionsPanelPage() {
   const [title, setTitle] = useState("");
   const [questions, setQuestions] = useState([]);
   const [isVisibleOverlay, setOverlay] = useState(false);
+  const [isNewQuestion, setNewQuestion] = useState(true);
+  const [idQuestion, setIdQuestion] = useState(-1);
 
   const displayOverlay = () => {
     setOverlay(true);
   };
 
   const hideOverlay = () => {
+    setNewQuestion(true);
     setOverlay(false);
   };
 
@@ -34,10 +37,20 @@ function QuestionsPanelPage() {
     updateQuestions();
   }, []);
 
+  const editQuestion = (id) => {
+    setIdQuestion(id);
+    setNewQuestion(false);
+    displayOverlay();
+  };
+
   return (
     <div className="content">
       <h3 id="title">{title}</h3>
-      <QuestionsContainer questions={questions} update={updateQuestions} />
+      <QuestionsContainer
+        questions={questions}
+        update={updateQuestions}
+        handleEditQuestion={editQuestion}
+      />
       <div className="row m-0">
         <button
           id="newQestionButton"
@@ -49,7 +62,11 @@ function QuestionsPanelPage() {
         </button>
       </div>
       <Overlay isVisible={isVisibleOverlay} hideOverlay={hideOverlay}>
-        <NewQuestionForm newForm={true} update={updateQuestions} />
+        <NewQuestionForm
+          newForm={isNewQuestion}
+          update={updateQuestions}
+          id={idQuestion}
+        />
       </Overlay>
       <Nav />
     </div>

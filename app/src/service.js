@@ -126,6 +126,7 @@ async function updateQuestion(
   answersContent,
   answersPoints
 ) {
+  console.log("update");
   Question.findOne({
     where: {
       id: id,

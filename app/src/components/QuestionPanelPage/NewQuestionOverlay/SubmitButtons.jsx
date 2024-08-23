@@ -1,6 +1,6 @@
 import React from "react";
 
-function Buttons({ displayNewAnswer, submitForm }) {
+function Buttons({ displayNewAnswer }) {
   return (
     <div className="container text-center">
       <button
@@ -12,14 +12,7 @@ function Buttons({ displayNewAnswer, submitForm }) {
         Add new answer
       </button>
       <div className="p-2">
-        <button
-          id="newAnswerButton"
-          onClick={submitForm}
-          type="button"
-          className="btn btn-success m-1"
-        >
-          Save
-        </button>
+        <input type="submit" className="btn btn-success m-1" />
       </div>
     </div>
   );
