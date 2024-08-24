@@ -166,6 +166,7 @@ var pointsForQuestion = 0;
 var gameActive = false;
 
 async function startGame(event) {
+  console.log("Game started");
   gameActive = true;
   gameLogic.getQuestions().then(async (questions) => {
     for (; indexOfQuestion < questions.length && gameActive; ) {
