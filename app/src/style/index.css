@@ -39,3 +39,9 @@ body {
     background-color: #2e2e2e;
     border-radius: 20px;
   }
+
+#questionsContainer {
+    margin-bottom: 10px;
+   color: white;
+   text-align: center
+  }

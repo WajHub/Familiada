@@ -8,7 +8,10 @@ function BackToHomeButton() {
       <div className="row" style={{ marginTop: 25 }}>
         <div className="col d-flex justify-content-center">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => {
+              window.api.deleteCurrentCollection();
+              navigate("/");
+            }}
             type="button"
             className="btn btn-outline-secondary"
           >

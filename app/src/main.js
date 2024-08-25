@@ -166,15 +166,15 @@ var pointsForQuestion = 0;
 var gameActive = false;
 
 async function startGame(event) {
-  console.log("Game started");
   gameActive = true;
   gameLogic.getQuestions().then(async (questions) => {
+    console.log("QUESTIONS", questions);
     for (; indexOfQuestion < questions.length && gameActive; ) {
+      sendAnswersToRender(questions[indexOfQuestion].id);
       sendQuestionsPointsTeamsToRender(
         questions[indexOfQuestion],
         questions.length
       );
-      sendAnswersToRender(questions[indexOfQuestion].id);
 
       nextQuestion = false;
       while (!nextQuestion) {
@@ -190,7 +190,9 @@ function sendQuestionsPointsTeamsToRender(question, length) {
 
   boardWindow.webContents.send("displayQuestion", question.content);
   boardWindow.webContents.send("displayPointsForQuestion", pointsForQuestion);
+
   mainWindow.send("displayPointsForQuestion", pointsForQuestion);
+  console.log("Wiadomosc do redner =>", question.content);
   mainWindow.webContents.send(
     "displayQuestionMain",
     question.content,
