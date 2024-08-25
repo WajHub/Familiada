@@ -3,7 +3,7 @@ const path = require("node:path");
 const sequelize = require("../database/sequelize");
 const Service = require("./service");
 const gameLogic = require("./gameLogic");
-const Answer = require("../models/answer");
+const { Answer } = require("../models/answer");
 
 var mainWindow;
 var boardWindow;
@@ -216,9 +216,9 @@ function sendQuestionsPointsTeamsToRender(question, length) {
 function sendAnswersToRender(QuestionId) {
   var index = 0;
   Service.getAnswers(null, QuestionId).then((answers) => {
-    answers.sort(Answer.compareByPointsFn);
+    const sortedAnswers = answers.sort(sortAnswersByPoints);
 
-    for (const answer of answers) {
+    for (const answer of sortedAnswers) {
       index++;
       mainWindow.webContents.send(
         "displayAnswer",
@@ -229,6 +229,16 @@ function sendAnswersToRender(QuestionId) {
       boardWindow.webContents.send("displayHiddenAnswer", index, answer.id);
     }
   });
+}
+
+function sortAnswersByPoints(a, b) {
+  if (a.dataValues.points > b.dataValues.points) {
+    return -1;
+  } else if (a.dataValues.points < b.dataValues.points) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 function delay(ms) {
