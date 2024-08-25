@@ -8,29 +8,17 @@ function GamePanelPage() {
   const [question, setQuestion] = useState("");
   const [answers, setAnswers] = useState([]);
 
-  window.api.onDisplayQuestionMain((question, first, last) => {
-    console.log("Wiadomosc z main=>", question);
-    setQuestion(question);
-    // document.querySelector("#winRed").disabled = false;
-    // document.querySelector("#winBlue").disabled = false;
-    // if (first) {
-    //   document.querySelector("#prev").classList.add("disabled");
-    // } else {
-    //   document.querySelector("#prev").classList.remove("disabled");
-    // }
-    // if (last) {
-    //   document.querySelector("#next").classList.add("disabled");
-    // } else {
-    //   document.querySelector("#next").classList.remove("disabled");
-    // }
-  });
-
-  window.api.onDisplayAnswer((answer, answerId, index) => {
-    setAnswers([...answers, { content: answer, id: answerId, index: index }]);
-  });
-
   useEffect(() => {
     window.api.startGame();
+    window.api.onDisplayQuestionMain((question, first, last) => {
+      setQuestion(question);
+    });
+    window.api.onDisplayAnswer((answer, answerId, index) => {
+      setAnswers((prevAnswers) => [
+        ...prevAnswers,
+        { content: answer, id: answerId, index: index },
+      ]);
+    });
   }, []);
 
   return (
