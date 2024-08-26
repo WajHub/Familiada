@@ -118,14 +118,15 @@ ipcMain.on("exposeAnswer", (event, id) => {
   });
 });
 ipcMain.on("wrongAnswer", (event, team) => {
-  if (team == "red") {
+  console.log(team.teamColor);
+  if (team.teamColor == "RED") {
     boardWindow.webContents.send("wrongAnswer", "red");
   } else {
     boardWindow.webContents.send("wrongAnswer", "blue");
   }
 });
 ipcMain.on("win", (event, team) => {
-  if (team == "red") {
+  if (team == "RED") {
     gameLogic.addPointsToRed(pointsForQuestion);
   } else {
     gameLogic.addPointsToBlue(pointsForQuestion);

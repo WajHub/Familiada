@@ -1,15 +1,11 @@
 import React from "react";
-import startRoundResource from "../../audio/StartRound.mp3";
-import correctAnswerResource from "../../audio/CorrectAnswer.mp3";
-import wrongAnswerResource from "../../audio/WrongAnswer.mp3";
-import showAnswerResource from "../../audio/ShowAnswer.mp3";
 
-function Answer({ answerContent, answerId }) {
-  const startRoundSound = new Audio(startRoundResource);
-  const correctAnswerSound = new Audio(correctAnswerResource);
-  const wrongAnswerSound = new Audio(wrongAnswerResource);
-  const showAnswerSound = new Audio(showAnswerResource);
-
+function Answer({
+  answerContent,
+  answerId,
+  showAnswerSound,
+  correctAnswerSound,
+}) {
   const disableButtons = (idButton) => {
     const selector = "[id='" + idButton + "']";
     const buttons = document.querySelectorAll(selector);
@@ -20,13 +16,13 @@ function Answer({ answerContent, answerId }) {
 
   const handleCorrectAnswer = (event) => {
     disableButtons(event.target.id);
-    showAnswerSound.play();
+    correctAnswerSound.play();
     window.api.guessAnswer(event.target.id);
   };
 
   const handleIncorrectAnswer = (event) => {
     disableButtons(event.target.id);
-    wrongAnswerSound.play();
+    showAnswerSound.play();
     window.api.exposeAnswer(event.target.id);
   };
 

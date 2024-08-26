@@ -45,3 +45,15 @@ body {
    color: white;
    text-align: center
   }
+
+  #redTeam{
+    font-size: 5vw;
+    color: red;
+    text-align: center;
+  }
+
+  #blueTeam{
+    font-size: 5vw;
+    color: rgb(61, 61, 255);
+    text-align: center;
+  } 
