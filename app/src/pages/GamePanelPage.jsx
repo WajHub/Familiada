@@ -31,6 +31,7 @@ function GamePanelPage() {
       setQuestion(question);
       setAnswers([]);
       setButtons(first, last);
+      // startRoundSound.play();
     });
     window.api.onDisplayAnswer((answer, answerId, index) => {
       setAnswers((prevAnswers) => [

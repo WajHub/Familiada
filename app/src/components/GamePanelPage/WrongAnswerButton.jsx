@@ -2,7 +2,7 @@ import React from "react";
 
 function WrongAnswerButton({ teamColor, wrongAnswerAudio }) {
   const handleWrongAnswer = () => {
-    // wrongAnswerAudio.play();
+    wrongAnswerAudio.play();
     window.api.wrongAnswer({ teamColor });
   };
   return (
