@@ -16,13 +16,13 @@ function Answer({
 
   const handleCorrectAnswer = (event) => {
     disableButtons(event.target.id);
-    correctAnswerSound.play();
+    // correctAnswerSound.play();
     window.api.guessAnswer(event.target.id);
   };
 
   const handleIncorrectAnswer = (event) => {
     disableButtons(event.target.id);
-    showAnswerSound.play();
+    // showAnswerSound.play();
     window.api.exposeAnswer(event.target.id);
   };
 

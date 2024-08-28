@@ -33,6 +33,26 @@ body {
   button {
     margin:20px;
   }
+  @font-face {
+    font-family: 'CustomFont';
+    src: url('./familiada.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+  .board {
+    font-weight: normal;
+    font-style: normal;
+    font-size: 3.2vw;
+    background-color: black;
+    color: yellow;
+    font-family: 'CustomFont', sans-serif;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+  }
   
   .mainContainer{
     color: aliceblue;
@@ -46,14 +66,37 @@ body {
    text-align: center
   }
 
-  #redTeam{
+#redTeam{
     font-size: 5vw;
     color: red;
     text-align: center;
   }
 
-  #blueTeam{
+#blueTeam{
     font-size: 5vw;
     color: rgb(61, 61, 255);
     text-align: center;
   } 
+
+:disabled {
+    background-color: grey;
+}
+
+.wrongAnswer {
+    font-size: 2.5vw;
+}
+
+.teamStats{
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    color: white;
+}
+
+#blueTeamPoints{
+    border-radius: 6px;
+    background-color: blue;
+}
+
+#redTeamPoints{
+    border-radius: 6px;
+    background-color: red;
+}

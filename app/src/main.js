@@ -22,7 +22,7 @@ const createWindow = () => {
     },
   });
 
-  boardWindow.loadFile(path.join(__dirname, "render/board.html"));
+  boardWindow.loadURL("http://localhost:9000/BoardPanel");
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
