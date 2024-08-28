@@ -98,7 +98,7 @@ ipcMain.on("guessAnswer", (event, id) => {
   Service.getAnswer(id).then((answer) => {
     boardWindow.webContents.send(
       "exposeAnswerOnBoard",
-      answer.content,
+      answer.content + " " + answer.points,
       answer.id,
       answer.points
     );
@@ -117,7 +117,6 @@ ipcMain.on("exposeAnswer", (event, id) => {
   });
 });
 ipcMain.on("wrongAnswer", (event, team) => {
-  console.log(team.teamColor);
   if (team.teamColor == "RED") {
     boardWindow.webContents.send("wrongAnswer", "red");
   } else {

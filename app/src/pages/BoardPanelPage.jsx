@@ -13,6 +13,8 @@ function BoardPanelPage() {
   const [blueTeamPoints, setBlueTeamPoints] = useState(0);
   const [question, setQuestion] = useState("");
   const [answers, setAnswers] = useState([]);
+  const [wrongAnswersRed, setWrongAnswersRed] = useState(0);
+  const [wrongAnswersBlue, setWrongAnswersBlue] = useState(0);
 
   useEffect(() => {
     window.api.onStatsTeam((redName, blueName, redPoints, bluePoints) => {
@@ -41,9 +43,20 @@ function BoardPanelPage() {
         return updatedAnswers;
       });
     });
+    window.api.onDisplayPointsForQuestion((points) => {
+      setQuestionPoints(points);
+    });
     window.api.onWrongAnswer((team) => {
       if (team == "red") {
+        setWrongAnswersRed((prev) => {
+          const updatedValue = prev + 1;
+          return updatedValue;
+        });
       } else {
+        setWrongAnswersBlue((prev) => {
+          const updatedValue = prev + 1;
+          return updatedValue;
+        });
       }
     });
   }, []);
@@ -61,7 +74,7 @@ function BoardPanelPage() {
 
       <div className="container justify-content-center" style={{ margin: 10 }}>
         <div className="row text-center p-3">
-          <div className="col text-center p-3 wrongAnswerRed"></div>
+          <WrongAnswerMark team="RED" amount={wrongAnswersRed} />
           <div className="col-8">
             <Question questionContent={question} />
 
@@ -86,7 +99,7 @@ function BoardPanelPage() {
             </div>
           </div>
 
-          <div className="col text-center p-3 wrongAnswerBlue"></div>
+          <WrongAnswerMark team="BLUE" amount={wrongAnswersBlue} />
         </div>
       </div>
     </div>
