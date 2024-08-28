@@ -34,13 +34,23 @@ function QuestionsPanelPage() {
   const updateQuestions = () => {
     hideOverlay();
     window.api.get_questions().then((response) => {
-      setQuestions(response);
+      if (response != undefined) {
+        // Proceed with accessing dataValues
+        setQuestions(response);
+      } else {
+        console.error("dataValues is undefined");
+        // Handle the error, e.g., set a default value or return early
+      }
     });
   };
 
   useEffect(() => {
     window.api.get_title().then((response) => {
-      setTitle(response.dataValues.title);
+      if (response.dataValues) {
+        setTitle(response.dataValues.title);
+      } else {
+        console.error("dataValues sis undefined");
+      }
     });
   });
 

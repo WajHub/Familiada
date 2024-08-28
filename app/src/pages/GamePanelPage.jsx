@@ -4,13 +4,14 @@ import BackToHomeButton from "../components/GamePanelPage/BackToHomeButton.jsx";
 import Question from "../components/GamePanelPage/Question.jsx";
 import Answer from "../components/GamePanelPage/Answer.jsx";
 import WrongAnswerButton from "../components/GamePanelPage/WrongAnswerButton.jsx";
+import NavQuestions from "../components/GamePanelPage/NavQuestions.jsx";
+import WinTeamButton from "../components/GamePanelPage/WinTeamButton.jsx";
 
 import startRoundResource from "../audio/StartRound.mp3";
 import correctAnswerResource from "../audio/CorrectAnswer.mp3";
 import wrongAnswerResource from "../audio/WrongAnswer.mp3";
 import showAnswerResource from "../audio/ShowAnswer.mp3";
-import NavQuestions from "../components/GamePanelPage/NavQuestions.jsx";
-import WinTeamButton from "../components/GamePanelPage/WinTeamButton.jsx";
+
 const startRoundSound = new Audio(startRoundResource);
 const correctAnswerSound = new Audio(correctAnswerResource);
 const wrongAnswerSound = new Audio(wrongAnswerResource);

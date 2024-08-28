@@ -100,3 +100,10 @@ body {
     border-radius: 6px;
     background-color: red;
 }
+
+.cancel-buttonOverlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1000; /* Ensure it is above other elements */
+}
