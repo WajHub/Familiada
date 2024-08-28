@@ -111,9 +111,8 @@ ipcMain.on("exposeAnswer", (event, id) => {
   Service.getAnswer(id).then((answer) => {
     boardWindow.webContents.send(
       "exposeAnswerOnBoard",
-      answer.content,
-      answer.id,
-      answer.points
+      answer.content + " " + answer.points,
+      answer.id
     );
   });
 });

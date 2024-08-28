@@ -26,18 +26,19 @@ function BoardPanelPage() {
       setAnswers([]);
     });
     window.api.onDisplayHiddenAnswer((index, idAnswer) => {
-      setAnswers((answers) => [...answers, { index, idAnswer }]);
+      setAnswers((answers) => [
+        ...answers,
+        { index, idAnswer, content: "", isVisible: false },
+      ]);
     });
-    window.api.onExposeAnswerOnBoard((answerContent, idAnswer, points) => {
-      console.log("TEST", answerContent, idAnswer, points);
-      console.log(answers);
-      answers.forEach((answer) => {
-        console.log("TESTa", answer);
-        if (answer.idAnswer == idAnswer) {
-          console.log(answerContent);
-          answer.isVisible = true;
-          answer.content = answerContent;
-        }
+    window.api.onExposeAnswerOnBoard((answerContent, idAnswer) => {
+      setAnswers((prevAnswers) => {
+        const updatedAnswers = prevAnswers.map((answer) =>
+          answer.idAnswer === idAnswer
+            ? { ...answer, content: answerContent, isVisible: true }
+            : answer
+        );
+        return updatedAnswers;
       });
     });
     window.api.onWrongAnswer((team) => {
@@ -51,10 +52,10 @@ function BoardPanelPage() {
     <div className="board">
       <div className="container teamStats">
         <TeamStats
-          redName={"RED"}
-          redPoints={0}
-          blueName={"BLUE"}
-          bluePoints={0}
+          redName={redTeamName}
+          redPoints={redTeamPoints}
+          blueName={blueTeamName}
+          bluePoints={blueTeamPoints}
         />
       </div>
 
@@ -69,8 +70,8 @@ function BoardPanelPage() {
                 {answers.map((answer) => {
                   return (
                     <Answer
-                      isVisible={false}
-                      content=""
+                      isVisible={answer.isVisible}
+                      content={answer.content}
                       id={answer.idAnswer}
                       index={answer.index}
                       key={answer.idAnswer}
