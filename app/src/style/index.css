@@ -107,3 +107,7 @@ body {
   left: 10px;
   z-index: 1000; /* Ensure it is above other elements */
 }
+.scrollable-content {
+  max-height: 75vh; /* Adjust as needed */
+  overflow-y: auto;
+}

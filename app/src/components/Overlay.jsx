@@ -7,7 +7,7 @@ function Overlay({ isVisible, hideOverlay, children }) {
   }
   return (
     <div className="overlay h-100 d-flex align-items-center justify-content-center">
-      {children}
+      <div className="scrollable-content">{children}</div>
       <button
         onClick={hideOverlay}
         className="btn btn-danger cancel-buttonOverlay"
