@@ -13,6 +13,9 @@ function Question({ question }) {
 
   useEffect(() => {
     updateAnswers();
+    window.api.onUpdateAnswers(() => {
+      updateAnswers();
+    });
   }, []);
 
   return (

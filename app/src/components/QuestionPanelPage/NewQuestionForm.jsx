@@ -55,7 +55,6 @@ function NewQuestionForm({ newForm, update, id }) {
     if (newForm) window.api.addNewQuestion(question, answers, asnwerPoints);
     else {
       window.api.updateQuestion(id, question, answers, asnwerPoints);
-      location.reload(); // TODO - change this
     }
     update();
   };

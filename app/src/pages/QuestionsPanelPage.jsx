@@ -35,11 +35,9 @@ function QuestionsPanelPage() {
     hideOverlay();
     window.api.get_questions().then((response) => {
       if (response != undefined) {
-        // Proceed with accessing dataValues
         setQuestions(response);
       } else {
         console.error("dataValues is undefined");
-        // Handle the error, e.g., set a default value or return early
       }
     });
   };

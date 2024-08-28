@@ -134,7 +134,10 @@ async function updateQuestion(
   answersContent,
   answersPoints
 ) {
-  console.log("update");
+  console.log("Updating question: ", id);
+  console.log("Question content: ", questionContent);
+  console.log("Answers content: ", answersContent);
+  console.log("Answers points: ", answersPoints);
   Question.findOne({
     where: {
       id: id,
@@ -149,6 +152,7 @@ async function updateQuestion(
     answersContent.forEach((answer, index) => {
       saveAnswer(answer, answersPoints[index], id);
     });
+    return;
   });
 }
 

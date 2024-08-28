@@ -83,7 +83,19 @@ ipcMain.handle("get_questions", async (event) => {
 ipcMain.handle("get_answers", Service.getAnswers);
 ipcMain.on("setGameData", gameLogic.setGameData);
 ipcMain.on("startGame", startGame);
-ipcMain.on("updateQuestion", Service.updateQuestion);
+ipcMain.on(
+  "updateQuestion",
+  (_event, id, questionContent, answersContent, answersPoints) => {
+    Service.updateQuestion(
+      _event,
+      id,
+      questionContent,
+      answersContent,
+      answersPoints
+    );
+    mainWindow.webContents.send("updateAnswers");
+  }
+);
 
 // IPC handles for GamePanel
 ipcMain.on("nextQuestion", (event) => {
