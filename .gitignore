@@ -112,3 +112,6 @@ Carthage/Build
 # Dependency directory
 Dependencies/
 
+
+.sqlite
+
