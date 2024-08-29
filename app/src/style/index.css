@@ -1,0 +1,113 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+      Arial, sans-serif;
+    margin: auto;
+    max-width: 38rem;
+    padding: 2rem;
+    background-color: #1b1b1b;
+  }
+  
+  .h1{
+    color: white;
+    padding-bottom: 20px;
+  }
+
+  #title{
+    color:white;
+    text-align: center;
+  }
+  
+  
+  .overlay {
+    position: fixed;
+    width: 100%; 
+    height: 100%; 
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.75); 
+    z-index: 2; 
+    color: white;
+  }
+  button {
+    margin:20px;
+  }
+  @font-face {
+    font-family: 'CustomFont';
+    src: url('./familiada.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+  .board {
+    font-weight: normal;
+    font-style: normal;
+    font-size: 3.2vw;
+    background-color: black;
+    color: yellow;
+    font-family: 'CustomFont', sans-serif;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+  }
+  
+  .mainContainer{
+    color: aliceblue;
+    background-color: #2e2e2e;
+    border-radius: 20px;
+  }
+
+#questionsContainer {
+    margin-bottom: 10px;
+   color: white;
+   text-align: center
+  }
+
+#redTeam{
+    font-size: 5vw;
+    color: red;
+    text-align: center;
+  }
+
+#blueTeam{
+    font-size: 5vw;
+    color: rgb(61, 61, 255);
+    text-align: center;
+  } 
+
+:disabled {
+    background-color: grey;
+}
+
+.wrongAnswer {
+    font-size: 2.5vw;
+}
+
+.teamStats{
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    color: white;
+}
+
+#blueTeamPoints{
+    border-radius: 6px;
+    background-color: blue;
+}
+
+#redTeamPoints{
+    border-radius: 6px;
+    background-color: red;
+}
+
+.cancel-buttonOverlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1000; 
+}
+.scrollable-content {
+  max-height: 75vh; 
+  overflow-y: auto;
+}
