@@ -12,8 +12,10 @@ function ChoseCollectionButton() {
           {
             event.preventDefault();
             const selected_set = document.querySelector(".form-select");
-            window.api.setCurrentCollection(selected_set.value);
-            navigate("/QuestionsPanel");
+            if (selected_set.value != undefined) {
+              window.api.setCurrentCollection(selected_set.value);
+              navigate("/QuestionsPanel");
+            }
           }
         }}
         className="btn btn-outline-success"

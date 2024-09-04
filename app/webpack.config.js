@@ -39,4 +39,8 @@ module.exports = {
     port: 9000,
     historyApiFallback: true,
   },
+  performance: {
+    maxAssetSize: 1000000,
+    maxEntrypointSize: 1000000,
+  },
 };

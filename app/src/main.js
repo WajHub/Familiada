@@ -36,8 +36,8 @@ const createWindow = () => {
   mainWindow.loadURL("http://localhost:9000");
 
   // Open the DevTools.
-  boardWindow.webContents.openDevTools();
-  mainWindow.webContents.openDevTools();
+  // boardWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   module.exports = { boardWindow };
 };
