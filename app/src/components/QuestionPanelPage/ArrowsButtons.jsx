@@ -1,5 +1,7 @@
 import React from "react";
 
+import "../../../node_modules/bootstrap-icons/font/bootstrap-icons.css";
+
 function ArrowsButtons() {
   const moveContent = (_event) => {
     var containerOfQuestions = document.querySelector("#questionsContainer");

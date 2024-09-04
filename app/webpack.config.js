@@ -40,7 +40,7 @@ module.exports = {
     historyApiFallback: true,
   },
   performance: {
-    maxAssetSize: 1000000,
-    maxEntrypointSize: 1000000,
+    maxAssetSize: 10000000,
+    maxEntrypointSize: 10000000,
   },
 };

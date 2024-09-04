@@ -115,3 +115,9 @@ Dependencies/
 
 .sqlite
 
+.vscode
+
+
+dist/
+
+build/

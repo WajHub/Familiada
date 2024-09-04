@@ -1,5 +1,5 @@
 import React from "react";
-import crossSvg from "../style/cross.png";
+import crossSvg from "../style/fonts/cross.png";
 
 function Overlay({ isVisible, hideOverlay, children }) {
   if (!isVisible) {

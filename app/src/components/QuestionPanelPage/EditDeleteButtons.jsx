@@ -1,4 +1,5 @@
 import React from "react";
+import "../../../node_modules/bootstrap-icons/font/bootstrap-icons.css";
 
 function EditDeleteButtons({ id, editQuestion }) {
   const handleDeleteQuestion = (event) => {
