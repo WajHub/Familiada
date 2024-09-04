@@ -81,7 +81,14 @@ ipcMain.handle("get_questions", async (event) => {
   return await Service.getQuestions(collectionId);
 });
 ipcMain.handle("get_answers", Service.getAnswers);
-ipcMain.on("setGameData", gameLogic.setGameData);
+ipcMain.handle("setGameData", async (event, team1, team2, questionsId) => {
+  console.log("EVENt", event);
+  console.log("team1", team1);
+  console.log("team2", team2);
+  console.log("questionsId", questionsId);
+  await gameLogic.setGameData(team1, team2, questionsId);
+  return true;
+});
 ipcMain.on("startGame", startGame);
 ipcMain.on(
   "updateQuestion",
@@ -178,20 +185,23 @@ var gameActive = false;
 
 async function startGame(event) {
   gameActive = true;
-  gameLogic.getQuestions().then(async (questions) => {
-    for (; indexOfQuestion < questions.length && gameActive; ) {
-      sendAnswersToRender(questions[indexOfQuestion].id);
-      sendQuestionsPointsTeamsToRender(
-        questions[indexOfQuestion],
-        questions.length
-      );
+  const questions = await gameLogic.getQuestions();
 
-      nextQuestion = false;
-      while (!nextQuestion) {
-        await delay(500);
-      }
+  for (; indexOfQuestion < questions.length && gameActive; ) {
+    console.log("index", indexOfQuestion);
+    console.log("length", questions.length);
+    console.log("questions", questions);
+    sendAnswersToRender(questions[indexOfQuestion].id);
+    sendQuestionsPointsTeamsToRender(
+      questions[indexOfQuestion],
+      questions.length
+    );
+
+    nextQuestion = false;
+    while (!nextQuestion) {
+      await delay(500);
     }
-  });
+  }
 }
 
 // Send Data to Render
@@ -202,6 +212,9 @@ function sendQuestionsPointsTeamsToRender(question, length) {
   boardWindow.webContents.send("displayPointsForQuestion", pointsForQuestion);
 
   mainWindow.send("displayPointsForQuestion", pointsForQuestion);
+  console.log("index", indexOfQuestion);
+  console.log("length", length);
+
   mainWindow.webContents.send(
     "displayQuestionMain",
     question.content,

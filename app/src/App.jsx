@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-const HomePage = React.lazy(() => import("./pages/HomePage.jsx"));
+import HomePage from "./pages/HomePage.jsx";
 import QuestionsPanelPage from "./pages/QuestionsPanelPage.jsx";
 import GamePanelPage from "./pages/GamePanelPage.jsx";
 import BoardPanelPage from "./pages/BoardPanelPage.jsx";

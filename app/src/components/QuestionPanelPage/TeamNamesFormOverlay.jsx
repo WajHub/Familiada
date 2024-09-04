@@ -14,13 +14,14 @@ function TeamNamesFormOverlay() {
     return questionsId;
   }
 
-  const startGame = () => {
+  const startGame = async () => {
     var team1 = document.getElementById("team1").value;
     var team2 = document.getElementById("team2").value;
-    getQuestionsId().then((questionsId) => {
-      window.api.setGameData(team1, team2, questionsId);
+    const questionsId = await getQuestionsId();
+    await window.api.setGameData(team1, team2, questionsId).then((response) => {
+      console.log(response);
+      navigate("/GamePanel");
     });
-    navigate("/GamePanel");
   };
 
   return (

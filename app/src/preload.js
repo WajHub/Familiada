@@ -45,6 +45,8 @@ const API = {
   get_answers: (id) => ipcRenderer.invoke("get_answers", id),
   get_title: () => ipcRenderer.invoke("getCollectionTitle"),
   deleteCollection: (id) => ipcRenderer.invoke("deleteCollection", id),
+  setGameData: (team1, team2, questionsId) =>
+    ipcRenderer.invoke("setGameData", team1, team2, questionsId),
 
   // Renderer ---> Main (sends)
   startGame: () => ipcRenderer.send("startGame"),
@@ -60,8 +62,6 @@ const API = {
   addNewQuestion: (question, answers, points) =>
     ipcRenderer.send("addNewQuestion", question, answers, points),
   setCurrentCollection: (id) => ipcRenderer.send("setCurrentCollection", id),
-  setGameData: (team1, team2, questionsId) =>
-    ipcRenderer.send("setGameData", team1, team2, questionsId),
   nextQuestion: () => ipcRenderer.send("nextQuestion"),
   prevQuestion: () => ipcRenderer.send("prevQuestion"),
   exposeAnswer: (id) => ipcRenderer.send("exposeAnswer", id),

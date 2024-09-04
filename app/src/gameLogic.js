@@ -14,15 +14,19 @@ async function setCurrentCollection(event, id) {
 }
 
 async function getQuestions() {
+  console.log("GETTING QUESTIONS");
+  console.log(questions);
   return questions;
 }
 
-async function setGameData(event, team1, team2, questionsId) {
+async function setGameData(team1, team2, questionsId) {
   teamRED = new Team(team1, 0);
   teamBLUE = new Team(team2, 0);
+  console.log("questionsId", questionsId);
   for (i = 0; i < questionsId.length; i++) {
     await Service.getQuestion(questionsId[i]).then((question) => {
       questions.push(question);
+      console.log("QUESTION ADDING", question);
     });
   }
 }

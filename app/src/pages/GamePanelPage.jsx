@@ -27,8 +27,10 @@ function GamePanelPage() {
   const [bluePoints, setBluePoints] = useState(0);
 
   useEffect(() => {
-    window.api.startGame();
     window.api.onDisplayQuestionMain((question, first, last) => {
+      console.log("display question main");
+      console.log("First", first);
+      console.log("Last", last);
       setQuestion(question);
       setAnswers([]);
       setButtons(first, last);
@@ -49,6 +51,8 @@ function GamePanelPage() {
       setRedPoints(redPoints);
       setBluePoints(bluePoints);
     });
+    setTimeout(2000);
+    window.api.startGame();
   }, []);
 
   const setButtons = (first, last) => {
