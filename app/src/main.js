@@ -1,9 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("node:path");
-const sequelize = require("../database/sequelize");
+const sequelize = require(path.join(__dirname, "../database/sequelize"));
 const Service = require("./service");
 const gameLogic = require("./gameLogic");
-const { Answer } = require("../models/answer");
 
 var mainWindow;
 var boardWindow;
