@@ -28,13 +28,20 @@ function Answer({
 
   return (
     <div className="row">
-      <div className="col">
+      <div className="col border border-light rounded mb-2">
+        <p
+          className="answer-1"
+          style={{ color: "white", fontSize: "1.5rem", fontWeight: "bold" }}
+        >
+          {answerContent}
+        </p>
+
         <button
           className="btn m-1 btn-secondary answer-1"
           id={answerId}
           onClick={handleIncorrectAnswer}
         >
-          {answerContent}
+          Show Answer
         </button>
         <button
           className="btn m-1 btn-outline-success answer-1"
