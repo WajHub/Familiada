@@ -26,6 +26,8 @@ function BoardPanelPage() {
     window.api.onDisplayQuestion((question) => {
       setQuestion(question);
       setAnswers([]);
+      setWrongAnswersRed(0);
+      setWrongAnswersBlue(0);
     });
     window.api.onDisplayHiddenAnswer((index, idAnswer) => {
       setAnswers((answers) => [

@@ -4,6 +4,8 @@ Familiada is a project created for Dj Dave who uses it in events as fan with gue
 
 Presenter can create Collections, and in it can create Questions with answers and points. Before starting he can set sequence of questions. You can edit and delete all of contents, which is saved in locally database.
 
+Once the game starts, one screen displays a window for the instructor to control the game (displaying answers, assigning points, etc.). The other window displays the scoreboard for the players.
+
 ## Installation
 
 1.  Install **NPM** **Node.js**
@@ -40,3 +42,12 @@ Presenter can create Collections, and in it can create Questions with answers an
 - Sequelize
 - SQLite
 - React
+- Bootstrap
+
+## Preview
+
+![Preview](Preview/Preview1.png)
+![Preview](Preview/Preview2.png)
+![Preview](Preview/Preview3.png)
+![Preview](Preview/Preview4.png)
+![Preview](Preview/Preview5.png)
