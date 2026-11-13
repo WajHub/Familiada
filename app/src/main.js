@@ -105,12 +105,10 @@ ipcMain.on(
 
 // IPC handles for GamePanel
 ipcMain.on("nextQuestion", (event) => {
-  nextQuestion = true;
-  indexOfQuestion++;
+  navigateQuestion(1);
 });
 ipcMain.on("prevQuestion", (event) => {
-  nextQuestion = true;
-  indexOfQuestion--;
+  navigateQuestion(-1);
 });
 ipcMain.on("guessAnswer", (event, id) => {
   Service.getAnswer(id).then((answer) => {
@@ -166,9 +164,10 @@ ipcMain.on("deleteQuestion", (_event, id) => {
   Service.deleteQuestion(id);
 });
 ipcMain.on("deleteCurrentCollection", () => {
-  gameActive = false;
-  nextQuestion = false;
-  indexOfQuestion = 0;
+  gameState.status = GAME_STATUS.IDLE;
+  gameState.questions = [];
+  gameState.index = 0;
+  gameState.renderVersion++;
   pointsForQuestion = 0;
   gameLogic.clearData();
 });
@@ -177,48 +176,102 @@ ipcMain.handle("getQuestion", (event, id) => {
 });
 
 // GAME
-var nextQuestion = false;
-var indexOfQuestion = 0;
+const GAME_STATUS = Object.freeze({
+  IDLE: "idle",
+  LOADING: "loading",
+  ACTIVE: "active",
+  COMPLETE: "complete",
+});
+
+const gameState = {
+  status: GAME_STATUS.IDLE,
+  questions: [],
+  index: 0,
+  renderVersion: 0,
+};
 var pointsForQuestion = 0;
-var gameActive = false;
 
 async function startGame(event) {
-  gameActive = true;
-  const questions = await gameLogic.getQuestions();
+  if (gameState.status !== GAME_STATUS.IDLE) {
+    return;
+  }
 
-  for (; indexOfQuestion < questions.length && gameActive; ) {
-    console.log("index", indexOfQuestion);
-    console.log("length", questions.length);
-    console.log("questions", questions);
-    sendAnswersToRender(questions[indexOfQuestion].id);
-    sendQuestionsPointsTeamsToRender(
-      questions[indexOfQuestion],
-      questions.length
-    );
+  gameState.status = GAME_STATUS.LOADING;
+  const sessionVersion = gameState.renderVersion;
 
-    nextQuestion = false;
-    while (!nextQuestion) {
-      await delay(500);
+  try {
+    const questions = await gameLogic.getQuestions();
+
+    if (sessionVersion !== gameState.renderVersion) {
+      return;
     }
+
+    gameState.questions = questions;
+    gameState.index = 0;
+
+    if (questions.length === 0) {
+      gameState.status = GAME_STATUS.COMPLETE;
+      return;
+    }
+
+    gameState.status = GAME_STATUS.ACTIVE;
+    renderCurrentQuestion();
+  } catch (error) {
+    gameState.status = GAME_STATUS.IDLE;
+    console.error("Unable to start game", error);
   }
 }
 
+function navigateQuestion(direction) {
+  if (
+    gameState.status !== GAME_STATUS.ACTIVE ||
+    gameState.questions.length === 0
+  ) {
+    return;
+  }
+
+  const lastIndex = gameState.questions.length - 1;
+  const nextIndex = Math.max(
+    0,
+    Math.min(lastIndex, gameState.index + direction)
+  );
+
+  if (nextIndex === gameState.index) {
+    return;
+  }
+
+  gameState.index = nextIndex;
+  renderCurrentQuestion();
+}
+
+function renderCurrentQuestion() {
+  const question = gameState.questions[gameState.index];
+  const renderVersion = ++gameState.renderVersion;
+
+  sendQuestionsPointsTeamsToRender(
+    question,
+    gameState.questions.length,
+    gameState.index
+  );
+  sendAnswersToRender(question.id, renderVersion);
+}
+
 // Send Data to Render
-function sendQuestionsPointsTeamsToRender(question, length) {
+function sendQuestionsPointsTeamsToRender(question, length, index) {
   pointsForQuestion = 0;
 
   boardWindow.webContents.send("displayQuestion", question.content);
   boardWindow.webContents.send("displayPointsForQuestion", pointsForQuestion);
 
   mainWindow.send("displayPointsForQuestion", pointsForQuestion);
-  console.log("index", indexOfQuestion);
+  console.log("index", index);
   console.log("length", length);
 
   mainWindow.webContents.send(
     "displayQuestionMain",
     question.content,
-    indexOfQuestion == 0,
-    indexOfQuestion == length - 1
+    index == 0,
+    index == length - 1
   );
   mainWindow.webContents.send(
     "statsTeam",
@@ -236,9 +289,15 @@ function sendQuestionsPointsTeamsToRender(question, length) {
   );
 }
 
-function sendAnswersToRender(QuestionId) {
+async function sendAnswersToRender(questionId, renderVersion) {
   var index = 0;
-  Service.getAnswers(null, QuestionId).then((answers) => {
+  try {
+    const answers = await Service.getAnswers(null, questionId);
+
+    if (renderVersion !== gameState.renderVersion) {
+      return;
+    }
+
     const sortedAnswers = answers.sort(sortAnswersByPoints);
 
     for (const answer of sortedAnswers) {
@@ -251,7 +310,9 @@ function sendAnswersToRender(QuestionId) {
       );
       boardWindow.webContents.send("displayHiddenAnswer", index, answer.id);
     }
-  });
+  } catch (error) {
+    console.error("Unable to load answers for question", error);
+  }
 }
 
 function sortAnswersByPoints(a, b) {
@@ -262,8 +323,4 @@ function sortAnswersByPoints(a, b) {
   } else {
     return 0;
   }
-}
-
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
