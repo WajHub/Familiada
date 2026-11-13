@@ -13,9 +13,11 @@ function Question({ question }) {
 
   useEffect(() => {
     updateAnswers();
-    window.api.onUpdateAnswers(() => {
+    const unsubscribeUpdateAnswers = window.api.onUpdateAnswers(() => {
       updateAnswers();
     });
+
+    return () => unsubscribeUpdateAnswers();
   }, []);
 
   return (

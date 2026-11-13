@@ -17,25 +17,36 @@ function BoardPanelPage() {
   const [wrongAnswersBlue, setWrongAnswersBlue] = useState(0);
 
   useEffect(() => {
-    window.api.onStatsTeam((redName, blueName, redPoints, bluePoints) => {
+    const unsubscribeStatsTeam = window.api.onStatsTeam((
+      redName,
+      blueName,
+      redPoints,
+      bluePoints
+    ) => {
       setRedTeamName(redName);
       setBlueTeamName(blueName);
       setRedTeamPoints(redPoints);
       setBlueTeamPoints(bluePoints);
     });
-    window.api.onDisplayQuestion((question) => {
+    const unsubscribeDisplayQuestion = window.api.onDisplayQuestion((question) => {
       setQuestion(question);
       setAnswers([]);
       setWrongAnswersRed(0);
       setWrongAnswersBlue(0);
     });
-    window.api.onDisplayHiddenAnswer((index, idAnswer) => {
+    const unsubscribeDisplayHiddenAnswer = window.api.onDisplayHiddenAnswer((
+      index,
+      idAnswer
+    ) => {
       setAnswers((answers) => [
         ...answers,
         { index, idAnswer, content: "", isVisible: false },
       ]);
     });
-    window.api.onExposeAnswerOnBoard((answerContent, idAnswer) => {
+    const unsubscribeExposeAnswer = window.api.onExposeAnswerOnBoard((
+      answerContent,
+      idAnswer
+    ) => {
       setAnswers((prevAnswers) => {
         const updatedAnswers = prevAnswers.map((answer) =>
           answer.idAnswer === idAnswer
@@ -45,10 +56,10 @@ function BoardPanelPage() {
         return updatedAnswers;
       });
     });
-    window.api.onDisplayPointsForQuestion((points) => {
+    const unsubscribeDisplayPoints = window.api.onDisplayPointsForQuestion((points) => {
       setQuestionPoints(points);
     });
-    window.api.onWrongAnswer((team) => {
+    const unsubscribeWrongAnswer = window.api.onWrongAnswer((team) => {
       if (team == "red") {
         setWrongAnswersRed((prev) => {
           const updatedValue = prev + 1;
@@ -61,6 +72,15 @@ function BoardPanelPage() {
         });
       }
     });
+
+    return () => {
+      unsubscribeStatsTeam();
+      unsubscribeDisplayQuestion();
+      unsubscribeDisplayHiddenAnswer();
+      unsubscribeExposeAnswer();
+      unsubscribeDisplayPoints();
+      unsubscribeWrongAnswer();
+    };
   }, []);
 
   return (

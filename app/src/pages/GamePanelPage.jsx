@@ -27,7 +27,11 @@ function GamePanelPage() {
   const [bluePoints, setBluePoints] = useState(0);
 
   useEffect(() => {
-    window.api.onDisplayQuestionMain((question, first, last) => {
+    const unsubscribeDisplayQuestion = window.api.onDisplayQuestionMain((
+      question,
+      first,
+      last
+    ) => {
       console.log("display question main");
       console.log("First", first);
       console.log("Last", last);
@@ -36,16 +40,25 @@ function GamePanelPage() {
       setButtons(first, last);
       // startRoundSound.play();
     });
-    window.api.onDisplayAnswer((answer, answerId, index) => {
+    const unsubscribeDisplayAnswer = window.api.onDisplayAnswer((
+      answer,
+      answerId,
+      index
+    ) => {
       setAnswers((prevAnswers) => [
         ...prevAnswers,
         { content: answer, id: answerId, index: index },
       ]);
     });
-    window.api.onDisplayPointsForQuestion((points) => {
+    const unsubscribeDisplayPoints = window.api.onDisplayPointsForQuestion((points) => {
       setPoints(points);
     });
-    window.api.onStatsTeam((redName, blueName, redPoints, bluePoints) => {
+    const unsubscribeStatsTeam = window.api.onStatsTeam((
+      redName,
+      blueName,
+      redPoints,
+      bluePoints
+    ) => {
       setRedName(redName);
       setBlueName(blueName);
       setRedPoints(redPoints);
@@ -53,6 +66,13 @@ function GamePanelPage() {
     });
     setTimeout(2000);
     window.api.startGame();
+
+    return () => {
+      unsubscribeDisplayQuestion();
+      unsubscribeDisplayAnswer();
+      unsubscribeDisplayPoints();
+      unsubscribeStatsTeam();
+    };
   }, []);
 
   const setButtons = (first, last) => {
