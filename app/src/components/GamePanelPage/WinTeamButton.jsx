@@ -1,16 +1,15 @@
 import React from "react";
 
-function WinTeamButton({ teamColor }) {
+function WinTeamButton({ teamColor, disabled, onWin }) {
   const handleWin = () => {
-    document.querySelector("#winRED").disabled = true;
-    document.querySelector("#winBLUE").disabled = true;
-    window.api.win(teamColor);
+    onWin(teamColor);
   };
   return (
     <div className="col">
       <div className="text-center">
         <button
           onClick={handleWin}
+          disabled={disabled}
           type="button"
           className={
             teamColor == "RED" ? "btn btn-danger win" : "btn btn-primary win"

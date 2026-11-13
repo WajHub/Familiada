@@ -3,7 +3,10 @@ import { useState } from "react";
 import Overlay from "../Overlay.jsx";
 import ConfirmButton from "../ConfirmButton.jsx";
 
-function DeleteCollectionButton({ onCollectionDelete }) {
+function DeleteCollectionButton({
+  selectedCollectionId,
+  onCollectionDelete,
+}) {
   const [isVisibleOverlay, setOverlay] = useState(false);
 
   const displayOverlay = () => {
@@ -15,8 +18,7 @@ function DeleteCollectionButton({ onCollectionDelete }) {
   };
 
   const deleteCollection = () => {
-    const selected_set = document.querySelector(".form-select");
-    window.api.deleteCollection(selected_set.value).then(() => {
+    window.api.deleteCollection(selectedCollectionId).then(() => {
       console.log("Collection deleted");
     });
     onCollectionDelete();

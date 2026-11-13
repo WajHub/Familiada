@@ -1,8 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-function CollectionsSelect({ myCollections }) {
+function CollectionsSelect({ myCollections, selectedCollectionId, onChange }) {
   return (
-    <select className="form-select">
+    <select
+      className="form-select"
+      value={selectedCollectionId}
+      onChange={(event) => onChange(event.target.value)}
+    >
       {myCollections.map((collection) => {
         return (
           <option

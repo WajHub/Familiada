@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 function Answer({
   answerContent,
@@ -8,26 +8,20 @@ function Answer({
 }) {
   const [opacity, setOpacity] = useState(1);
 
-  const disableButtons = (idButton) => {
-    const selector = "[id='" + idButton + "']";
-    const buttons = document.querySelectorAll(selector);
-    buttons.forEach((button) => {
-      button.disabled = true;
-    });
-  };
+  const [isAnswered, setIsAnswered] = useState(false);
 
-  const handleCorrectAnswer = (event) => {
+  const handleCorrectAnswer = () => {
     setOpacity(0.5);
-    disableButtons(event.target.id);
+    setIsAnswered(true);
     correctAnswerSound.play();
-    window.api.guessAnswer(event.target.id);
+    window.api.guessAnswer(answerId);
   };
 
-  const handleIncorrectAnswer = (event) => {
+  const handleIncorrectAnswer = () => {
     setOpacity(0.5);
-    disableButtons(event.target.id);
+    setIsAnswered(true);
     showAnswerSound.play();
-    window.api.exposeAnswer(event.target.id);
+    window.api.exposeAnswer(answerId);
   };
 
   return (
@@ -42,14 +36,14 @@ function Answer({
 
         <button
           className="btn m-1 btn-secondary answer-1"
-          id={answerId}
+          disabled={isAnswered}
           onClick={handleIncorrectAnswer}
         >
           Show Answer
         </button>
         <button
           className="btn m-1 btn-outline-success answer-1"
-          id={answerId}
+          disabled={isAnswered}
           onClick={handleCorrectAnswer}
         >
           Correct Answer

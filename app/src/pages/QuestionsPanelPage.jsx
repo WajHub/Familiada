@@ -49,7 +49,7 @@ function QuestionsPanelPage() {
       } else {
         console.error("dataValues sis undefined");
       }
-    });
+    }, []);
   });
 
   useEffect(() => {
@@ -62,13 +62,36 @@ function QuestionsPanelPage() {
     displayOverlay();
   };
 
+  const deleteQuestion = (id) => {
+    setQuestions((currentQuestions) =>
+      currentQuestions.filter((question) => question.dataValues.id !== id)
+    );
+  };
+
+  const moveQuestion = (index, direction) => {
+    const newIndex = index + direction;
+    setQuestions((currentQuestions) => {
+      if (newIndex < 0 || newIndex >= currentQuestions.length) {
+        return currentQuestions;
+      }
+
+      const reorderedQuestions = [...currentQuestions];
+      [reorderedQuestions[index], reorderedQuestions[newIndex]] = [
+        reorderedQuestions[newIndex],
+        reorderedQuestions[index],
+      ];
+      return reorderedQuestions;
+    });
+  };
+
   return (
     <div className="content">
       <h3 id="title">{title}</h3>
       <QuestionsContainer
         questions={questions}
-        update={updateQuestions}
         handleEditQuestion={editQuestion}
+        handleDeleteQuestion={deleteQuestion}
+        handleMoveQuestion={moveQuestion}
       />
       <div className="row m-0">
         <button
@@ -94,7 +117,7 @@ function QuestionsPanelPage() {
         isVisible={isVisibleOverlayNameOfTeam}
         hideOverlay={hideOverlayNameOfTeam}
       >
-        <TeamNamesFormOverlay />
+        <TeamNamesFormOverlay questions={questions} />
       </Overlay>
       <Nav displayOverlayNameOfTeams={displayOverlayNameOfTeams} />
     </div>

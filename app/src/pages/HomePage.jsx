@@ -8,10 +8,17 @@ import DeleteCollectionButton from "../components/HomePage/DeleteCollectionButto
 
 const HomePage = () => {
   const [myCollections, setCollections] = useState([]);
+  const [selectedCollectionId, setSelectedCollectionId] = useState("");
 
   const updateCollections = () => {
     window.api.getCollections().then((collections) => {
       setCollections(collections);
+      setSelectedCollectionId((currentId) => {
+        if (collections.some((collection) => String(collection.dataValues.id) === currentId)) {
+          return currentId;
+        }
+        return collections.length > 0 ? String(collections[0].dataValues.id) : "";
+      });
     });
   };
 
@@ -25,10 +32,19 @@ const HomePage = () => {
         <h1 className="h1">Familiada</h1>
       </div>
       <NewCollectionButton onCollectionAdd={updateCollections} />
-      {myCollections && <CollectionsSelect myCollections={myCollections} />}
+      {myCollections && (
+        <CollectionsSelect
+          myCollections={myCollections}
+          selectedCollectionId={selectedCollectionId}
+          onChange={setSelectedCollectionId}
+        />
+      )}
       <div className="d-flex justify-content-center">
-        <ChoseCollectionButton />
-        <DeleteCollectionButton onCollectionDelete={updateCollections} />
+        <ChoseCollectionButton selectedCollectionId={selectedCollectionId} />
+        <DeleteCollectionButton
+          selectedCollectionId={selectedCollectionId}
+          onCollectionDelete={updateCollections}
+        />
       </div>
     </div>
   );

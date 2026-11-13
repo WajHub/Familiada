@@ -1,15 +1,22 @@
 import React from "react";
 
 function NewCollectionForm({ closeOverlay, updateCollections }) {
+  const [title, setTitle] = React.useState("");
+
   const onFormSubmit = () => {
-    var title = document.querySelector("#title").value;
     window.api.saveCollection(title);
     updateCollections();
     closeOverlay();
   };
 
   return (
-    <form id="form_create_new_set">
+    <form
+      id="form_create_new_set"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onFormSubmit();
+      }}
+    >
       <label htmlFor="title">Collection name:</label>
       <input
         type="text"
@@ -17,15 +24,10 @@ function NewCollectionForm({ closeOverlay, updateCollections }) {
         name="title"
         required
         style={{ color: "black" }}
+        value={title}
+        onChange={(event) => setTitle(event.target.value)}
       />
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          onFormSubmit();
-          closeOverlay();
-        }}
-        className="btn btn-outline-success"
-      >
+      <button type="submit" className="btn btn-outline-success">
         Create
       </button>
     </form>

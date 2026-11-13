@@ -1,7 +1,7 @@
 import React from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-function ChoseCollectionButton() {
+function ChoseCollectionButton({ selectedCollectionId }) {
   const navigate = useNavigate();
   return (
     <div className="d-flex justify-content-center">
@@ -9,13 +9,9 @@ function ChoseCollectionButton() {
       <button
         type="submit"
         onClick={() => {
-          {
-            event.preventDefault();
-            const selected_set = document.querySelector(".form-select");
-            if (selected_set.value != undefined) {
-              window.api.setCurrentCollection(selected_set.value);
-              navigate("/QuestionsPanel");
-            }
+          if (selectedCollectionId !== "") {
+            window.api.setCurrentCollection(selectedCollectionId);
+            navigate("/QuestionsPanel");
           }
         }}
         className="btn btn-outline-success"

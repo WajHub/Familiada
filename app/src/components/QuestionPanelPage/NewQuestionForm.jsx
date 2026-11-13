@@ -8,53 +8,61 @@ function NewQuestionForm({ newForm, update, id }) {
   const [answers, setAnswers] = useState([]);
 
   const handleAddAnswer = () => {
-    const newAnswer = <NewAnswer key={answers.length} answer={""} points={0} />;
-    setAnswers((answers) => [...answers, newAnswer]);
+    setAnswers((currentAnswers) => [
+      ...currentAnswers,
+      { id: crypto.randomUUID(), content: "", points: 0 },
+    ]);
   };
 
   useEffect(() => {
+    let active = true;
+
     if (!newForm) {
       window.api.getQuestions(id).then((question) => {
+        if (!active) return;
         setQuestion(question.dataValues.content);
         window.api.get_answers(id).then((answersResponse) => {
-          answersResponse.forEach((answer, index) => {
-            const newAnswer = (
-              <NewAnswer
-                key={index}
-                answer={answer.dataValues.content}
-                points={answer.dataValues.points}
-              />
-            );
-            setAnswers((answers) => [...answers, newAnswer]);
-          });
+          if (!active) return;
+          setAnswers(
+            answersResponse.map((answer) => ({
+              id: answer.dataValues.id,
+              content: answer.dataValues.content,
+              points: answer.dataValues.points,
+            }))
+          );
         });
       });
     } else {
-      setAnswers((answers) => [
-        <NewAnswer key={answers.length} answer={""} points={0} />,
-      ]);
+      setAnswers([{ id: crypto.randomUUID(), content: "", points: 0 }]);
     }
-  }, []);
+
+    return () => {
+      active = false;
+    };
+  }, [id, newForm]);
+
+  const updateAnswer = (answerId, field, value) => {
+    setAnswers((currentAnswers) =>
+      currentAnswers.map((answer) =>
+        answer.id === answerId ? { ...answer, [field]: value } : answer
+      )
+    );
+  };
+
+  const deleteAnswer = (answerId) => {
+    setAnswers((currentAnswers) =>
+      currentAnswers.filter((answer) => answer.id !== answerId)
+    );
+  };
 
   const saveQuestion = (event) => {
     event.preventDefault();
-    const form = document.querySelector("#form_addNewQuestion");
-    var question = document.getElementById("questionInput").value;
-    var answersForm = document.getElementsByClassName("answerInput");
-    var pointsForm = document.getElementsByClassName("pointsInput");
+    const answerContents = answers.map((answer) => answer.content);
+    const answerPoints = answers.map((answer) => answer.points);
 
-    var answers = [];
-    var asnwerPoints = [];
-
-    for (let i = 0; i < answersForm.length; i++) {
-      var answerContent = answersForm[i].value;
-      var points = pointsForm[i].value;
-      answers.push(answerContent);
-      asnwerPoints.push(points);
-    }
-    if (newForm) window.api.addNewQuestion(question, answers, asnwerPoints);
+    if (newForm) window.api.addNewQuestion(question, answerContents, answerPoints);
     else {
-      window.api.updateQuestion(id, question, answers, asnwerPoints);
+      window.api.updateQuestion(id, question, answerContents, answerPoints);
     }
     update();
   };
@@ -62,9 +70,24 @@ function NewQuestionForm({ newForm, update, id }) {
   return (
     <div className="container d-flex align-items-center justify-content-center">
       <form id="form_addNewQuestion" onSubmit={saveQuestion}>
-        <NewQuestion questionsContent={question} />
+        <NewQuestion
+          questionsContent={question}
+          onChange={setQuestion}
+        />
 
-        <div className="answerContainer container">{answers}</div>
+        <div className="answerContainer container">
+          {answers.map((answer) => (
+            <NewAnswer
+              key={answer.id}
+              answer={answer.content}
+              points={answer.points}
+              onChange={(field, value) =>
+                updateAnswer(answer.id, field, value)
+              }
+              onDelete={() => deleteAnswer(answer.id)}
+            />
+          ))}
+        </div>
 
         <SubmitButtons displayNewAnswer={handleAddAnswer} />
       </form>

@@ -1,12 +1,10 @@
 import React from "react";
 import "../../../node_modules/bootstrap-icons/font/bootstrap-icons.css";
 
-function EditDeleteButtons({ id, editQuestion }) {
-  const handleDeleteQuestion = (event) => {
-    window.api.deleteQuestion(event.currentTarget.id);
-    const question = document.getElementById(event.currentTarget.id).parentNode
-      .parentNode;
-    question.parentNode.removeChild(question);
+function EditDeleteButtons({ id, editQuestion, deleteQuestion }) {
+  const handleDeleteQuestion = () => {
+    window.api.deleteQuestion(id);
+    deleteQuestion(id);
   };
 
   return (
@@ -15,17 +13,14 @@ function EditDeleteButtons({ id, editQuestion }) {
         <button
           onClick={handleDeleteQuestion}
           className="btn btn-danger btn-sm m-0 mb-2 "
-          id={id}
         >
           <i className="bi bi-trash"></i>
         </button>
         <button
           onClick={(event) => {
-            const id = event.currentTarget.id;
             editQuestion(id);
           }}
           className="btn btn-primary btn-sm m-0"
-          id={id}
         >
           <i className="bi bi-pencil"></i>
         </button>

@@ -1,9 +1,6 @@
 import React from "react";
 
-function NewAnswer({ answer, points }) {
-  const handleDeleteAnswer = (event) => {
-    event.currentTarget.parentNode.remove();
-  };
+function NewAnswer({ answer, points, onChange, onDelete }) {
   return (
     <div className="row p-3 answerRow">
       <label htmlFor="answer" className="col-2 mt-1 mb-1">
@@ -14,7 +11,8 @@ function NewAnswer({ answer, points }) {
         type="text"
         className="col-5 answer answerInput m-1"
         name="answer"
-        defaultValue={answer}
+        value={answer}
+        onChange={(event) => onChange("content", event.target.value)}
       />
       <input
         required=""
@@ -23,11 +21,12 @@ function NewAnswer({ answer, points }) {
         name="quantity"
         min="1"
         max="100"
-        defaultValue={points}
+        value={points}
+        onChange={(event) => onChange("points", event.target.value)}
       />
       <button
         className="btn btn-danger btn-sm col-2 m-1"
-        onClick={handleDeleteAnswer}
+        onClick={onDelete}
       >
         Delete
       </button>

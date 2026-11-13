@@ -1,6 +1,6 @@
 import React from "react";
 
-function NewQuestion({ questionsContent }) {
+function NewQuestion({ questionsContent, onChange }) {
   return (
     <div className="col-xs-4 pb-4">
       <label htmlFor="ex3">Question:</label>
@@ -8,7 +8,8 @@ function NewQuestion({ questionsContent }) {
         className="form-control questionInput"
         id="questionInput"
         type="text"
-        defaultValue={questionsContent}
+        value={questionsContent}
+        onChange={(event) => onChange(event.target.value)}
         required
       />
     </div>

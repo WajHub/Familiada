@@ -25,6 +25,9 @@ function GamePanelPage() {
   const [blueName, setBlueName] = useState("");
   const [redPoints, setRedPoints] = useState(0);
   const [bluePoints, setBluePoints] = useState(0);
+  const [isFirstQuestion, setIsFirstQuestion] = useState(true);
+  const [isLastQuestion, setIsLastQuestion] = useState(true);
+  const [isRoundWon, setIsRoundWon] = useState(false);
 
   useEffect(() => {
     const unsubscribeDisplayQuestion = window.api.onDisplayQuestionMain((
@@ -37,7 +40,9 @@ function GamePanelPage() {
       console.log("Last", last);
       setQuestion(question);
       setAnswers([]);
-      setButtons(first, last);
+      setIsFirstQuestion(first);
+      setIsLastQuestion(last);
+      setIsRoundWon(false);
       // startRoundSound.play();
     });
     const unsubscribeDisplayAnswer = window.api.onDisplayAnswer((
@@ -64,7 +69,6 @@ function GamePanelPage() {
       setRedPoints(redPoints);
       setBluePoints(bluePoints);
     });
-    setTimeout(2000);
     window.api.startGame();
 
     return () => {
@@ -75,19 +79,9 @@ function GamePanelPage() {
     };
   }, []);
 
-  const setButtons = (first, last) => {
-    document.querySelector("#winRED").disabled = false;
-    document.querySelector("#winBLUE").disabled = false;
-    if (first) {
-      document.querySelector("#Previous").classList.add("disabled");
-    } else {
-      document.querySelector("#Previous").classList.remove("disabled");
-    }
-    if (last) {
-      document.querySelector("#Next").classList.add("disabled");
-    } else {
-      document.querySelector("#Next").classList.remove("disabled");
-    }
+  const handleWin = (teamColor) => {
+    setIsRoundWon(true);
+    window.api.win(teamColor);
   };
 
   return (
@@ -124,8 +118,16 @@ function GamePanelPage() {
       </div>
       <div className="container p-4">
         <div className="row">
-          <WinTeamButton teamColor={"RED"} />
-          <WinTeamButton teamColor={"BLUE"} />
+          <WinTeamButton
+            teamColor={"RED"}
+            disabled={isRoundWon}
+            onWin={handleWin}
+          />
+          <WinTeamButton
+            teamColor={"BLUE"}
+            disabled={isRoundWon}
+            onWin={handleWin}
+          />
         </div>
       </div>
       <div className="container pb-4">
@@ -140,8 +142,8 @@ function GamePanelPage() {
       </div>
       <div className="container">
         <div className="row">
-          <NavQuestions type="Previous" />
-          <NavQuestions type="Next" />
+          <NavQuestions type="Previous" disabled={isFirstQuestion} />
+          <NavQuestions type="Next" disabled={isLastQuestion} />
         </div>
       </div>
       <BackToHomeButton />
