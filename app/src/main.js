@@ -4,15 +4,28 @@ const sequelize = require(path.join(__dirname, "../database/sequelize"));
 const Service = require("./service");
 const gameLogic = require("./gameLogic");
 
-var mainWindow;
-var boardWindow;
+let mainWindow = null;
+let boardWindow = null;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
+function safeSend(win, channel, ...args) {
+  if (
+    win &&
+    !win.isDestroyed() &&
+    win.webContents &&
+    !win.webContents.isDestroyed()
+  ) {
+    win.webContents.send(channel, ...args);
+  }
+}
+
 const createWindow = () => {
+  const isDev = !app.isPackaged;
+
   boardWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -21,9 +34,6 @@ const createWindow = () => {
     },
   });
 
-  boardWindow.loadURL("http://localhost:9000/BoardPanel");
-
-  // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -32,23 +42,29 @@ const createWindow = () => {
     },
   });
 
-  mainWindow.loadURL("http://localhost:9000");
+  if (isDev) {
+    boardWindow.loadURL("http://localhost:9000/#/BoardPanel");
+    mainWindow.loadURL("http://localhost:9000/#/");
+  } else {
+    const indexPath = path.join(__dirname, "../dist/index.html");
+    boardWindow.loadFile(indexPath, { hash: "/BoardPanel" });
+    mainWindow.loadFile(indexPath, { hash: "/" });
+  }
 
-  // Open the DevTools.
-  // boardWindow.webContents.openDevTools();
-  // mainWindow.webContents.openDevTools();
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+  });
 
-  module.exports = { boardWindow };
+  boardWindow.on("closed", () => {
+    boardWindow = null;
+  });
 };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow();
 
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
@@ -56,9 +72,7 @@ app.whenReady().then(() => {
   });
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// Quit when all windows are closed, except on macOS.
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     sequelize.close();
@@ -66,102 +80,114 @@ app.on("window-all-closed", () => {
   }
 });
 
-// IPC handles for index
+// IPC handles for Collections
 ipcMain.handle("getCollections", Service.getCollections);
-ipcMain.on("saveCollection", Service.saveCollection);
-ipcMain.handle("deleteCollection", Service.deleteCollection);
-ipcMain.on("setCurrentCollection", gameLogic.setCurrentCollection);
+ipcMain.handle("saveCollection", async (_event, title) => {
+  return await Service.saveCollection(title);
+});
+ipcMain.handle("deleteCollection", async (_event, id) => {
+  return await Service.deleteCollection(id);
+});
+ipcMain.handle("setCurrentCollection", async (_event, id) => {
+  return await gameLogic.setCurrentCollection(id);
+});
 
 // IPC handles for Questions
-ipcMain.on("addNewQuestion", gameLogic.addNewQuestion);
+ipcMain.handle("addNewQuestion", async (_event, question, answers, points) => {
+  return await gameLogic.addNewQuestion(question, answers, points);
+});
 ipcMain.handle("getCollectionTitle", gameLogic.getCollectionTitle);
-ipcMain.handle("get_questions", async (event) => {
+ipcMain.handle("get_questions", async () => {
   const collectionId = gameLogic.getCollectionId();
   return await Service.getQuestions(collectionId);
 });
-ipcMain.handle("get_answers", Service.getAnswers);
-ipcMain.handle("setGameData", async (event, team1, team2, questionsId) => {
-  console.log("EVENt", event);
-  console.log("team1", team1);
-  console.log("team2", team2);
-  console.log("questionsId", questionsId);
+ipcMain.handle("get_answers", async (_event, id) => {
+  return await Service.getAnswers(id);
+});
+ipcMain.handle("setGameData", async (_event, team1, team2, questionsId) => {
   await gameLogic.setGameData(team1, team2, questionsId);
   return true;
 });
-ipcMain.on("startGame", startGame);
-ipcMain.on(
+ipcMain.handle("deleteQuestion", async (_event, id) => {
+  return await Service.deleteQuestion(id);
+});
+ipcMain.handle(
   "updateQuestion",
-  (_event, id, questionContent, answersContent, answersPoints) => {
-    Service.updateQuestion(
-      _event,
+  async (_event, id, questionContent, answersContent, answersPoints) => {
+    await Service.updateQuestion(
       id,
       questionContent,
       answersContent,
       answersPoints
     );
-    mainWindow.webContents.send("updateAnswers");
+    safeSend(mainWindow, "updateAnswers");
+    return true;
   }
 );
+ipcMain.handle("getQuestion", async (_event, id) => {
+  return await Service.getQuestion(id);
+});
 
 // IPC handles for GamePanel
-ipcMain.on("nextQuestion", (event) => {
+ipcMain.on("startGame", startGame);
+ipcMain.on("nextQuestion", () => {
   navigateQuestion(1);
 });
-ipcMain.on("prevQuestion", (event) => {
+ipcMain.on("prevQuestion", () => {
   navigateQuestion(-1);
 });
-ipcMain.on("guessAnswer", (event, id) => {
-  Service.getAnswer(id).then((answer) => {
-    boardWindow.webContents.send(
-      "exposeAnswerOnBoard",
-      answer.content + " " + answer.points,
-      answer.id,
-      answer.points
-    );
-    pointsForQuestion += answer.points;
-    boardWindow.webContents.send("displayPointsForQuestion", pointsForQuestion);
-    mainWindow.send("displayPointsForQuestion", pointsForQuestion);
-  });
-});
-ipcMain.on("exposeAnswer", (event, id) => {
-  Service.getAnswer(id).then((answer) => {
-    boardWindow.webContents.send(
-      "exposeAnswerOnBoard",
-      answer.content + " " + answer.points,
-      answer.id
-    );
-  });
-});
-ipcMain.on("wrongAnswer", (event, team) => {
-  if (team.teamColor == "RED") {
-    boardWindow.webContents.send("wrongAnswer", "red");
-  } else {
-    boardWindow.webContents.send("wrongAnswer", "blue");
+ipcMain.on("guessAnswer", async (_event, id) => {
+  const answer = await Service.getAnswer(id);
+  if (answer) {
+    const content = answer.dataValues ? answer.dataValues.content : answer.content;
+    const points = answer.dataValues ? answer.dataValues.points : answer.points;
+    const answerId = answer.dataValues ? answer.dataValues.id : answer.id;
+
+    safeSend(boardWindow, "exposeAnswerOnBoard", content + " " + points, answerId, points);
+    pointsForQuestion += points;
+    safeSend(boardWindow, "displayPointsForQuestion", pointsForQuestion);
+    safeSend(mainWindow, "displayPointsForQuestion", pointsForQuestion);
   }
 });
-ipcMain.on("win", (event, team) => {
-  if (team == "RED") {
+ipcMain.on("exposeAnswer", async (_event, id) => {
+  const answer = await Service.getAnswer(id);
+  if (answer) {
+    const content = answer.dataValues ? answer.dataValues.content : answer.content;
+    const points = answer.dataValues ? answer.dataValues.points : answer.points;
+    const answerId = answer.dataValues ? answer.dataValues.id : answer.id;
+
+    safeSend(boardWindow, "exposeAnswerOnBoard", content + " " + points, answerId);
+  }
+});
+ipcMain.on("wrongAnswer", (_event, team) => {
+  if (team && team.teamColor === "RED") {
+    safeSend(boardWindow, "wrongAnswer", "red");
+  } else {
+    safeSend(boardWindow, "wrongAnswer", "blue");
+  }
+});
+ipcMain.on("win", (_event, team) => {
+  if (team === "RED") {
     gameLogic.addPointsToRed(pointsForQuestion);
   } else {
     gameLogic.addPointsToBlue(pointsForQuestion);
   }
-  mainWindow.webContents.send(
+  safeSend(
+    mainWindow,
     "statsTeam",
     gameLogic.getTeamRed(),
     gameLogic.getTeamBlue(),
     gameLogic.getRedPoints(),
     gameLogic.getBluePoints()
   );
-  boardWindow.webContents.send(
+  safeSend(
+    boardWindow,
     "statsTeam",
     gameLogic.getTeamRed(),
     gameLogic.getTeamBlue(),
     gameLogic.getRedPoints(),
     gameLogic.getBluePoints()
   );
-});
-ipcMain.on("deleteQuestion", (_event, id) => {
-  Service.deleteQuestion(id);
 });
 ipcMain.on("deleteCurrentCollection", () => {
   gameState.status = GAME_STATUS.IDLE;
@@ -171,11 +197,8 @@ ipcMain.on("deleteCurrentCollection", () => {
   pointsForQuestion = 0;
   gameLogic.clearData();
 });
-ipcMain.handle("getQuestion", (event, id) => {
-  return Service.getQuestion(id);
-});
 
-// GAME
+// GAME STATE
 const GAME_STATUS = Object.freeze({
   IDLE: "idle",
   LOADING: "loading",
@@ -189,9 +212,9 @@ const gameState = {
   index: 0,
   renderVersion: 0,
 };
-var pointsForQuestion = 0;
+let pointsForQuestion = 0;
 
-async function startGame(event) {
+async function startGame() {
   if (gameState.status !== GAME_STATUS.IDLE) {
     return;
   }
@@ -260,27 +283,28 @@ function renderCurrentQuestion() {
 function sendQuestionsPointsTeamsToRender(question, length, index) {
   pointsForQuestion = 0;
 
-  boardWindow.webContents.send("displayQuestion", question.content);
-  boardWindow.webContents.send("displayPointsForQuestion", pointsForQuestion);
+  safeSend(boardWindow, "displayQuestion", question.content);
+  safeSend(boardWindow, "displayPointsForQuestion", pointsForQuestion);
 
-  mainWindow.send("displayPointsForQuestion", pointsForQuestion);
-  console.log("index", index);
-  console.log("length", length);
+  safeSend(mainWindow, "displayPointsForQuestion", pointsForQuestion);
 
-  mainWindow.webContents.send(
+  safeSend(
+    mainWindow,
     "displayQuestionMain",
     question.content,
-    index == 0,
-    index == length - 1
+    index === 0,
+    index === length - 1
   );
-  mainWindow.webContents.send(
+  safeSend(
+    mainWindow,
     "statsTeam",
     gameLogic.getTeamRed(),
     gameLogic.getTeamBlue(),
     gameLogic.getRedPoints(),
     gameLogic.getBluePoints()
   );
-  boardWindow.webContents.send(
+  safeSend(
+    boardWindow,
     "statsTeam",
     gameLogic.getTeamRed(),
     gameLogic.getTeamBlue(),
@@ -290,9 +314,9 @@ function sendQuestionsPointsTeamsToRender(question, length, index) {
 }
 
 async function sendAnswersToRender(questionId, renderVersion) {
-  var index = 0;
+  let index = 0;
   try {
-    const answers = await Service.getAnswers(null, questionId);
+    const answers = await Service.getAnswers(questionId);
 
     if (renderVersion !== gameState.renderVersion) {
       return;
@@ -302,13 +326,11 @@ async function sendAnswersToRender(questionId, renderVersion) {
 
     for (const answer of sortedAnswers) {
       index++;
-      mainWindow.webContents.send(
-        "displayAnswer",
-        answer.content,
-        answer.id,
-        index
-      );
-      boardWindow.webContents.send("displayHiddenAnswer", index, answer.id);
+      const content = answer.dataValues ? answer.dataValues.content : answer.content;
+      const id = answer.dataValues ? answer.dataValues.id : answer.id;
+
+      safeSend(mainWindow, "displayAnswer", content, id, index);
+      safeSend(boardWindow, "displayHiddenAnswer", index, id);
     }
   } catch (error) {
     console.error("Unable to load answers for question", error);
@@ -316,11 +338,7 @@ async function sendAnswersToRender(questionId, renderVersion) {
 }
 
 function sortAnswersByPoints(a, b) {
-  if (a.dataValues.points > b.dataValues.points) {
-    return -1;
-  } else if (a.dataValues.points < b.dataValues.points) {
-    return 1;
-  } else {
-    return 0;
-  }
+  const pointsA = a.dataValues ? a.dataValues.points : a.points;
+  const pointsB = b.dataValues ? b.dataValues.points : b.points;
+  return pointsB - pointsA;
 }

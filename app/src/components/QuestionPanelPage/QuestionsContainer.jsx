@@ -28,7 +28,6 @@ function QuestionsContainer({
             />
             <Question question={question} />
             <EditDeleteButtons
-              update={update}
               id={questionId}
               editQuestion={handleEditQuestion}
               deleteQuestion={handleDeleteQuestion}

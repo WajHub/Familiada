@@ -11,8 +11,8 @@ const API = {
     return () => ipcRenderer.removeListener("displayQuestion", subscription);
   },
   onDisplayQuestionMain: (callback) => {
-    const subscription = (_event, content, last, first) =>
-      callback(content, last, first);
+    const subscription = (_event, content, first, last) =>
+      callback(content, first, last);
     ipcRenderer.on("displayQuestionMain", subscription);
     return () =>
       ipcRenderer.removeListener("displayQuestionMain", subscription);
@@ -63,18 +63,15 @@ const API = {
   // Renderer <---> Main (invokes)
   getCollections: () => ipcRenderer.invoke("getCollections"),
   get_questions: () => ipcRenderer.invoke("get_questions"),
-  getQuestions: (_event, id) => ipcRenderer.invoke("getQuestion", _event, id),
+  getQuestions: (id) => ipcRenderer.invoke("getQuestion", id),
   get_answers: (id) => ipcRenderer.invoke("get_answers", id),
   get_title: () => ipcRenderer.invoke("getCollectionTitle"),
   deleteCollection: (id) => ipcRenderer.invoke("deleteCollection", id),
   setGameData: (team1, team2, questionsId) =>
     ipcRenderer.invoke("setGameData", team1, team2, questionsId),
-
-  // Renderer ---> Main (sends)
-  startGame: () => ipcRenderer.send("startGame"),
-  saveCollection: (title) => ipcRenderer.send("saveCollection", title),
+  saveCollection: (title) => ipcRenderer.invoke("saveCollection", title),
   updateQuestion: (id, questionContent, answersContent, answersPoints) =>
-    ipcRenderer.send(
+    ipcRenderer.invoke(
       "updateQuestion",
       id,
       questionContent,
@@ -82,8 +79,12 @@ const API = {
       answersPoints
     ),
   addNewQuestion: (question, answers, points) =>
-    ipcRenderer.send("addNewQuestion", question, answers, points),
-  setCurrentCollection: (id) => ipcRenderer.send("setCurrentCollection", id),
+    ipcRenderer.invoke("addNewQuestion", question, answers, points),
+  setCurrentCollection: (id) => ipcRenderer.invoke("setCurrentCollection", id),
+  deleteQuestion: (id) => ipcRenderer.invoke("deleteQuestion", id),
+
+  // Renderer ---> Main (sends)
+  startGame: () => ipcRenderer.send("startGame"),
   nextQuestion: () => ipcRenderer.send("nextQuestion"),
   prevQuestion: () => ipcRenderer.send("prevQuestion"),
   exposeAnswer: (id) => ipcRenderer.send("exposeAnswer", id),
@@ -91,8 +92,6 @@ const API = {
   wrongAnswer: (team) => ipcRenderer.send("wrongAnswer", team),
   win: (team) => ipcRenderer.send("win", team),
   deleteCurrentCollection: () => ipcRenderer.send("deleteCurrentCollection"),
-  deleteQuestion: (_event, id) =>
-    ipcRenderer.send("deleteQuestion", _event, id),
 };
 
 contextBridge.exposeInMainWorld("api", API);

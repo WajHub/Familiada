@@ -1,5 +1,3 @@
-const collection = require("./collection");
-
 module.exports = (sequelize, DataTypes) => {
     const Question = sequelize.define('Question', {
       content: {
@@ -16,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     });
     Question.associate = function(models) {
-      Question.belongsTo(collection);
+      Question.belongsTo(models.Collection, { foreignKey: 'collectionId' });
       Question.hasMany(models.Answer, { foreignKey: 'questionId' });
     };
     return Question;

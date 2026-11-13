@@ -44,13 +44,15 @@ function QuestionsPanelPage() {
 
   useEffect(() => {
     window.api.get_title().then((response) => {
-      if (response.dataValues) {
+      if (response && response.dataValues) {
         setTitle(response.dataValues.title);
+      } else if (response && response.title) {
+        setTitle(response.title);
       } else {
-        console.error("dataValues sis undefined");
+        console.error("Collection title is undefined");
       }
-    }, []);
-  });
+    });
+  }, []);
 
   useEffect(() => {
     updateQuestions();

@@ -17,10 +17,13 @@ function DeleteCollectionButton({
     setOverlay(false);
   };
 
-  const deleteCollection = () => {
-    window.api.deleteCollection(selectedCollectionId).then(() => {
+  const deleteCollection = async () => {
+    try {
+      await window.api.deleteCollection(selectedCollectionId);
       console.log("Collection deleted");
-    });
+    } catch (err) {
+      console.error("Error deleting collection:", err);
+    }
     onCollectionDelete();
     hideOverlay();
   };

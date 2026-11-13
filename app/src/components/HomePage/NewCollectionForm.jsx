@@ -3,8 +3,8 @@ import React from "react";
 function NewCollectionForm({ closeOverlay, updateCollections }) {
   const [title, setTitle] = React.useState("");
 
-  const onFormSubmit = () => {
-    window.api.saveCollection(title);
+  const onFormSubmit = async () => {
+    await window.api.saveCollection(title);
     updateCollections();
     closeOverlay();
   };

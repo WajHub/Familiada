@@ -55,14 +55,15 @@ function NewQuestionForm({ newForm, update, id }) {
     );
   };
 
-  const saveQuestion = (event) => {
+  const saveQuestion = async (event) => {
     event.preventDefault();
     const answerContents = answers.map((answer) => answer.content);
     const answerPoints = answers.map((answer) => answer.points);
 
-    if (newForm) window.api.addNewQuestion(question, answerContents, answerPoints);
-    else {
-      window.api.updateQuestion(id, question, answerContents, answerPoints);
+    if (newForm) {
+      await window.api.addNewQuestion(question, answerContents, answerPoints);
+    } else {
+      await window.api.updateQuestion(id, question, answerContents, answerPoints);
     }
     update();
   };

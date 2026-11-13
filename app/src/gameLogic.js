@@ -1,41 +1,60 @@
 // gameLogic.js
 const Service = require("./service");
-const Team = require("../models/team");
+const Team = require("./entities/team");
 
-var collection;
-var questions = [];
-var teamRED;
-var teamBLUE;
+let collection = null;
+let questions = [];
+let teamRED = new Team("RED", 0);
+let teamBLUE = new Team("BLUE", 0);
 
-async function setCurrentCollection(event, id) {
-  Service.getCollection(id).then((set) => {
-    collection = set;
-  });
+async function setCurrentCollection(eventOrId, maybeId) {
+  const id = maybeId !== undefined ? maybeId : eventOrId;
+  collection = await Service.getCollection(id);
+  return collection;
 }
 
 async function getQuestions() {
-  console.log("GETTING QUESTIONS");
-  console.log(questions);
   return questions;
 }
 
 async function setGameData(team1, team2, questionsId) {
-  teamRED = new Team(team1, 0);
-  teamBLUE = new Team(team2, 0);
-  console.log("questionsId", questionsId);
-  for (i = 0; i < questionsId.length; i++) {
-    await Service.getQuestion(questionsId[i]).then((question) => {
-      questions.push(question);
-      console.log("QUESTION ADDING", question);
-    });
+  teamRED = new Team(team1 || "RED", 0);
+  teamBLUE = new Team(team2 || "BLUE", 0);
+  questions = [];
+  if (Array.isArray(questionsId)) {
+    for (let i = 0; i < questionsId.length; i++) {
+      const question = await Service.getQuestion(questionsId[i]);
+      if (question) {
+        questions.push(question);
+      }
+    }
   }
 }
 
-async function addNewQuestion(event, question, answers, points) {
-  const questionid = await Service.saveQuestion(question, collection.id);
-  for (i = 0; i < answers.length; i++) {
-    Service.saveAnswer(answers[i], points[i], questionid);
+async function addNewQuestion(arg1, arg2, arg3, arg4) {
+  // Support both (event, question, answers, points) and (question, answers, points)
+  let question, answers, points;
+  if (arg4 !== undefined) {
+    question = arg2;
+    answers = arg3;
+    points = arg4;
+  } else {
+    question = arg1;
+    answers = arg2;
+    points = arg3;
   }
+
+  if (!collection || !collection.id) {
+    throw new Error("No active collection selected");
+  }
+
+  const questionId = await Service.saveQuestion(question, collection.id);
+  if (Array.isArray(answers) && Array.isArray(points)) {
+    for (let i = 0; i < answers.length; i++) {
+      await Service.saveAnswer(answers[i], points[i], questionId);
+    }
+  }
+  return questionId;
 }
 
 function clearData() {
@@ -44,19 +63,19 @@ function clearData() {
 
 module.exports = {
   getQuestions,
-  getCollectionTitle: () => {
-    return collection;
-  },
-  getCollectionId: () => {
-    return collection.id;
-  },
-  getTeamRed: () => teamRED.name,
-  getTeamBlue: () => teamBLUE.name,
-  getRedPoints: () => teamRED.points,
-  getBluePoints: () => teamBLUE.points,
+  getCollectionTitle: () => collection,
+  getCollectionId: () => (collection ? collection.id : null),
+  getTeamRed: () => (teamRED ? teamRED.name : "RED"),
+  getTeamBlue: () => (teamBLUE ? teamBLUE.name : "BLUE"),
+  getRedPoints: () => (teamRED ? teamRED.points : 0),
+  getBluePoints: () => (teamBLUE ? teamBLUE.points : 0),
   addNewQuestion,
-  addPointsToRed: (points) => teamRED.addPoints(points),
-  addPointsToBlue: (points) => teamBLUE.addPoints(points),
+  addPointsToRed: (points) => {
+    if (teamRED) teamRED.addPoints(points);
+  },
+  addPointsToBlue: (points) => {
+    if (teamBLUE) teamBLUE.addPoints(points);
+  },
   setCurrentCollection,
   setGameData,
   clearData,

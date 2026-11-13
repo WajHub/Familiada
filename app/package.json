@@ -5,12 +5,14 @@
   "description": "My Electron application description",
   "main": "src/main.js",
   "scripts": {
+    "build": "webpack --mode production",
     "start": "webpack serve --mode development",
     "test": "webpack serve --mode development",
     "serve": "webpack serve --mode production",
     "package": "electron-forge package",
-    "prepackage": "npx sequelize db:migrate",
+    "prepackage": "npm run build && npx sequelize db:migrate",
     "make": "electron-forge make",
+    "premake": "npm run build && npx sequelize db:migrate",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
     "electron": "electron ."
@@ -53,22 +55,6 @@
     "sequelize": "^6.37.3",
     "sqlite3": "^5.1.7"
   },
-  "build": {
-    "appId": "com.example.myapp",
-    "files": [
-      "build/**/*",
-      "src/**/*"
-    ],
-    "win": {
-      "target": "nsis"
-    },
-    "mac": {
-      "target": "dmg"
-    },
-    "linux": {
-      "target": "AppImage"
-    }
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -82,28 +68,6 @@
     ]
   },
   "config": {
-    "forge": {
-      "packagerConfig": {},
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ]
-    }
+    "forge": "./config/forge.config.js"
   }
 }

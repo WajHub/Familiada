@@ -1,16 +1,12 @@
-const sequelize = require("../database/sequelize");
-const { DataTypes } = require("sequelize");
-const Answer = require("../models/answer")(sequelize, DataTypes);
-const Question = require("../models/question")(sequelize, DataTypes);
-const Collection = require("../models/collection")(sequelize, DataTypes);
-// const gameLogic = require('./gameLogic');
+const { Answer, Question, Collection, sequelize } = require("../models");
 
 // Getters
 async function getCollections() {
   return await Collection.findAll();
 }
 
-async function getCollection(id) {
+async function getCollection(eventOrId, maybeId) {
+  const id = maybeId !== undefined ? maybeId : eventOrId;
   return await Collection.findOne({
     where: {
       id: id,
@@ -26,7 +22,8 @@ async function getAnswer(id) {
   });
 }
 
-async function getAnswers(event, idQuestion) {
+async function getAnswers(eventOrId, maybeId) {
+  const idQuestion = maybeId !== undefined ? maybeId : eventOrId;
   return await Answer.findAll({
     where: {
       questionId: idQuestion,
@@ -34,7 +31,8 @@ async function getAnswers(event, idQuestion) {
   });
 }
 
-async function getQuestions(idCollection) {
+async function getQuestions(eventOrId, maybeId) {
+  const idCollection = maybeId !== undefined ? maybeId : eventOrId;
   return await Question.findAll({
     where: {
       collectionId: idCollection,
@@ -42,7 +40,8 @@ async function getQuestions(idCollection) {
   });
 }
 
-async function getQuestion(id) {
+async function getQuestion(eventOrId, maybeId) {
+  const id = maybeId !== undefined ? maybeId : eventOrId;
   return await Question.findOne({
     where: {
       id: id,
@@ -51,12 +50,9 @@ async function getQuestion(id) {
 }
 
 // Insertion
-async function saveCollection(event, title) {
-  Collection.create({ title: title })
-    .then((set) => {
-      console.log("Set created: ", set);
-    })
-    .catch((error) => console.error("Error creating set: ", error));
+async function saveCollection(eventOrTitle, maybeTitle) {
+  const title = maybeTitle !== undefined ? maybeTitle : eventOrTitle;
+  return await Collection.create({ title: title });
 }
 
 async function saveQuestion(question, collectionId) {
@@ -68,57 +64,59 @@ async function saveQuestion(question, collectionId) {
 }
 
 async function saveAnswer(answer, points, questionId) {
-  Answer.create({
+  return await Answer.create({
     content: answer,
     points: points,
     questionId: questionId,
   });
 }
 
-async function saveNewQuestion(question, answers, points) {
-  Question.create({
-    content: question,
-    collectionId: setOfQuestions.id,
-  });
-  Question.findOne({
-    where: {
-      content: question,
-    },
-  }).then((questionRespone) => {
-    for (i = 0; i < answers.length; i++) {
-      Answer.create({
-        content: answers[i],
-        points: points[i],
-        questionId: questionRespone.id,
+// Deletion
+async function deleteCollection(eventOrId, maybeId) {
+  const id = maybeId !== undefined ? maybeId : eventOrId;
+  return await sequelize.transaction(async (t) => {
+    const questions = await Question.findAll({
+      where: { collectionId: id },
+      transaction: t,
+    });
+    const questionIds = questions.map((q) => q.id);
+    if (questionIds.length > 0) {
+      await Answer.destroy({
+        where: { questionId: questionIds },
+        transaction: t,
+      });
+      await Question.destroy({
+        where: { id: questionIds },
+        transaction: t,
       });
     }
+    await Collection.destroy({
+      where: { id: id },
+      transaction: t,
+    });
   });
 }
 
-// Deletion
-async function deleteCollection(event, id) {
-  await Collection.destroy({
-    where: {
-      id: id,
-    },
-  });
-}
-
-async function deleteQuestion(id) {
-  await Answer.destroy({
-    where: {
-      questionId: id,
-    },
-  });
-  await Question.destroy({
-    where: {
-      id: id,
-    },
+async function deleteQuestion(eventOrId, maybeId) {
+  const id = maybeId !== undefined ? maybeId : eventOrId;
+  return await sequelize.transaction(async (t) => {
+    await Answer.destroy({
+      where: {
+        questionId: id,
+      },
+      transaction: t,
+    });
+    await Question.destroy({
+      where: {
+        id: id,
+      },
+      transaction: t,
+    });
   });
 }
 
 async function deleteAnswers(idQuestion) {
-  await Answer.destroy({
+  return await Answer.destroy({
     where: {
       questionId: idQuestion,
     },
@@ -126,33 +124,48 @@ async function deleteAnswers(idQuestion) {
 }
 
 // Update
+async function updateQuestion(arg1, arg2, arg3, arg4, arg5) {
+  let id, questionContent, answersContent, answersPoints;
+  if (arg5 !== undefined) {
+    id = arg2;
+    questionContent = arg3;
+    answersContent = arg4;
+    answersPoints = arg5;
+  } else {
+    id = arg1;
+    questionContent = arg2;
+    answersContent = arg3;
+    answersPoints = arg4;
+  }
 
-async function updateQuestion(
-  _event,
-  id,
-  questionContent,
-  answersContent,
-  answersPoints
-) {
-  console.log("Updating question: ", id);
-  console.log("Question content: ", questionContent);
-  console.log("Answers content: ", answersContent);
-  console.log("Answers points: ", answersPoints);
-  Question.findOne({
-    where: {
-      id: id,
-    },
-  }).then((question) => {
-    question.content = questionContent;
-    question.save();
-
-    //Delete all of answers for this question
-    deleteAnswers(id);
-    //Add new answers
-    answersContent.forEach((answer, index) => {
-      saveAnswer(answer, answersPoints[index], id);
+  return await sequelize.transaction(async (t) => {
+    const question = await Question.findOne({
+      where: { id: id },
+      transaction: t,
     });
-    return;
+    if (!question) {
+      throw new Error("Question not found with id: " + id);
+    }
+    question.content = questionContent;
+    await question.save({ transaction: t });
+
+    await Answer.destroy({
+      where: { questionId: id },
+      transaction: t,
+    });
+
+    if (Array.isArray(answersContent) && Array.isArray(answersPoints)) {
+      for (let i = 0; i < answersContent.length; i++) {
+        await Answer.create(
+          {
+            content: answersContent[i],
+            points: answersPoints[i],
+            questionId: id,
+          },
+          { transaction: t }
+        );
+      }
+    }
   });
 }
 
@@ -163,12 +176,11 @@ module.exports = {
   getQuestion,
   getAnswers,
   getAnswer,
-  getCollection,
   saveCollection,
   saveQuestion,
   saveAnswer,
-  saveNewQuestion,
   deleteCollection,
   deleteQuestion,
+  deleteAnswers,
   updateQuestion,
 };

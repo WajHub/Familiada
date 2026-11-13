@@ -25,6 +25,7 @@ function NewAnswer({ answer, points, onChange, onDelete }) {
         onChange={(event) => onChange("points", event.target.value)}
       />
       <button
+        type="button"
         className="btn btn-danger btn-sm col-2 m-1"
         onClick={onDelete}
       >

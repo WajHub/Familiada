@@ -7,11 +7,12 @@ function TeamNamesFormOverlay({ questions }) {
   const [team2, setTeam2] = useState("");
 
   const startGame = async () => {
-    const questionsId = questions.map((question) => question.dataValues.id);
-    await window.api.setGameData(team1, team2, questionsId).then((response) => {
-      console.log(response);
-      navigate("/GamePanel");
-    });
+    const questionsId = questions.map((question) =>
+      question.dataValues ? question.dataValues.id : question.id
+    );
+    const response = await window.api.setGameData(team1, team2, questionsId);
+    console.log(response);
+    navigate("/GamePanel");
   };
 
   return (

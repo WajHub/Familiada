@@ -8,9 +8,9 @@ function ChoseCollectionButton({ selectedCollectionId }) {
       {/* <Link to="/QuestionsPanel"> */}
       <button
         type="submit"
-        onClick={() => {
+        onClick={async () => {
           if (selectedCollectionId !== "") {
-            window.api.setCurrentCollection(selectedCollectionId);
+            await window.api.setCurrentCollection(selectedCollectionId);
             navigate("/QuestionsPanel");
           }
         }}
