@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { HashRouter as Router } from "react-router-dom";
-import BoardPanelPage from "./pages/BoardPanelPage.jsx";
+import BoardPanelPage from "./pages/BoardPanelPage";
 import { HostShell } from "./host/HostShell";
 import { LibraryPage } from "./host/library/LibraryPage";
 import { ShowPage } from "./host/show/ShowPage";
