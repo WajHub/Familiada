@@ -57,13 +57,15 @@ function ShowSetup({ onStart }: ShowSetupProps) {
             className="rounded-lg border border-blue-900 bg-zinc-950 px-3 py-3 text-base text-zinc-50 outline-none ring-blue-500 focus:ring-2"
           />
         </label>
-        <button
-          type="submit"
-          disabled={starting}
-          className="mt-6 min-h-12 w-full rounded-xl bg-amber-400 text-base font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-50"
-        >
-          {starting ? "Starting…" : "Start show"}
-        </button>
+        <div className="pt-8">
+          <button
+            type="submit"
+            disabled={starting}
+            className="min-h-12 w-full rounded-xl bg-amber-400 text-base font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-50"
+          >
+            {starting ? "Starting…" : "Start show"}
+          </button>
+        </div>
       </form>
     </div>
   );
