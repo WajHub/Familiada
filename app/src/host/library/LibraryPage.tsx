@@ -1,0 +1,203 @@
+import { FormEvent, useState } from "react";
+import { useHostSession } from "../HostSession";
+import type { QuestionListItem } from "../types";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { QuestionDialog } from "./QuestionDialog";
+import { QuestionRow } from "./QuestionRow";
+
+export function LibraryPage() {
+  const {
+    collections,
+    selectedCollectionId,
+    questions,
+    loading,
+    errorMessage,
+    selectCollection,
+    createCollection,
+    deleteCollection,
+    refreshQuestions,
+    moveQuestion,
+    removeQuestion,
+  } = useHostSession();
+
+  const [title, setTitle] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null);
+  const [questionToDelete, setQuestionToDelete] = useState<QuestionListItem | null>(null);
+
+  const selected = collections.find((collection) => String(collection.id) === selectedCollectionId);
+
+  const create = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const nextTitle = title.trim();
+    if (nextTitle === "") {
+      return;
+    }
+    setCreating(true);
+    try {
+      await createCollection(nextTitle);
+      setTitle("");
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const openCreate = () => {
+    setEditingId(null);
+    setEditorOpen(true);
+  };
+
+  const openEdit = (id: number) => {
+    setEditingId(id);
+    setEditorOpen(true);
+  };
+
+  return (
+    <div className="flex h-full min-h-0">
+      <section className="flex w-80 shrink-0 flex-col border-r border-zinc-800 bg-zinc-950">
+        <div className="border-b border-zinc-800 px-4 py-4">
+          <h1 className="text-sm font-semibold uppercase tracking-wide text-zinc-400">Collections</h1>
+        </div>
+        <div className="flex-1 overflow-y-auto p-3">
+          {loading && <p className="px-2 py-3 text-sm text-zinc-400">Loading collections…</p>}
+          {!loading && collections.length === 0 && (
+            <p className="px-2 py-3 text-sm text-zinc-400">
+              No sets yet. Create one to start adding questions.
+            </p>
+          )}
+          <ul className="flex flex-col gap-2">
+            {collections.map((collection) => {
+              const id = String(collection.id);
+              const selectedRow = id === selectedCollectionId;
+              return (
+                <li key={collection.id}>
+                  <button
+                    type="button"
+                    onClick={() => selectCollection(id)}
+                    className={
+                      selectedRow
+                        ? "w-full rounded-xl bg-zinc-800 px-3 py-3 text-left text-zinc-50"
+                        : "w-full rounded-xl px-3 py-3 text-left text-zinc-300 hover:bg-zinc-900"
+                    }
+                  >
+                    {collection.title}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        <form onSubmit={(event) => void create(event)} className="flex flex-col gap-2 border-t border-zinc-800 p-3">
+          <label className="text-xs text-zinc-400" htmlFor="collection-title">
+            New collection
+          </label>
+          <input
+            id="collection-title"
+            required
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-50 outline-none ring-amber-400 focus:ring-2"
+          />
+          <button
+            type="submit"
+            disabled={creating}
+            className="rounded-lg bg-amber-400 px-3 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-50"
+          >
+            {creating ? "Creating…" : "Create collection"}
+          </button>
+          <button
+            type="button"
+            disabled={selectedCollectionId === ""}
+            onClick={() => setCollectionToDelete(selectedCollectionId)}
+            className="rounded-lg border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 hover:bg-zinc-800 disabled:opacity-40"
+          >
+            Delete selected
+          </button>
+        </form>
+      </section>
+
+      <section className="flex min-w-0 flex-1 flex-col">
+        <header className="flex items-center justify-between gap-4 border-b border-zinc-800 px-6 py-4">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-zinc-500">Library</p>
+            <h2 className="text-xl font-semibold text-zinc-50">
+              {selected ? selected.title : "Choose a collection"}
+            </h2>
+          </div>
+          <button
+            type="button"
+            disabled={!selected}
+            onClick={openCreate}
+            className="rounded-lg bg-amber-400 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-40"
+          >
+            Add question
+          </button>
+        </header>
+        <div className="flex-1 overflow-y-auto p-6">
+          {errorMessage && (
+            <p className="mb-4 rounded-lg border border-amber-800 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">
+              {errorMessage}
+            </p>
+          )}
+          {selected && questions.length === 0 && (
+            <p className="text-sm text-zinc-400">
+              This collection has no questions. Add the first one, then start a show from the sidebar.
+            </p>
+          )}
+          <div className="flex flex-col gap-3">
+            {questions.map((question, index) => (
+              <QuestionRow
+                key={question.id}
+                question={question}
+                index={index}
+                total={questions.length}
+                onMove={moveQuestion}
+                onEdit={openEdit}
+                onDelete={setQuestionToDelete}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <QuestionDialog
+        open={editorOpen}
+        questionId={editingId}
+        onClose={() => setEditorOpen(false)}
+        onSaved={refreshQuestions}
+      />
+      <ConfirmDialog
+        open={collectionToDelete !== null}
+        title="Delete collection"
+        message="Delete this collection and its questions? This cannot be undone."
+        confirmLabel="Delete collection"
+        onClose={() => setCollectionToDelete(null)}
+        onConfirm={async () => {
+          if (collectionToDelete) {
+            await deleteCollection(collectionToDelete);
+          }
+        }}
+      />
+      <ConfirmDialog
+        open={questionToDelete !== null}
+        title="Delete question"
+        message={
+          questionToDelete
+            ? `Delete “${questionToDelete.content}”?`
+            : "Delete this question?"
+        }
+        confirmLabel="Delete question"
+        onClose={() => setQuestionToDelete(null)}
+        onConfirm={async () => {
+          if (!questionToDelete) {
+            return;
+          }
+          await window.api.deleteQuestion(questionToDelete.id);
+          removeQuestion(questionToDelete.id);
+        }}
+      />
+    </div>
+  );
+}

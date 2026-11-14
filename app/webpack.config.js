@@ -7,17 +7,25 @@ module.exports = {
     filename: "bundle.js",
     path: path.resolve(__dirname, "dist"),
   },
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
+  },
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
         },
       },
       {
+        test: /host\.css$/,
+        use: ["style-loader", "css-loader", "postcss-loader"],
+      },
+      {
         test: /\.css$/,
+        exclude: /host\.css$/,
         use: ["style-loader", "css-loader"],
       },
       {
