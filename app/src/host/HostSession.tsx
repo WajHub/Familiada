@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -34,6 +35,8 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
   const [collections, setCollections] = useState<CollectionSummary[]>([]);
   const [selectedCollectionId, setSelectedCollectionId] = useState("");
   const [questions, setQuestions] = useState<QuestionListItem[]>([]);
+  const questionsRef = useRef<QuestionListItem[]>([]);
+  questionsRef.current = questions;
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -136,23 +139,33 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
     });
   }, []);
 
-  const moveQuestion = useCallback((index: number, direction: -1 | 1) => {
-    setQuestions((currentQuestions) => {
+  const moveQuestion = useCallback(
+    (index: number, direction: -1 | 1) => {
+      const currentQuestions = questionsRef.current;
       const newIndex = index + direction;
       if (newIndex < 0 || newIndex >= currentQuestions.length) {
-        return currentQuestions;
+        return;
       }
       const reordered = [...currentQuestions];
       const current = reordered[index];
       const neighbor = reordered[newIndex];
       if (!current || !neighbor) {
-        return currentQuestions;
+        return;
       }
       reordered[index] = neighbor;
       reordered[newIndex] = current;
-      return reordered;
-    });
-  }, []);
+      questionsRef.current = reordered;
+      setQuestions(reordered);
+
+      void window.api
+        .reorderQuestions(reordered.map((question) => question.id))
+        .catch((error) => {
+          console.error("Failed to persist questions order:", error);
+          void refreshQuestions();
+        });
+    },
+    [refreshQuestions]
+  );
 
   const removeQuestion = useCallback((id: number) => {
     setQuestions((currentQuestions) => currentQuestions.filter((question) => question.id !== id));

@@ -8,6 +8,7 @@ export interface CollectionSummary {
 export interface QuestionListItem {
   id: number;
   content: string;
+  order?: number;
 }
 
 export interface AnswerSummary {
@@ -51,7 +52,7 @@ export function toQuestionListItem(
   row: WithDataValues<QuestionRecord> | QuestionRecord
 ): QuestionListItem {
   const data = unwrap(row);
-  return { id: data.id, content: data.content };
+  return { id: data.id, content: data.content, order: data.order };
 }
 
 export function toAnswerSummary(

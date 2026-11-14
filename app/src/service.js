@@ -37,6 +37,10 @@ async function getQuestions(eventOrId, maybeId) {
     where: {
       collectionId: idCollection,
     },
+    order: [
+      ["order", "ASC"],
+      ["id", "ASC"],
+    ],
   });
 }
 
@@ -56,9 +60,20 @@ async function saveCollection(eventOrTitle, maybeTitle) {
 }
 
 async function saveQuestion(question, collectionId) {
+  const maxOrderQuestion = await Question.findOne({
+    where: { collectionId: collectionId },
+    order: [["order", "DESC"]],
+    attributes: ["order"],
+  });
+  const nextOrder =
+    maxOrderQuestion && typeof maxOrderQuestion.order === "number"
+      ? maxOrderQuestion.order + 1
+      : 0;
+
   const createdQuestion = await Question.create({
     content: question,
     collectionId: collectionId,
+    order: nextOrder,
   });
   return createdQuestion.id;
 }
@@ -169,6 +184,24 @@ async function updateQuestion(arg1, arg2, arg3, arg4, arg5) {
   });
 }
 
+async function reorderQuestions(questionIds) {
+  if (!Array.isArray(questionIds) || questionIds.length === 0) {
+    return true;
+  }
+  return await sequelize.transaction(async (t) => {
+    for (let index = 0; index < questionIds.length; index++) {
+      await Question.update(
+        { order: index },
+        {
+          where: { id: questionIds[index] },
+          transaction: t,
+        }
+      );
+    }
+    return true;
+  });
+}
+
 module.exports = {
   getCollections,
   getCollection,
@@ -183,4 +216,5 @@ module.exports = {
   deleteQuestion,
   deleteAnswers,
   updateQuestion,
+  reorderQuestions,
 };

@@ -9,6 +9,7 @@ import type {
 
 interface PreviewQuestion extends QuestionRecord {
   collectionId: number;
+  order: number;
 }
 
 interface PreviewAnswer extends AnswerRecord {
@@ -29,20 +30,20 @@ function createPreviewApi(): FamiliadaApi {
     { id: 4, title: "New Year's Eve" },
   ];
   const questions: PreviewQuestion[] = [
-    { id: 4, content: "Name something guests forget to bring to a wedding", collectionId: 1 },
-    { id: 5, content: "Name a song people dance to at a reception", collectionId: 1 },
-    { id: 6, content: "Name something you find on a wedding cake", collectionId: 1 },
-    { id: 7, content: "Name a reason people cry at weddings", collectionId: 1 },
-    { id: 8, content: "Name something you find in a kitchen at work", collectionId: 2 },
-    { id: 9, content: "Name something people do instead of working", collectionId: 2 },
-    { id: 10, content: "Name a snack you steal from the office kitchen", collectionId: 2 },
-    { id: 11, content: "Name something you hear in a meeting", collectionId: 2 },
-    { id: 12, content: "Name something families argue about at dinner", collectionId: 3 },
-    { id: 13, content: "Name a board game people play at home", collectionId: 3 },
-    { id: 14, content: "Name something kids hide from their parents", collectionId: 3 },
-    { id: 15, content: "Name a New Year's resolution people break first", collectionId: 4 },
-    { id: 16, content: "Name something you hear at midnight on New Year's", collectionId: 4 },
-    { id: 17, content: "Name a drink people pour at a New Year's party", collectionId: 4 },
+    { id: 4, content: "Name something guests forget to bring to a wedding", collectionId: 1, order: 0 },
+    { id: 5, content: "Name a song people dance to at a reception", collectionId: 1, order: 1 },
+    { id: 6, content: "Name something you find on a wedding cake", collectionId: 1, order: 2 },
+    { id: 7, content: "Name a reason people cry at weddings", collectionId: 1, order: 3 },
+    { id: 8, content: "Name something you find in a kitchen at work", collectionId: 2, order: 0 },
+    { id: 9, content: "Name something people do instead of working", collectionId: 2, order: 1 },
+    { id: 10, content: "Name a snack you steal from the office kitchen", collectionId: 2, order: 2 },
+    { id: 11, content: "Name something you hear in a meeting", collectionId: 2, order: 3 },
+    { id: 12, content: "Name something families argue about at dinner", collectionId: 3, order: 0 },
+    { id: 13, content: "Name a board game people play at home", collectionId: 3, order: 1 },
+    { id: 14, content: "Name something kids hide from their parents", collectionId: 3, order: 2 },
+    { id: 15, content: "Name a New Year's resolution people break first", collectionId: 4, order: 0 },
+    { id: 16, content: "Name something you hear at midnight on New Year's", collectionId: 4, order: 1 },
+    { id: 17, content: "Name a drink people pour at a New Year's party", collectionId: 4, order: 2 },
   ];
   const answers: PreviewAnswer[] = [
     { id: 20, content: "Gift", points: 32, questionId: 4 },
@@ -137,6 +138,7 @@ function createPreviewApi(): FamiliadaApi {
         id: questionId,
         content: `Name something people take to ${topic} (${questionIndex + 1})`,
         collectionId,
+        order: questionIndex,
       });
       extraAnswers.forEach((content, answerIndex) => {
         answers.push({
@@ -155,6 +157,7 @@ function createPreviewApi(): FamiliadaApi {
       id: questionId,
       content: `Name something you hear at a wedding (${index + 1})`,
       collectionId: 1,
+      order: 4 + index,
     });
     extraAnswers.forEach((content, answerIndex) => {
       answers.push({
@@ -231,6 +234,7 @@ function createPreviewApi(): FamiliadaApi {
     getQuestions: async () =>
       questions
         .filter((question) => question.collectionId === currentCollectionId)
+        .sort((left, right) => left.order - right.order)
         .map((question) => model(question)),
     getQuestion: async (id) => {
       const question = questions.find((item) => item.id === id);
@@ -306,10 +310,15 @@ function createPreviewApi(): FamiliadaApi {
     addNewQuestion: async (question, answerContents, points) => {
       const id = nextId;
       nextId += 1;
+      const targetCollectionId = currentCollectionId ?? collections[0]?.id ?? 1;
+      const existingCount = questions.filter(
+        (item) => item.collectionId === targetCollectionId
+      ).length;
       questions.push({
         id,
         content: question,
-        collectionId: currentCollectionId ?? collections[0]?.id ?? 1,
+        collectionId: targetCollectionId,
+        order: existingCount,
       });
       answerContents.forEach((content, index) => {
         const value = Number(points[index] ?? 0);
@@ -322,6 +331,15 @@ function createPreviewApi(): FamiliadaApi {
         nextId += 1;
       });
       return id;
+    },
+    reorderQuestions: async (questionIds) => {
+      questionIds.forEach((id, index) => {
+        const question = questions.find((item) => item.id === id);
+        if (question) {
+          question.order = index;
+        }
+      });
+      return true;
     },
     setCurrentCollection: async (id) => {
       currentCollectionId = Number(id);

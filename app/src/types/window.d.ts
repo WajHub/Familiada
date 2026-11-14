@@ -6,6 +6,7 @@ export interface CollectionRecord {
 export interface QuestionRecord {
   id: number;
   content: string;
+  order?: number;
   collectionId?: number;
 }
 
@@ -78,6 +79,7 @@ export interface FamiliadaApi {
   ) => Promise<unknown>;
   setCurrentCollection: (id: string | number) => Promise<unknown>;
   deleteQuestion: (id: number) => Promise<unknown>;
+  reorderQuestions: (questionIds: number[]) => Promise<boolean>;
   startGame: () => void;
   nextQuestion: () => void;
   prevQuestion: () => void;

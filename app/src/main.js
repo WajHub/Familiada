@@ -127,6 +127,9 @@ ipcMain.handle(
 ipcMain.handle("getQuestion", async (_event, id) => {
   return await Service.getQuestion(id);
 });
+ipcMain.handle("reorderQuestions", async (_event, questionIds) => {
+  return await Service.reorderQuestions(questionIds);
+});
 
 // IPC handles for GamePanel
 ipcMain.on("startGame", startGame);

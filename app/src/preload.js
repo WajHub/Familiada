@@ -82,6 +82,8 @@ const API = {
     ipcRenderer.invoke("addNewQuestion", question, answers, points),
   setCurrentCollection: (id) => ipcRenderer.invoke("setCurrentCollection", id),
   deleteQuestion: (id) => ipcRenderer.invoke("deleteQuestion", id),
+  reorderQuestions: (questionIds) =>
+    ipcRenderer.invoke("reorderQuestions", questionIds),
 
   // Renderer ---> Main (sends)
   startGame: () => ipcRenderer.send("startGame"),
