@@ -91,6 +91,7 @@ export interface FamiliadaApi {
 declare global {
   interface Window {
     api: FamiliadaApi;
+    __familiadaPreview?: boolean;
   }
 }
 

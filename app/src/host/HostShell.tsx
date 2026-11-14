@@ -48,6 +48,11 @@ function HostFrame() {
             Add a question to the selected collection before starting a show.
           </p>
         )}
+        {window.__familiadaPreview && (
+          <p className="mt-auto px-3 text-xs leading-5 text-zinc-500">
+            Preview data for layout. The Electron window uses your saved sets.
+          </p>
+        )}
       </aside>
       <div className="min-w-0 flex-1 overflow-hidden">
         <Outlet />
