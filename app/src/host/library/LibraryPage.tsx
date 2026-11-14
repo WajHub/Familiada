@@ -79,7 +79,7 @@ export function LibraryPage() {
                     className={
                       selectedRow
                         ? "w-full rounded-xl bg-zinc-800 px-3 py-3 text-left text-zinc-50"
-                        : "w-full rounded-xl px-3 py-3 text-left text-zinc-300 hover:bg-zinc-900"
+                        : "w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-3 text-left text-zinc-300 hover:bg-zinc-900"
                     }
                   >
                     {collection.title}
