@@ -62,10 +62,10 @@ const API = {
 
   // Renderer <---> Main (invokes)
   getCollections: () => ipcRenderer.invoke("getCollections"),
-  get_questions: () => ipcRenderer.invoke("get_questions"),
-  getQuestions: (id) => ipcRenderer.invoke("getQuestion", id),
-  get_answers: (id) => ipcRenderer.invoke("get_answers", id),
-  get_title: () => ipcRenderer.invoke("getCollectionTitle"),
+  getQuestions: () => ipcRenderer.invoke("getQuestions"),
+  getQuestion: (id) => ipcRenderer.invoke("getQuestion", id),
+  getAnswers: (id) => ipcRenderer.invoke("getAnswers", id),
+  getCollectionTitle: () => ipcRenderer.invoke("getCollectionTitle"),
   deleteCollection: (id) => ipcRenderer.invoke("deleteCollection", id),
   setGameData: (team1, team2, questionsId) =>
     ipcRenderer.invoke("setGameData", team1, team2, questionsId),

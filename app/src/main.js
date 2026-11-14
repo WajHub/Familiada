@@ -97,11 +97,11 @@ ipcMain.handle("addNewQuestion", async (_event, question, answers, points) => {
   return await gameLogic.addNewQuestion(question, answers, points);
 });
 ipcMain.handle("getCollectionTitle", gameLogic.getCollectionTitle);
-ipcMain.handle("get_questions", async () => {
+ipcMain.handle("getQuestions", async () => {
   const collectionId = gameLogic.getCollectionId();
   return await Service.getQuestions(collectionId);
 });
-ipcMain.handle("get_answers", async (_event, id) => {
+ipcMain.handle("getAnswers", async (_event, id) => {
   return await Service.getAnswers(id);
 });
 ipcMain.handle("setGameData", async (_event, team1, team2, questionsId) => {

@@ -52,10 +52,10 @@ export interface FamiliadaApi {
   ) => () => void;
   onUpdateAnswers: (callback: () => void) => () => void;
   getCollections: () => Promise<WithDataValues<CollectionRecord>[]>;
-  get_questions: () => Promise<WithDataValues<QuestionRecord>[] | undefined>;
-  getQuestions: (id: number) => Promise<WithDataValues<QuestionRecord>>;
-  get_answers: (id: number) => Promise<WithDataValues<AnswerRecord>[]>;
-  get_title: () => Promise<
+  getQuestions: () => Promise<WithDataValues<QuestionRecord>[] | undefined>;
+  getQuestion: (id: number) => Promise<WithDataValues<QuestionRecord>>;
+  getAnswers: (id: number) => Promise<WithDataValues<AnswerRecord>[]>;
+  getCollectionTitle: () => Promise<
     WithDataValues<CollectionRecord> | CollectionRecord | null | undefined
   >;
   deleteCollection: (id: string | number) => Promise<unknown>;

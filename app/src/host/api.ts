@@ -13,7 +13,7 @@ export async function fetchCollections(): Promise<CollectionSummary[]> {
 }
 
 export async function fetchQuestions(): Promise<QuestionListItem[]> {
-  const rows = await window.api.get_questions();
+  const rows = await window.api.getQuestions();
   if (!rows) {
     return [];
   }
@@ -21,11 +21,11 @@ export async function fetchQuestions(): Promise<QuestionListItem[]> {
 }
 
 export async function fetchAnswers(questionId: number): Promise<AnswerSummary[]> {
-  const rows = await window.api.get_answers(questionId);
+  const rows = await window.api.getAnswers(questionId);
   return rows.map((row) => toAnswerSummary(row));
 }
 
 export async function fetchQuestion(questionId: number): Promise<QuestionListItem> {
-  const row = await window.api.getQuestions(questionId);
+  const row = await window.api.getQuestion(questionId);
   return toQuestionListItem(row);
 }

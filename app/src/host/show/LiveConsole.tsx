@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { RevealedAnswer } from "../types";
 import type { TeamSide } from "../../types/window";
-import { correctAnswerSound, playSound, showAnswerSound, startRoundSound, wrongAnswerSound } from "./sounds";
+import { correctAnswerSound, playSound, showAnswerSound, wrongAnswerSound } from "./sounds";
 
 interface AnswerRowProps {
   answer: RevealedAnswer;
