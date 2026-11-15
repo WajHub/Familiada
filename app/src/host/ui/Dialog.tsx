@@ -1,13 +1,16 @@
 import { useEffect, type ReactNode } from "react";
+import { X } from "lucide-react";
 
 interface DialogProps {
   open: boolean;
   title: string;
+  subtitle?: string;
+  size?: "md" | "lg" | "xl";
   onClose: () => void;
   children: ReactNode;
 }
 
-export function Dialog({ open, title, onClose, children }: DialogProps) {
+export function Dialog({ open, title, subtitle, size = "lg", onClose, children }: DialogProps) {
   useEffect(() => {
     if (!open) {
       return;
@@ -27,31 +30,44 @@ export function Dialog({ open, title, onClose, children }: DialogProps) {
     return null;
   }
 
+  const maxWidthClass =
+    size === "md"
+      ? "max-w-xl"
+      : size === "xl"
+        ? "max-w-4xl"
+        : "max-w-3xl";
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
       <button
         type="button"
         aria-label="Close dialog"
-        className="absolute inset-0 bg-black/70"
+        className="absolute inset-0 bg-black/75 backdrop-blur-xs transition-opacity"
         onClick={onClose}
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="host-fade relative z-10 flex max-h-[85vh] w-full max-w-2xl flex-col rounded-2xl border border-zinc-700 bg-zinc-900 shadow-2xl"
+        className={`host-fade relative z-10 flex max-h-[90vh] w-full ${maxWidthClass} flex-col rounded-2xl border border-zinc-700/80 bg-zinc-900 shadow-2xl overflow-hidden`}
       >
-        <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-4">
-          <h2 className="text-lg font-semibold text-zinc-50">{title}</h2>
+        <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/90 px-6 py-5">
+          <div className="min-w-0 pr-4">
+            <h2 className="m-0 text-lg font-bold text-white tracking-wide">{title}</h2>
+            {subtitle && (
+              <p className="mt-1 text-xs text-zinc-400 font-normal">{subtitle}</p>
+            )}
+          </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg bg-zinc-800 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-white"
+            aria-label="Close"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800 text-zinc-400 transition hover:border-zinc-500 hover:bg-zinc-700 hover:text-white"
           >
-            Close
+            <X size={16} />
           </button>
         </div>
-        <div className="overflow-y-auto px-5 py-4">{children}</div>
+        <div className="overflow-y-auto px-6 py-5">{children}</div>
       </div>
     </div>
   );

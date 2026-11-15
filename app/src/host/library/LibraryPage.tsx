@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { Check, Copy, Pencil, X } from "lucide-react";
+import { Check, Copy, Pencil, Plus, Trash2, X, HelpCircle } from "lucide-react";
 import { useHostSession } from "../HostSession";
 import { useI18n } from "../../i18n/I18nContext";
 import type { QuestionListItem } from "../types";
@@ -92,16 +92,21 @@ export function LibraryPage() {
 
   return (
     <div className="flex h-full min-h-0">
+      {/* Collections Sidebar */}
       <section className="flex w-80 shrink-0 flex-col border-r border-zinc-800 bg-zinc-950">
         <div className="border-b border-zinc-800 px-4 py-4">
-          <h1 className="text-sm font-semibold uppercase tracking-wide text-zinc-400">{t("library.collections")}</h1>
+          <h1 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            {t("library.collections")}
+          </h1>
         </div>
+
+        {/* Collections List */}
         <div className="flex-1 overflow-y-auto p-3">
-          {loading && <p className="px-2 py-3 text-sm text-zinc-400">{t("library.loadingCollections")}</p>}
+          {loading && (
+            <p className="px-2 py-3 text-sm text-zinc-400">{t("library.loadingCollections")}</p>
+          )}
           {!loading && collections.length === 0 && (
-            <p className="px-2 py-3 text-sm text-zinc-400">
-              {t("library.noCollections")}
-            </p>
+            <p className="px-2 py-3 text-sm text-zinc-400">{t("library.noCollections")}</p>
           )}
           <ul className="flex flex-col gap-2">
             {collections.map((collection) => {
@@ -116,12 +121,12 @@ export function LibraryPage() {
                     className={
                       selectedRow
                         ? "flex w-full items-center justify-between rounded-xl border-2 border-amber-400 bg-zinc-800 px-3.5 py-3 text-left font-bold text-white shadow-md shadow-amber-400/10"
-                        : "flex w-full items-center justify-between rounded-xl border border-zinc-700 bg-zinc-900 px-3.5 py-3 text-left font-medium text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-800 hover:text-white"
+                        : "flex w-full items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/90 px-3.5 py-3 text-left font-medium text-zinc-200 transition hover:border-zinc-600 hover:bg-zinc-800 hover:text-white"
                     }
                   >
                     <span className="truncate">{collection.title}</span>
                     {selectedRow && (
-                      <span className="h-2 w-2 rounded-full bg-amber-400" />
+                      <span className="h-2 w-2 rounded-full bg-amber-400 shadow-xs" />
                     )}
                   </button>
                 </li>
@@ -129,39 +134,59 @@ export function LibraryPage() {
             })}
           </ul>
         </div>
-        <form onSubmit={(event) => void create(event)} className="flex flex-col gap-2.5 border-t border-zinc-800 p-3.5">
-          <label className="text-xs font-semibold uppercase tracking-wider text-zinc-300" htmlFor="collection-title">
+
+        {/* Create / Delete Collection Footer */}
+        <form
+          onSubmit={(event) => void create(event)}
+          className="flex flex-col gap-2.5 border-t border-zinc-800 p-3.5 bg-zinc-950/70"
+        >
+          <label
+            className="text-[11px] font-bold uppercase tracking-wider text-zinc-400"
+            htmlFor="collection-title"
+          >
             {t("library.newCollection")}
           </label>
-          <input
-            id="collection-title"
-            required
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            className="rounded-xl border-2 border-zinc-700 bg-zinc-900 px-3.5 py-2.5 text-sm text-white outline-none transition placeholder-zinc-500 focus:border-amber-400 focus:bg-zinc-950 focus:ring-2 focus:ring-amber-400/20"
-          />
-          <button
-            type="submit"
-            disabled={creating}
-            className="rounded-xl bg-amber-400 px-3.5 py-2.5 text-sm font-bold text-zinc-950 shadow-sm transition hover:bg-amber-300 disabled:opacity-50"
-          >
-            {creating ? t("library.creating") : t("library.createCollection")}
-          </button>
-          <button
-            type="button"
-            disabled={selectedCollectionId === ""}
-            onClick={() => setCollectionToDelete(selectedCollectionId)}
-            className="rounded-xl border border-zinc-700 bg-zinc-900 px-3.5 py-2.5 text-xs font-semibold text-zinc-300 transition hover:border-red-500/60 hover:bg-red-950/40 hover:text-red-200 disabled:opacity-30"
-          >
-            {t("library.deleteSelected")}
-          </button>
+          <div className="flex items-center gap-2">
+            <input
+              id="collection-title"
+              required
+              placeholder={t("library.newCollectionPlaceholder")}
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              className="flex-1 rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-medium text-white outline-none transition placeholder-zinc-500 focus:border-amber-400 focus:bg-zinc-950"
+            />
+            <button
+              type="submit"
+              disabled={creating || !title.trim()}
+              title={t("library.createCollection")}
+              className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-400 text-zinc-950 transition hover:bg-amber-300 disabled:opacity-40 shadow-xs shrink-0"
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+
+          {selectedCollectionId && (
+            <button
+              type="button"
+              onClick={() => setCollectionToDelete(selectedCollectionId)}
+              className="mt-1 flex items-center justify-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900/60 px-3 py-2 text-xs font-semibold text-zinc-400 transition hover:border-red-500/60 hover:bg-red-950/30 hover:text-red-300"
+            >
+              <Trash2 size={13} />
+              <span>{t("library.deleteSelected")}</span>
+            </button>
+          )}
         </form>
       </section>
 
+      {/* Main Question Management Area */}
       <section className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between gap-4 border-b border-zinc-800 px-6 py-4">
+        {/* Header Bar */}
+        <header className="flex items-center justify-between gap-4 border-b border-zinc-800 bg-zinc-950/50 px-6 py-4 backdrop-blur-xs">
           <div className="min-w-0">
-            <p className="text-xs uppercase tracking-wide text-zinc-500">{t("sidebar.library")}</p>
+            <p className="text-xs uppercase tracking-wide text-zinc-500">
+              {t("sidebar.library")}
+            </p>
+
             {selected && editingCollectionId === String(selected.id) ? (
               <div className="mt-1 flex items-center gap-2">
                 <input
@@ -235,27 +260,51 @@ export function LibraryPage() {
               </div>
             )}
           </div>
+
           <button
             type="button"
             disabled={!selected}
             onClick={openCreate}
-            className="rounded-lg bg-amber-400 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-40"
+            className="flex items-center gap-2 rounded-xl bg-amber-400 px-4 py-2.5 text-sm font-bold text-zinc-950 shadow-md shadow-amber-400/15 transition hover:bg-amber-300 disabled:opacity-40"
           >
-            {t("library.addQuestion")}
+            <Plus size={16} />
+            <span>{t("library.addQuestion")}</span>
           </button>
         </header>
+
+        {/* Question List View */}
         <div className="flex-1 overflow-y-auto p-6">
           {errorMessage && (
-            <p className="mb-4 rounded-lg border border-amber-800 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">
+            <p className="mb-4 rounded-xl border border-amber-800 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
               {errorMessage}
             </p>
           )}
+
+          {/* Empty State */}
           {selected && questions.length === 0 && (
-            <p className="text-sm text-zinc-400">
-              {t("library.noQuestions")}
-            </p>
+            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-zinc-800 bg-zinc-900/30 p-12 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-400/10 text-amber-300">
+                <HelpCircle size={24} />
+              </div>
+              <h3 className="mt-4 text-base font-bold text-white">
+                {t("library.emptyStateTitle")}
+              </h3>
+              <p className="mt-1 max-w-sm text-xs text-zinc-400 leading-relaxed">
+                {t("library.emptyStateSubtitle")}
+              </p>
+              <button
+                type="button"
+                onClick={openCreate}
+                className="mt-5 flex items-center gap-2 rounded-xl bg-amber-400 px-4 py-2.5 text-xs font-bold text-zinc-950 transition hover:bg-amber-300 shadow-sm"
+              >
+                <Plus size={15} />
+                <span>{t("library.addFirstQuestion")}</span>
+              </button>
+            </div>
           )}
-          <div className="flex flex-col gap-3">
+
+          {/* Question Cards List */}
+          <div className="flex flex-col gap-4">
             {questions.map((question, index) => (
               <QuestionRow
                 key={question.id}
@@ -271,6 +320,7 @@ export function LibraryPage() {
         </div>
       </section>
 
+      {/* Dialogs */}
       <QuestionDialog
         open={editorOpen}
         questionId={editingId}

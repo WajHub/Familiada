@@ -46,73 +46,99 @@ export function QuestionRow({
   }, [question.id]);
 
   return (
-    <article className="rounded-2xl border border-zinc-800/90 bg-zinc-900/90 p-5 shadow-sm transition-all hover:border-zinc-700/80">
-      <div className="flex items-start gap-4">
-        {/* Reordering stepper pill */}
-        <div className="flex flex-col rounded-xl border border-zinc-700 bg-zinc-800/80 overflow-hidden shadow-xs shrink-0">
-          <button
-            type="button"
-            aria-label={t("questionRow.moveUp")}
-            disabled={index === 0}
-            onClick={() => onMove(index, -1)}
-            className="flex h-7 w-7 items-center justify-center text-zinc-400 transition hover:bg-zinc-700 hover:text-white disabled:opacity-20 disabled:hover:bg-transparent"
-          >
-            <ChevronUp size={15} />
-          </button>
-          <div className="h-px w-full bg-zinc-700/80" />
-          <button
-            type="button"
-            aria-label={t("questionRow.moveDown")}
-            disabled={index === total - 1}
-            onClick={() => onMove(index, 1)}
-            className="flex h-7 w-7 items-center justify-center text-zinc-400 transition hover:bg-zinc-700 hover:text-white disabled:opacity-20 disabled:hover:bg-transparent"
-          >
-            <ChevronDown size={15} />
-          </button>
+    <article className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-md transition-all hover:border-zinc-700">
+      {/* Header bar: Question number, Reorder & Action buttons */}
+      <div className="flex items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
+        <div className="flex items-center gap-2">
+          {/* Question / Round Number Badge */}
+          <span className="flex items-center rounded-lg bg-amber-400 px-2.5 py-1 text-xs font-black tracking-wide text-zinc-950 shadow-xs">
+            {t("questionRow.questionNumber")} {index + 1}
+          </span>
         </div>
 
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="flex h-5 items-center justify-center rounded-md bg-amber-400/10 px-2 text-[11px] font-bold tracking-wider text-amber-300">
-              {t("questionRow.questionNumber")} {index + 1}
-            </span>
+        {/* Controls: Reorder Up/Down + Edit + Delete */}
+        <div className="flex items-center gap-2">
+          {/* Stepper buttons */}
+          <div className="flex rounded-xl border border-zinc-700/80 bg-zinc-800/80 overflow-hidden shadow-xs">
+            <button
+              type="button"
+              aria-label={t("questionRow.moveUp")}
+              disabled={index === 0}
+              onClick={() => onMove(index, -1)}
+              className="flex h-8 w-8 items-center justify-center text-zinc-400 transition hover:bg-zinc-700 hover:text-white disabled:opacity-20 disabled:hover:bg-transparent"
+            >
+              <ChevronUp size={16} />
+            </button>
+            <div className="w-px bg-zinc-700/80" />
+            <button
+              type="button"
+              aria-label={t("questionRow.moveDown")}
+              disabled={index === total - 1}
+              onClick={() => onMove(index, 1)}
+              className="flex h-8 w-8 items-center justify-center text-zinc-400 transition hover:bg-zinc-700 hover:text-white disabled:opacity-20 disabled:hover:bg-transparent"
+            >
+              <ChevronDown size={16} />
+            </button>
           </div>
-          <h3 className="mt-1.5 text-base font-semibold text-white">{question.content}</h3>
-          <ul className="mt-3 flex flex-wrap gap-2.5">
-            {answers.map((answer) => (
-              <li
-                key={answer.id}
-                className="flex items-center gap-2.5 rounded-xl border border-zinc-700/80 bg-zinc-800/90 px-3 py-1.5 text-xs shadow-sm"
-              >
-                <span className="font-semibold text-white">{answer.content}</span>
-                <span className="flex items-center rounded-md bg-amber-400 px-2 py-0.5 text-[11px] font-black tabular-nums text-zinc-950 shadow-xs">
-                  {answer.points} {t("questionRow.pts")}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
 
-        {/* Edit and Delete Actions */}
-        <div className="flex items-center gap-2 pt-0.5 shrink-0">
+          {/* Edit Button */}
           <button
             type="button"
             aria-label={t("questionRow.editAria")}
             onClick={() => onEdit(question.id)}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-300 transition hover:border-amber-400/80 hover:bg-amber-400/10 hover:text-amber-300 shadow-xs"
+            className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-700/80 bg-zinc-800/80 px-3 text-xs font-semibold text-zinc-200 transition hover:border-amber-400/80 hover:bg-amber-400/10 hover:text-amber-300 shadow-xs"
           >
-            <Pencil size={15} />
+            <Pencil size={13} />
+            <span>{t("questionRow.edit")}</span>
           </button>
+
+          {/* Delete Button */}
           <button
             type="button"
             aria-label={t("questionRow.deleteAria")}
             onClick={() => onDelete(question)}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-400 transition hover:border-red-500/80 hover:bg-red-500/10 hover:text-red-400 shadow-xs"
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-700/80 bg-zinc-800/80 text-zinc-400 transition hover:border-red-500/80 hover:bg-red-500/10 hover:text-red-400 shadow-xs"
           >
-            <Trash2 size={15} />
+            <Trash2 size={14} />
           </button>
         </div>
       </div>
+
+      {/* Question Prompt Title */}
+      <h3 className="mt-3.5 text-lg font-bold text-white tracking-wide leading-snug">
+        {question.content}
+      </h3>
+
+      {/* Ranked Answers Grid (2-Column structured layout) */}
+      {answers.length > 0 ? (
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          {answers.map((answer, answerIndex) => (
+            <div
+              key={answer.id}
+              className="flex items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-950/50 px-3.5 py-2 transition-all hover:border-zinc-700/80"
+            >
+              {/* Left: Rank Badge + Content */}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-zinc-700/80 bg-zinc-800 text-[11px] font-bold text-zinc-300">
+                  {answerIndex + 1}
+                </span>
+                <span className="truncate text-sm font-semibold text-zinc-100" title={answer.content}>
+                  {answer.content}
+                </span>
+              </div>
+
+              {/* Right: Points Tag */}
+              <span className="shrink-0 rounded-lg border border-zinc-700/60 bg-zinc-800/80 px-2.5 py-0.5 text-xs font-bold tabular-nums text-zinc-300">
+                {answer.points} {t("questionRow.pts")}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-3 text-xs italic text-zinc-500">
+          {t("library.noQuestions")}
+        </p>
+      )}
     </article>
   );
 }
