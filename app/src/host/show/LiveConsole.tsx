@@ -28,7 +28,7 @@ function AnswerRow({ answer }: AnswerRowProps) {
 
   return (
     <div
-      className={`flex items-center gap-4 rounded-xl border px-4 py-3 transition-all duration-200 ${
+      className={`flex items-center gap-4 rounded-xl border px-4 py-2.5 transition-all duration-200 ${
         isAnswered
           ? "border-zinc-800/80 bg-zinc-900/40 opacity-70"
           : "border-zinc-800 bg-zinc-900/90 hover:border-zinc-700 shadow-sm"
@@ -93,33 +93,55 @@ function TeamColumn({
   const { t } = useI18n();
   const isRed = side === "RED";
   const teamClass = isRed
-    ? "border-red-900/60 bg-gradient-to-b from-red-950/40 to-zinc-900/80 host-glow-red"
-    : "border-blue-900/60 bg-gradient-to-b from-blue-950/40 to-zinc-900/80 host-glow-blue";
+    ? "border-red-900/60 bg-gradient-to-r from-red-950/40 via-zinc-900/80 to-zinc-900/80"
+    : "border-blue-900/60 bg-gradient-to-r from-blue-950/40 via-zinc-900/80 to-zinc-900/80";
   const solidClass = isRed
-    ? "bg-red-600 text-white shadow-lg shadow-red-900/30 hover:bg-red-500"
-    : "bg-blue-600 text-white shadow-lg shadow-blue-900/30 hover:bg-blue-500";
+    ? "bg-red-600 text-white shadow-md shadow-red-900/30 hover:bg-red-500"
+    : "bg-blue-600 text-white shadow-md shadow-blue-900/30 hover:bg-blue-500";
 
   return (
-    <section className={`flex flex-col gap-3 rounded-2xl border p-5 backdrop-blur-md ${teamClass}`}>
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-            {isRed ? t("liveConsole.red") : t("liveConsole.blue")}
-          </p>
-          <h3 className="truncate text-2xl font-bold text-white">{name || side}</h3>
+    <section className={`flex flex-col gap-2 rounded-xl border p-3 backdrop-blur-md ${teamClass}`}>
+      {/* Row 1: Team Name + Lost Chances + Points */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-baseline gap-2 min-w-0">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+            {isRed ? t("liveConsole.red") : t("liveConsole.blue")}:
+          </span>
+          <h3 className="truncate text-base font-bold text-white">{name || side}</h3>
         </div>
-        <div className="flex flex-col items-end">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Points</span>
-          <p className="text-3xl font-bold tabular-nums text-white drop-shadow">{points}</p>
+
+        {/* Mini Lost Chances */}
+        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg border border-zinc-800/80 bg-zinc-950/70">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className={`flex h-5 w-5 items-center justify-center rounded transition-all ${
+                i < lostChances
+                  ? isRed
+                    ? "bg-red-950/80 border border-red-500/50"
+                    : "bg-blue-950/80 border border-blue-500/50"
+                  : "bg-zinc-900/40 border border-zinc-800/60"
+              }`}
+            >
+              <FamiliadaStrike active={i < lostChances} size={13} />
+            </div>
+          ))}
+        </div>
+
+        {/* Total Points Counter */}
+        <div className="flex items-baseline gap-1.5 shrink-0 pl-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">PTS</span>
+          <span className="text-xl font-black tabular-nums text-white drop-shadow">{points}</span>
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 pt-2">
+      {/* Row 2: Strike & Award Round Buttons Side-by-Side */}
+      <div className="grid grid-cols-2 gap-2">
         <button
           type="button"
           disabled={lostChances >= 3}
           onClick={() => onStrike(side)}
-          className={`min-h-12 rounded-xl px-4 text-base font-bold transition ${solidClass} disabled:opacity-40 disabled:cursor-not-allowed`}
+          className={`min-h-9 rounded-lg px-3 text-xs font-bold transition ${solidClass} disabled:opacity-40 disabled:cursor-not-allowed`}
         >
           {t("liveConsole.strike")}
         </button>
@@ -127,34 +149,12 @@ function TeamColumn({
           type="button"
           disabled={awardDisabled}
           onClick={() => onAward(side)}
-          className={`min-h-11 rounded-xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:bg-white/10 disabled:opacity-40 ${
+          className={`min-h-9 rounded-lg border border-white/20 px-3 text-xs font-semibold text-white transition hover:bg-white/10 disabled:opacity-40 ${
             isRed ? "bg-red-600/30" : "bg-blue-600/30"
           }`}
         >
           {t("liveConsole.awardRound")}
         </button>
-      </div>
-
-      <div className="mt-auto flex items-center justify-between rounded-xl border border-zinc-800/80 bg-zinc-950/60 px-3 py-2.5">
-        <span className="text-xs uppercase tracking-wide text-zinc-400 font-medium">
-          {t("liveConsole.lostChances")}
-        </span>
-        <div className="flex items-center gap-2">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-all ${
-                i < lostChances
-                  ? isRed
-                    ? "border-red-500/60 bg-red-950/60 shadow-sm shadow-red-900/50"
-                    : "border-blue-500/60 bg-blue-950/60 shadow-sm shadow-blue-900/50"
-                  : "border-zinc-800/80 bg-zinc-900/40"
-              }`}
-            >
-              <FamiliadaStrike active={i < lostChances} size={22} />
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );
@@ -241,24 +241,24 @@ export function LiveConsole() {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <header className="flex items-start justify-between gap-4 border-b border-zinc-800 px-6 py-4">
+      <header className="flex items-start justify-between gap-4 border-b border-zinc-800/80 px-6 py-3">
         <div className="min-w-0">
           <p className="text-xs uppercase tracking-wide text-zinc-500">
             {t("liveConsole.currentQuestion")}
           </p>
-          <h2 className="text-2xl font-semibold text-zinc-50">
+          <h2 className="text-xl font-bold text-white">
             {question || t("liveConsole.waitingForRound")}
           </h2>
-          <p className="mt-1 text-sm text-zinc-400">
+          <p className="mt-0.5 text-xs text-zinc-400">
             {t("liveConsole.roundPoints")}{" "}
-            <span className="font-semibold text-amber-300">{points}</span>
+            <span className="font-bold text-amber-300">{points}</span>
           </p>
         </div>
         <div className="flex gap-2">
           <button
             type="button"
             onClick={requestExitGame}
-            className="inline-flex min-h-11 items-center rounded-lg border border-zinc-600 bg-zinc-900 px-4 text-sm text-zinc-100 hover:bg-zinc-800"
+            className="inline-flex min-h-10 items-center rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 text-xs font-semibold text-zinc-200 transition hover:bg-zinc-800"
           >
             {t("liveConsole.backToLibrary")}
           </button>
@@ -266,7 +266,7 @@ export function LiveConsole() {
             type="button"
             disabled={isFirstQuestion}
             onClick={() => window.api.prevQuestion()}
-            className="min-h-11 rounded-lg border border-zinc-600 bg-zinc-900 px-4 text-sm text-zinc-100 hover:bg-zinc-800 disabled:opacity-40"
+            className="min-h-10 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 text-xs font-semibold text-zinc-200 transition hover:bg-zinc-800 disabled:opacity-40"
           >
             {t("liveConsole.previous")}
           </button>
@@ -274,14 +274,14 @@ export function LiveConsole() {
             type="button"
             disabled={isLastQuestion}
             onClick={() => window.api.nextQuestion()}
-            className="min-h-11 rounded-lg border border-zinc-600 bg-zinc-900 px-4 text-sm text-zinc-100 hover:bg-zinc-800 disabled:opacity-40"
+            className="min-h-10 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 text-xs font-semibold text-zinc-200 transition hover:bg-zinc-800 disabled:opacity-40"
           >
             {t("liveConsole.next")}
           </button>
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-6 py-4">
+      <div className="flex-1 overflow-y-auto px-6 py-3">
         {orderedAnswers.length === 0 ? (
           <p className="text-sm text-zinc-500">
             {t("liveConsole.answersPlaceholder")}
@@ -295,7 +295,7 @@ export function LiveConsole() {
         )}
       </div>
 
-      <footer className="grid grid-cols-2 gap-4 border-t border-zinc-800 px-6 py-4">
+      <footer className="grid grid-cols-2 gap-4 border-t border-zinc-800/80 bg-zinc-950/40 px-6 py-3">
         <TeamColumn
           side="RED"
           name={redName}
