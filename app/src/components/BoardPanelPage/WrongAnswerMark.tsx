@@ -17,12 +17,12 @@ export function WrongAnswerMark({ amount }: WrongAnswerMarkProps) {
   ];
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-around py-4">
+    <div className="flex h-full w-full flex-col items-center justify-around py-1 sm:py-2">
       {strikes.map((slot) => (
-        <div key={slot.id} className="flex items-center justify-center py-2">
+        <div key={slot.id} className="flex items-center justify-center py-1">
           <FamiliadaStrike
             active={slot.active}
-            className="w-[6.5vw] min-w-[80px] max-w-[160px] aspect-[54/62] h-auto drop-shadow-md"
+            className="w-[6.5vw] min-w-[70px] max-w-[145px] aspect-[54/62] h-auto drop-shadow-md"
           />
         </div>
       ))}

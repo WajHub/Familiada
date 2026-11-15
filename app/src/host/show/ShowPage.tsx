@@ -34,24 +34,24 @@ function ShowSetup({ collectionTitle, onStart }: ShowSetupProps) {
     <div className="flex h-full items-center justify-center p-8">
       <form
         onSubmit={(event) => void submit(event)}
-        className="host-fade host-glass-card w-full max-w-lg rounded-3xl p-8 shadow-2xl transition-all"
+        className="host-fade host-glass-card w-full max-w-lg rounded-3xl px-8 pt-6 pb-8 shadow-2xl transition-all"
       >
-        <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-amber-400" />
-          <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-            {t("showSetup.setupTitle")}
+        <div className="flex flex-col items-center text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/20 bg-amber-400/10 px-3.5 py-1.5 mb-4 text-xs font-bold uppercase tracking-wider text-amber-300">
+            <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+            <span className="leading-none">{t("showSetup.setupTitle")}</span>
+          </div>
+          <h1 className="mt-6 text-2xl font-bold tracking-tight text-white leading-snug">{t("showSetup.nameTeams")}</h1>
+          {collectionTitle && (
+            <p className="mt-3 text-sm text-zinc-300 leading-relaxed">
+              {t("showSetup.chosenCollectionSentence")}{" "}
+              <span className="font-bold text-amber-400">{collectionTitle}</span>.
+            </p>
+          )}
+          <p className="mt-2 text-xs text-zinc-400 leading-relaxed">
+            {t("showSetup.setupSubtitle")}
           </p>
         </div>
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-white">{t("showSetup.nameTeams")}</h1>
-        {collectionTitle && (
-          <p className="mt-2 text-sm text-zinc-300">
-            {t("showSetup.chosenCollectionSentence")}{" "}
-            <span className="font-bold text-amber-400">{collectionTitle}</span>.
-          </p>
-        )}
-        <p className="mt-1 text-xs text-zinc-400">
-          {t("showSetup.setupSubtitle")}
-        </p>
 
         <div className="mt-6 flex flex-col gap-4">
           <label className="flex flex-col gap-2 text-sm font-semibold text-red-400">

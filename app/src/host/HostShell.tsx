@@ -41,15 +41,15 @@ function HostFrame() {
     <div className="host-root fixed inset-0 flex bg-zinc-950 text-zinc-100">
       <aside className="flex w-60 shrink-0 flex-col border-r border-zinc-800/80 bg-zinc-900/90 px-4 py-5 backdrop-blur-md">
         <div className="mb-6 px-2">
-          <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-400/20 text-xs font-black text-amber-400">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-400/20 text-xs font-black leading-none text-amber-400 select-none">
               F
             </span>
-            <p className="text-base font-bold tracking-wide text-white">
+            <span className="m-0 text-base font-bold leading-none tracking-wide text-white">
               {t("common.appName")}
-            </p>
+            </span>
           </div>
-          <p className="mt-0.5 text-[11px] font-medium uppercase tracking-wider text-zinc-500">
+          <p className="m-0 mt-5 text-[11px] font-medium uppercase tracking-wider text-zinc-500 leading-normal">
             {t("common.hostControl")}
           </p>
         </div>

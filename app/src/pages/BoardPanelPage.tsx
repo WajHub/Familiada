@@ -104,7 +104,7 @@ function BoardPanelPage() {
   }, []);
 
   return (
-    <div className="fixed inset-0 flex h-full w-full flex-col justify-between overflow-hidden bg-[#050608] p-4 sm:p-6 text-[#ffd000]">
+    <div className="fixed inset-0 flex h-full w-full flex-col justify-between overflow-hidden bg-[#050608] p-2 sm:p-3 lg:p-3.5 text-[#ffd000]">
       {/* Top Header with Team Scores & Center Round Display */}
       <TeamStats
         redName={redTeamName}
@@ -115,8 +115,8 @@ function BoardPanelPage() {
       />
 
       {/* Main Electronic Matrix Board */}
-      <main className="familiada-matrix-bg relative my-2 flex min-h-0 flex-1 flex-col justify-between rounded-xl border border-zinc-800/90 bg-[#08090c] p-6 shadow-2xl">
-        <div className="grid h-full min-h-0 grid-cols-12 items-stretch gap-4">
+      <main className="familiada-matrix-bg relative my-1 sm:my-1.5 flex min-h-0 flex-1 flex-col justify-between rounded-xl border border-zinc-800/90 bg-[#08090c] p-3 sm:p-4 lg:p-5 shadow-2xl">
+        <div className="grid h-full min-h-0 grid-cols-12 items-stretch gap-2 sm:gap-4">
           {/* Red Team Strikes Column (Left) */}
           <div className="col-span-2 flex h-full items-center justify-center">
             <WrongAnswerMark team="RED" amount={wrongAnswersRed} />
@@ -130,7 +130,7 @@ function BoardPanelPage() {
             {/* Answer Rows List */}
             <div
               id="answerContainer"
-              className="my-auto flex w-full flex-col justify-center gap-1.5 py-2"
+              className="flex-1 min-h-0 flex flex-col justify-evenly w-full py-0.5 sm:py-1"
             >
               {answers.map((answer) => (
                 <Answer
@@ -139,15 +139,21 @@ function BoardPanelPage() {
                   index={answer.index}
                   content={answer.content}
                   isVisible={answer.isVisible}
+                  totalAnswers={answers.length}
                 />
               ))}
             </div>
 
             {/* Bottom Round Points Sum */}
-            <div className="flex w-full items-baseline justify-end pt-2">
-              <div className="flex items-baseline gap-6 font-['CustomFont',sans-serif] text-[2.6vw] tracking-wider text-[#ffd000] drop-shadow-[0_0_8px_rgba(255,208,0,0.6)]">
+            <div className="flex w-full shrink-0 items-baseline justify-end pt-1 sm:pt-1.5">
+              <div
+                style={{ fontSize: "min(2.35vw, 4.4vh)" }}
+                className="flex items-baseline gap-4 sm:gap-6 font-['CustomFont',sans-serif] leading-none tracking-wider text-[#ffd000] drop-shadow-[0_0_8px_rgba(255,208,0,0.6)]"
+              >
                 <span>{t("board.total").toUpperCase()}</span>
-                <span className="min-w-[4rem] text-right tabular-nums">{questionPoints}</span>
+                <span className="min-w-[3.5rem] sm:min-w-[4rem] text-right tabular-nums">
+                  {questionPoints}
+                </span>
               </div>
             </div>
           </div>

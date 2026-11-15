@@ -3,9 +3,15 @@ interface AnswerProps {
   index: number;
   content: string;
   isVisible: boolean;
+  totalAnswers?: number;
 }
 
-export function Answer({ index, content, isVisible }: AnswerProps) {
+export function Answer({
+  index,
+  content,
+  isVisible,
+  totalAnswers = 6,
+}: AnswerProps) {
   let text = "";
   let points = "";
 
@@ -19,10 +25,24 @@ export function Answer({ index, content, isVisible }: AnswerProps) {
     }
   }
 
+  // Dynamic typography: scales automatically based on how many answers are active on the board,
+  // guaranteeing up to 10 answers fit perfectly on 40"-60" displays while filling maximum screen space.
+  const fontSizeStyle =
+    totalAnswers >= 9
+      ? "min(1.85vw, 3.8vh)"
+      : totalAnswers >= 7
+      ? "min(2.1vw, 4.5vh)"
+      : "min(2.4vw, 5.5vh)";
+
   return (
-    <div className="flex w-full items-baseline justify-between py-1 font-['CustomFont',sans-serif] text-[2.5vw] leading-normal tracking-wide text-[#ffd000]">
-      <div className="flex min-w-0 flex-1 items-baseline gap-4 overflow-hidden">
-        <span className="w-8 shrink-0 text-right">{index}</span>
+    <div
+      style={{ fontSize: fontSizeStyle }}
+      className="flex w-full items-baseline justify-between font-['CustomFont',sans-serif] leading-tight tracking-wide text-[#ffd000]"
+    >
+      <div className="flex min-w-0 flex-1 items-baseline gap-3 sm:gap-4 overflow-hidden">
+        <span className="w-[2.2em] min-w-[2.2em] shrink-0 text-right tabular-nums">
+          {index}
+        </span>
         {isVisible ? (
           <span className="truncate">{text}</span>
         ) : (

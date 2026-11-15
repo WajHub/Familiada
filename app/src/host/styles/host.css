@@ -7,6 +7,16 @@
   appearance: none;
 }
 
+.host-root p,
+.host-root h1,
+.host-root h2,
+.host-root h3,
+.host-root h4,
+.host-root h5,
+.host-root h6 {
+  margin: 0;
+}
+
 .host-root ul,
 .host-root ol {
   margin: 0;

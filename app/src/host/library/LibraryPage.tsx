@@ -201,7 +201,7 @@ export function LibraryPage() {
               </div>
             ) : (
               <div className="mt-1 flex items-center gap-2.5">
-                <h2 className="truncate text-xl font-bold text-white">
+                <h2 className="m-0 truncate text-xl font-bold leading-7 text-white">
                   {selected ? selected.title : t("library.chooseCollection")}
                 </h2>
                 {selected && (
