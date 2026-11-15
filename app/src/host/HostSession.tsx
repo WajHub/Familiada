@@ -38,6 +38,7 @@ interface HostSessionValue {
   deleteCollection: (id: string) => Promise<void>;
   refreshQuestions: () => Promise<void>;
   moveQuestion: (index: number, direction: -1 | 1) => void;
+  reorderQuestionsList: (fromIndex: number, toIndex: number) => void;
   removeQuestion: (id: number) => void;
 }
 
@@ -313,6 +314,39 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
     [refreshQuestions]
   );
 
+  const reorderQuestionsList = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      if (fromIndex === toIndex) {
+        return;
+      }
+      const currentQuestions = questionsRef.current;
+      if (
+        fromIndex < 0 ||
+        fromIndex >= currentQuestions.length ||
+        toIndex < 0 ||
+        toIndex >= currentQuestions.length
+      ) {
+        return;
+      }
+      const reordered = [...currentQuestions];
+      const [movedItem] = reordered.splice(fromIndex, 1);
+      if (!movedItem) {
+        return;
+      }
+      reordered.splice(toIndex, 0, movedItem);
+      questionsRef.current = reordered;
+      setQuestions(reordered);
+
+      void window.api
+        .reorderQuestions(reordered.map((question) => question.id))
+        .catch((error) => {
+          console.error("Failed to persist questions order:", error);
+          void refreshQuestions();
+        });
+    },
+    [refreshQuestions]
+  );
+
   const removeQuestion = useCallback((id: number) => {
     setQuestions((currentQuestions) => currentQuestions.filter((question) => question.id !== id));
   }, []);
@@ -349,6 +383,7 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
       deleteCollection,
       refreshQuestions,
       moveQuestion,
+      reorderQuestionsList,
       removeQuestion,
     }),
     [
@@ -377,6 +412,7 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
       deleteCollection,
       refreshQuestions,
       moveQuestion,
+      reorderQuestionsList,
       removeQuestion,
     ]
   );

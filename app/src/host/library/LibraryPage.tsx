@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Check, Copy, Folder, Pencil, Plus, Trash2, X, HelpCircle } from "lucide-react";
 import { useHostSession } from "../HostSession";
 import { useI18n } from "../../i18n/I18nContext";
@@ -22,6 +22,7 @@ export function LibraryPage() {
     deleteCollection,
     refreshQuestions,
     moveQuestion,
+    reorderQuestionsList,
     removeQuestion,
   } = useHostSession();
 
@@ -35,6 +36,11 @@ export function LibraryPage() {
   const [editingTitle, setEditingTitle] = useState("");
   const [savingTitle, setSavingTitle] = useState(false);
   const [copying, setCopying] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [hoverTarget, setHoverTarget] = useState<{
+    cardIndex: number;
+    position: "above" | "below";
+  } | null>(null);
 
   const selected = collections.find((collection) => String(collection.id) === selectedCollectionId);
 
@@ -85,9 +91,200 @@ export function LibraryPage() {
     setEditorOpen(true);
   };
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollAnimationRef = useRef<number | null>(null);
+  const scrollSpeedRef = useRef<number>(0);
+
+  const stopAutoScroll = useCallback(() => {
+    if (scrollAnimationRef.current !== null) {
+      cancelAnimationFrame(scrollAnimationRef.current);
+      scrollAnimationRef.current = null;
+    }
+    scrollSpeedRef.current = 0;
+  }, []);
+
+  const startAutoScroll = useCallback(() => {
+    if (scrollAnimationRef.current !== null) {
+      return;
+    }
+    const scrollStep = () => {
+      const container = scrollContainerRef.current;
+      if (container && scrollSpeedRef.current !== 0) {
+        container.scrollTop += scrollSpeedRef.current;
+        scrollAnimationRef.current = requestAnimationFrame(scrollStep);
+      } else {
+        stopAutoScroll();
+      }
+    };
+    scrollAnimationRef.current = requestAnimationFrame(scrollStep);
+  }, [stopAutoScroll]);
+
+  const checkAutoScroll = useCallback(
+    (clientY: number) => {
+      const container = scrollContainerRef.current;
+      if (!container || draggedIndex === null) {
+        stopAutoScroll();
+        return;
+      }
+      const rect = container.getBoundingClientRect();
+      const EDGE_THRESHOLD = 120; // px zone from top/bottom where auto-scroll activates
+      const MAX_SPEED = 24; // max px per frame
+
+      const distFromTop = clientY - rect.top;
+      const distFromBottom = rect.bottom - clientY;
+
+      if (distFromTop < EDGE_THRESHOLD && distFromTop >= -40) {
+        const ratio = 1 - Math.max(0, distFromTop) / EDGE_THRESHOLD;
+        scrollSpeedRef.current = -Math.max(4, Math.round(ratio * MAX_SPEED));
+        startAutoScroll();
+      } else if (distFromBottom < EDGE_THRESHOLD && distFromBottom >= -40) {
+        const ratio = 1 - Math.max(0, distFromBottom) / EDGE_THRESHOLD;
+        scrollSpeedRef.current = Math.max(4, Math.round(ratio * MAX_SPEED));
+        startAutoScroll();
+      } else {
+        stopAutoScroll();
+      }
+    },
+    [draggedIndex, startAutoScroll, stopAutoScroll]
+  );
+
+  useEffect(() => {
+    return () => {
+      stopAutoScroll();
+    };
+  }, [stopAutoScroll]);
+
   const openEdit = (id: number) => {
     setEditingId(id);
     setEditorOpen(true);
+  };
+
+  function calculateNewIndex(
+    fromIndex: number,
+    targetIndex: number,
+    position: "above" | "below"
+  ): number {
+    if (fromIndex === targetIndex) {
+      return fromIndex;
+    }
+    if (position === "above") {
+      return fromIndex < targetIndex ? targetIndex - 1 : targetIndex;
+    } else {
+      return fromIndex < targetIndex ? targetIndex : targetIndex + 1;
+    }
+  }
+
+  const handleDragStart = (index: number) => {
+    requestAnimationFrame(() => {
+      setDraggedIndex(index);
+    });
+  };
+
+  const handleDragEnd = () => {
+    stopAutoScroll();
+    setDraggedIndex(null);
+    setHoverTarget(null);
+  };
+
+  const handleCardDragOver = (e: React.DragEvent, cardIndex: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (draggedIndex === null) {
+      return;
+    }
+
+    checkAutoScroll(e.clientY);
+
+    if (cardIndex === draggedIndex) {
+      setHoverTarget(null);
+      return;
+    }
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const relY = e.clientY - rect.top;
+    const isTopHalf = relY < rect.height / 2;
+    const position = isTopHalf ? "above" : "below";
+    setHoverTarget({ cardIndex, position });
+  };
+
+  const handleCardDrop = (e: React.DragEvent, cardIndex: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    stopAutoScroll();
+
+    if (draggedIndex === null) {
+      setHoverTarget(null);
+      return;
+    }
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const relY = e.clientY - rect.top;
+    const isTopHalf = relY < rect.height / 2;
+    const position = isTopHalf ? "above" : "below";
+
+    const newIndex = calculateNewIndex(draggedIndex, cardIndex, position);
+    if (newIndex !== draggedIndex) {
+      reorderQuestionsList(draggedIndex, newIndex);
+    }
+
+    setDraggedIndex(null);
+    setHoverTarget(null);
+  };
+
+  const handleContainerDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (draggedIndex === null) {
+      return;
+    }
+
+    checkAutoScroll(e.clientY);
+
+    const container = scrollContainerRef.current;
+    if (container && questions.length > 0) {
+      const cards = container.querySelectorAll("article");
+      if (cards.length > 0) {
+        const firstRect = cards[0].getBoundingClientRect();
+        const lastRect = cards[cards.length - 1].getBoundingClientRect();
+        if (e.clientY < firstRect.top) {
+          setHoverTarget({ cardIndex: 0, position: "above" });
+        } else if (e.clientY > lastRect.bottom) {
+          setHoverTarget({ cardIndex: questions.length - 1, position: "below" });
+        }
+      }
+    }
+  };
+
+  const handleContainerDragLeave = (e: React.DragEvent) => {
+    if (
+      scrollContainerRef.current &&
+      !scrollContainerRef.current.contains(e.relatedTarget as Node)
+    ) {
+      stopAutoScroll();
+    }
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (draggedIndex !== null && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop += e.deltaY;
+    }
+  };
+
+  const handleContainerDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    stopAutoScroll();
+    if (draggedIndex !== null && hoverTarget !== null) {
+      const newIndex = calculateNewIndex(
+        draggedIndex,
+        hoverTarget.cardIndex,
+        hoverTarget.position
+      );
+      if (newIndex !== draggedIndex) {
+        reorderQuestionsList(draggedIndex, newIndex);
+      }
+    }
+    setDraggedIndex(null);
+    setHoverTarget(null);
   };
 
   return (
@@ -272,7 +469,14 @@ export function LibraryPage() {
         </header>
 
         {/* Question List View */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div
+          ref={scrollContainerRef}
+          onDragOver={handleContainerDragOver}
+          onDragLeave={handleContainerDragLeave}
+          onDrop={handleContainerDrop}
+          onWheel={handleWheel}
+          className="flex-1 overflow-y-auto p-6"
+        >
           {errorMessage && (
             <p className="mb-4 rounded-xl border border-amber-800 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
               {errorMessage}
@@ -303,18 +507,42 @@ export function LibraryPage() {
           )}
 
           {/* Question Cards List */}
-          <div className="flex flex-col gap-4">
-            {questions.map((question, index) => (
-              <QuestionRow
-                key={question.id}
-                question={question}
-                index={index}
-                total={questions.length}
-                onMove={moveQuestion}
-                onEdit={openEdit}
-                onDelete={setQuestionToDelete}
-              />
-            ))}
+          <div
+            className="flex flex-col gap-4"
+            onDragOver={handleContainerDragOver}
+            onDrop={handleContainerDrop}
+          >
+            {questions.map((question, index) => {
+              const isDragging = draggedIndex === index;
+              const showIndicatorAbove =
+                hoverTarget !== null &&
+                hoverTarget.cardIndex === index &&
+                hoverTarget.position === "above";
+
+              const showIndicatorBelow =
+                hoverTarget !== null &&
+                hoverTarget.cardIndex === index &&
+                hoverTarget.position === "below";
+
+              return (
+                <QuestionRow
+                  key={question.id}
+                  question={question}
+                  index={index}
+                  total={questions.length}
+                  isDragging={isDragging}
+                  showIndicatorAbove={showIndicatorAbove}
+                  showIndicatorBelow={showIndicatorBelow}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={handleCardDragOver}
+                  onDrop={handleCardDrop}
+                  onMove={moveQuestion}
+                  onEdit={openEdit}
+                  onDelete={setQuestionToDelete}
+                />
+              );
+            })}
           </div>
         </div>
       </section>

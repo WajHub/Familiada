@@ -102,6 +102,8 @@ export const pl: Translations = {
     moveDown: "Przesuń pytanie w dół",
     editAria: "Edytuj pytanie",
     deleteAria: "Usuń pytanie",
+    dragHandle: "Zmień kolejność",
+    dragHandleTooltip: "Przeciągnij, aby zmienić kolejność pytań",
   },
   showSetup: {
     setupTitle: "Przygotowanie gry",

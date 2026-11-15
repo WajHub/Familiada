@@ -9,8 +9,12 @@ try {
   const app = electron.app || (electron.remote && electron.remote.app);
   if (app && app.isPackaged) {
     const userDataPath = app.getPath('userData');
+    if (!fs.existsSync(userDataPath)) {
+      fs.mkdirSync(userDataPath, { recursive: true });
+    }
     dbPath = path.join(userDataPath, 'database.sqlite');
-    if (!fs.existsSync(dbPath)) {
+    const shouldCopy = !fs.existsSync(dbPath) || fs.statSync(dbPath).size === 0;
+    if (shouldCopy) {
       const templatePath = path.join(__dirname, 'database.sqlite');
       if (fs.existsSync(templatePath)) {
         fs.copyFileSync(templatePath, dbPath);
@@ -18,7 +22,7 @@ try {
     }
   }
 } catch (e) {
-  // Running outside Electron (e.g. sequelize CLI or tests)
+  console.error('Error configuring SQLite database path:', e);
 }
 
 // Inicjalizacja Sequelize

@@ -100,6 +100,8 @@ export const en = {
     moveDown: "Move question down",
     editAria: "Edit question",
     deleteAria: "Delete question",
+    dragHandle: "Reorder",
+    dragHandleTooltip: "Drag to reorder questions",
   },
   showSetup: {
     setupTitle: "Show setup",

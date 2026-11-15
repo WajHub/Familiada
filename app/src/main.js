@@ -271,7 +271,12 @@ app.on("before-quit", (event) => {
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  try {
+    await sequelize.sync();
+  } catch (err) {
+    console.error("Failed to sync database:", err);
+  }
   createWindow();
 
   app.on("activate", () => {
