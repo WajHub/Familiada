@@ -23,6 +23,7 @@ function HostFrame() {
     questions,
     loading,
     isGameActive,
+    selectedCollection,
     confirmExitOpen,
     requestExitGame,
     cancelExitGame,
@@ -99,6 +100,11 @@ function HostFrame() {
             <p className="mt-1 text-xs leading-relaxed text-zinc-400">
               {t("sidebar.showInProgressDesc")}
             </p>
+            {selectedCollection && (
+              <p className="mt-1 text-xs leading-relaxed text-zinc-400">
+                {t("sidebar.activeCollection")}: {selectedCollection.title}
+              </p>
+            )}
           </div>
         )}
         {isGameActive && (

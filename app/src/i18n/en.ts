@@ -14,6 +14,7 @@ export const en = {
     live: "Live",
     showInProgress: "Show in progress",
     showInProgressDesc: "Live on the scoreboard. Scores and answers are active.",
+    activeCollection: "Question set",
     gameHistory: "Game History",
     undo: "Undo",
     redo: "Redo",
@@ -75,6 +76,7 @@ export const en = {
   showSetup: {
     setupTitle: "Show setup",
     nameTeams: "Name the teams",
+    chosenCollectionSentence: "Selected question set:",
     setupSubtitle: "The question order from the library is the round order for this show.",
     redTeam: "Red team",
     blueTeam: "Blue team",

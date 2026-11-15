@@ -16,6 +16,7 @@ export const pl: Translations = {
     live: "Na żywo",
     showInProgress: "Gra w toku",
     showInProgressDesc: "Wyniki i odpowiedzi są aktywne na tablicy.",
+    activeCollection: "Zestaw pytań",
     gameHistory: "Historia gry",
     undo: "Cofnij",
     redo: "Ponów",
@@ -77,6 +78,7 @@ export const pl: Translations = {
   showSetup: {
     setupTitle: "Przygotowanie gry",
     nameTeams: "Nazwij drużyny",
+    chosenCollectionSentence: "Wybrany zestaw pytań:",
     setupSubtitle: "Kolejność pytań z biblioteki określa kolejność rund w tej grze.",
     redTeam: "Drużyna Czerwona",
     blueTeam: "Drużyna Niebieska",

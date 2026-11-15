@@ -5,10 +5,11 @@ import { useI18n } from "../../i18n/I18nContext";
 import { LiveConsole } from "./LiveConsole";
 
 interface ShowSetupProps {
+  collectionTitle?: string;
   onStart: (redName: string, blueName: string) => Promise<void>;
 }
 
-function ShowSetup({ onStart }: ShowSetupProps) {
+function ShowSetup({ collectionTitle, onStart }: ShowSetupProps) {
   const { t } = useI18n();
   const [redName, setRedName] = useState("");
   const [blueName, setBlueName] = useState("");
@@ -42,7 +43,13 @@ function ShowSetup({ onStart }: ShowSetupProps) {
           </p>
         </div>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-white">{t("showSetup.nameTeams")}</h1>
-        <p className="mt-1 text-sm text-zinc-400">
+        {collectionTitle && (
+          <p className="mt-2 text-sm text-zinc-300">
+            {t("showSetup.chosenCollectionSentence")}{" "}
+            <span className="font-bold text-amber-400">{collectionTitle}</span>.
+          </p>
+        )}
+        <p className="mt-1 text-xs text-zinc-400">
           {t("showSetup.setupSubtitle")}
         </p>
 
@@ -92,7 +99,7 @@ function ShowSetup({ onStart }: ShowSetupProps) {
 
 export function ShowPage() {
   const { t } = useI18n();
-  const { questions, isGameActive, setIsGameActive } = useHostSession();
+  const { questions, isGameActive, setIsGameActive, selectedCollection } = useHostSession();
 
   if (questions.length === 0) {
     return (
@@ -114,6 +121,7 @@ export function ShowPage() {
   if (!isGameActive) {
     return (
       <ShowSetup
+        collectionTitle={selectedCollection?.title}
         onStart={async (redName, blueName) => {
           await window.api.setGameData(
             redName,

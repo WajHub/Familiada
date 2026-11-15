@@ -76,9 +76,6 @@ export function QuestionRow({
             <span className="flex h-5 items-center justify-center rounded-md bg-amber-400/10 px-2 text-[11px] font-bold tracking-wider text-amber-300">
               {t("questionRow.questionNumber")} {index + 1}
             </span>
-            <span className="text-xs text-zinc-500 font-medium">
-              {answers.length} {answers.length === 1 ? "answer" : "answers"}
-            </span>
           </div>
           <h3 className="mt-1.5 text-base font-semibold text-white">{question.content}</h3>
           <ul className="mt-3 flex flex-wrap gap-2.5">

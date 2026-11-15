@@ -15,6 +15,7 @@ import type { CollectionSummary, QuestionListItem } from "./types";
 interface HostSessionValue {
   collections: CollectionSummary[];
   selectedCollectionId: string;
+  selectedCollection: CollectionSummary | null;
   questions: QuestionListItem[];
   loading: boolean;
   errorMessage: string | null;
@@ -304,10 +305,16 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
     setQuestions((currentQuestions) => currentQuestions.filter((question) => question.id !== id));
   }, []);
 
+  const selectedCollection = useMemo(
+    () => collections.find((col) => String(col.id) === selectedCollectionId) ?? null,
+    [collections, selectedCollectionId]
+  );
+
   const value = useMemo<HostSessionValue>(
     () => ({
       collections,
       selectedCollectionId,
+      selectedCollection,
       questions,
       loading,
       errorMessage,
@@ -334,6 +341,7 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
     [
       collections,
       selectedCollectionId,
+      selectedCollection,
       questions,
       loading,
       errorMessage,
