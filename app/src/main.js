@@ -297,6 +297,13 @@ ipcMain.handle("saveCollection", async (_event, title) => {
 ipcMain.handle("deleteCollection", async (_event, id) => {
   return await Service.deleteCollection(id);
 });
+ipcMain.handle("updateCollection", async (_event, id, title) => {
+  const result = await Service.updateCollection(id, title);
+  if (gameLogic.getCollectionId() === Number(id)) {
+    await gameLogic.setCurrentCollection(id);
+  }
+  return result;
+});
 ipcMain.handle("setCurrentCollection", async (_event, id) => {
   return await gameLogic.setCurrentCollection(id);
 });

@@ -29,3 +29,7 @@ export async function fetchQuestion(questionId: number): Promise<QuestionListIte
   const row = await window.api.getQuestion(questionId);
   return toQuestionListItem(row);
 }
+
+export async function updateCollection(id: string | number, title: string): Promise<void> {
+  await window.api.updateCollection(id, title);
+}

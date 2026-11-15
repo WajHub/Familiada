@@ -49,6 +49,9 @@ export const en = {
     deleteCollectionMsg: "Delete this collection and its questions? This cannot be undone.",
     deleteQuestionTitle: "Delete question",
     deleteQuestionMsg: "Delete this question? This cannot be undone.",
+    editCollection: "Rename collection",
+    saveCollectionName: "Save name",
+    cancelEdit: "Cancel",
   },
   questionDialog: {
     newQuestion: "New question",

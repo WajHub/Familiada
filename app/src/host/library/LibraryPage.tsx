@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import { Check, Pencil, X } from "lucide-react";
 import { useHostSession } from "../HostSession";
 import { useI18n } from "../../i18n/I18nContext";
 import type { QuestionListItem } from "../types";
@@ -16,6 +17,7 @@ export function LibraryPage() {
     errorMessage,
     selectCollection,
     createCollection,
+    updateCollectionTitle,
     deleteCollection,
     refreshQuestions,
     moveQuestion,
@@ -28,8 +30,38 @@ export function LibraryPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null);
   const [questionToDelete, setQuestionToDelete] = useState<QuestionListItem | null>(null);
+  const [editingCollectionId, setEditingCollectionId] = useState<string | null>(null);
+  const [editingTitle, setEditingTitle] = useState("");
+  const [savingTitle, setSavingTitle] = useState(false);
 
   const selected = collections.find((collection) => String(collection.id) === selectedCollectionId);
+
+  const startEditCollection = (id: string, currentTitle: string) => {
+    setEditingCollectionId(id);
+    setEditingTitle(currentTitle);
+  };
+
+  const cancelEditCollection = () => {
+    setEditingCollectionId(null);
+    setEditingTitle("");
+  };
+
+  const saveCollectionTitle = async () => {
+    if (!editingCollectionId) {
+      return;
+    }
+    const trimmed = editingTitle.trim();
+    if (!trimmed) {
+      return;
+    }
+    setSavingTitle(true);
+    try {
+      await updateCollectionTitle(editingCollectionId, trimmed);
+      setEditingCollectionId(null);
+    } finally {
+      setSavingTitle(false);
+    }
+  };
 
   const create = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -73,6 +105,7 @@ export function LibraryPage() {
             {collections.map((collection) => {
               const id = String(collection.id);
               const selectedRow = id === selectedCollectionId;
+
               return (
                 <li key={collection.id}>
                   <button
@@ -125,11 +158,62 @@ export function LibraryPage() {
 
       <section className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between gap-4 border-b border-zinc-800 px-6 py-4">
-          <div>
+          <div className="min-w-0">
             <p className="text-xs uppercase tracking-wide text-zinc-500">{t("sidebar.library")}</p>
-            <h2 className="text-xl font-semibold text-zinc-50">
-              {selected ? selected.title : t("library.chooseCollection")}
-            </h2>
+            {selected && editingCollectionId === String(selected.id) ? (
+              <div className="mt-1 flex items-center gap-2">
+                <input
+                  autoFocus
+                  value={editingTitle}
+                  onChange={(e) => setEditingTitle(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      void saveCollectionTitle();
+                    } else if (e.key === "Escape") {
+                      e.preventDefault();
+                      cancelEditCollection();
+                    }
+                  }}
+                  disabled={savingTitle}
+                  className="rounded-xl border-2 border-amber-400 bg-zinc-900 px-3.5 py-1 text-xl font-bold text-white outline-none"
+                />
+                <button
+                  type="button"
+                  disabled={savingTitle || !editingTitle.trim()}
+                  onClick={() => void saveCollectionTitle()}
+                  title={t("library.saveCollectionName")}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-400 text-zinc-950 hover:bg-amber-300 disabled:opacity-40"
+                >
+                  <Check size={16} />
+                </button>
+                <button
+                  type="button"
+                  disabled={savingTitle}
+                  onClick={cancelEditCollection}
+                  title={t("library.cancelEdit")}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            ) : (
+              <div className="mt-1 flex items-center gap-2.5">
+                <h2 className="truncate text-xl font-bold text-white">
+                  {selected ? selected.title : t("library.chooseCollection")}
+                </h2>
+                {selected && (
+                  <button
+                    type="button"
+                    title={t("library.editCollection")}
+                    onClick={() => startEditCollection(String(selected.id), selected.title)}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800/80 text-zinc-400 transition hover:border-amber-400/80 hover:bg-amber-400/10 hover:text-amber-300 shadow-xs"
+                  >
+                    <Pencil size={14} />
+                  </button>
+                )}
+              </div>
+            )}
           </div>
           <button
             type="button"

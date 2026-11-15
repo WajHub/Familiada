@@ -89,6 +89,7 @@ export interface FamiliadaApi {
     WithDataValues<CollectionRecord> | CollectionRecord | null | undefined
   >;
   deleteCollection: (id: string | number) => Promise<unknown>;
+  updateCollection: (id: string | number, title: string) => Promise<unknown>;
   setGameData: (
     team1: string,
     team2: string,

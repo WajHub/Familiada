@@ -139,6 +139,19 @@ async function deleteAnswers(idQuestion) {
 }
 
 // Update
+async function updateCollection(eventOrId, maybeIdOrTitle, maybeTitle) {
+  let id;
+  let title;
+  if (maybeTitle !== undefined) {
+    id = maybeIdOrTitle;
+    title = maybeTitle;
+  } else {
+    id = eventOrId;
+    title = maybeIdOrTitle;
+  }
+  return await Collection.update({ title: title }, { where: { id: id } });
+}
+
 async function updateQuestion(arg1, arg2, arg3, arg4, arg5) {
   let id, questionContent, answersContent, answersPoints;
   if (arg5 !== undefined) {
@@ -215,6 +228,7 @@ module.exports = {
   deleteCollection,
   deleteQuestion,
   deleteAnswers,
+  updateCollection,
   updateQuestion,
   reorderQuestions,
 };

@@ -99,6 +99,7 @@ const API = {
   setGameData: (team1, team2, questionsId) =>
     ipcRenderer.invoke("setGameData", team1, team2, questionsId),
   saveCollection: (title) => ipcRenderer.invoke("saveCollection", title),
+  updateCollection: (id, title) => ipcRenderer.invoke("updateCollection", id, title),
   updateQuestion: (id, questionContent, answersContent, answersPoints) =>
     ipcRenderer.invoke(
       "updateQuestion",

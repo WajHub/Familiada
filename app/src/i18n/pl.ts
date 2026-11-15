@@ -51,6 +51,9 @@ export const pl: Translations = {
     deleteCollectionMsg: "Usunąć ten zestaw wraz z pytaniami? Tej operacji nie można cofnąć.",
     deleteQuestionTitle: "Usuń pytanie",
     deleteQuestionMsg: "Usunąć to pytanie? Tej operacji nie można cofnąć.",
+    editCollection: "Zmień nazwę zestawu",
+    saveCollectionName: "Zapisz nazwę",
+    cancelEdit: "Anuluj",
   },
   questionDialog: {
     newQuestion: "Nowe pytanie",

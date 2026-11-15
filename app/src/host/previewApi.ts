@@ -328,6 +328,14 @@ function createPreviewApi(): FamiliadaApi {
       collections.push(created);
       return model(created);
     },
+    updateCollection: async (id, title) => {
+      const numericId = Number(id);
+      const collection = collections.find((item) => item.id === numericId);
+      if (collection) {
+        collection.title = title;
+      }
+      return true;
+    },
     updateQuestion: async (id, questionContent, answersContent, answersPoints) => {
       const question = questions.find((item) => item.id === id);
       if (question) {
