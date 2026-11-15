@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, Pencil, Trash2 } from "lucide-react";
 import { fetchAnswers } from "../api";
+import { useI18n } from "../../i18n/I18nContext";
 import type { AnswerSummary, QuestionListItem } from "../types";
 
 interface QuestionRowProps {
@@ -20,6 +21,7 @@ export function QuestionRow({
   onEdit,
   onDelete,
 }: QuestionRowProps) {
+  const { t } = useI18n();
   const [answers, setAnswers] = useState<AnswerSummary[]>([]);
 
   useEffect(() => {
@@ -49,7 +51,7 @@ export function QuestionRow({
         <div className="flex flex-col gap-1">
           <button
             type="button"
-            aria-label="Move question up"
+            aria-label={t("questionRow.moveUp")}
             disabled={index === 0}
             onClick={() => onMove(index, -1)}
             className="rounded-md border border-zinc-700 bg-zinc-900 p-1.5 text-zinc-200 hover:bg-zinc-800 disabled:opacity-30"
@@ -58,7 +60,7 @@ export function QuestionRow({
           </button>
           <button
             type="button"
-            aria-label="Move question down"
+            aria-label={t("questionRow.moveDown")}
             disabled={index === total - 1}
             onClick={() => onMove(index, 1)}
             className="rounded-md border border-zinc-700 bg-zinc-900 p-1.5 text-zinc-200 hover:bg-zinc-800 disabled:opacity-30"
@@ -67,13 +69,13 @@ export function QuestionRow({
           </button>
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-xs uppercase tracking-wide text-zinc-500">Question {index + 1}</p>
+          <p className="text-xs uppercase tracking-wide text-zinc-500">{t("questionRow.questionNumber")} {index + 1}</p>
           <h3 className="mt-1 text-base font-medium text-zinc-50">{question.content}</h3>
           <ul className="mt-3 flex flex-col gap-1">
             {answers.map((answer) => (
               <li key={answer.id} className="text-sm text-zinc-300">
                 {answer.content}
-                <span className="ml-2 text-zinc-500">{answer.points} pts</span>
+                <span className="ml-2 text-zinc-500">{answer.points} {t("questionRow.pts")}</span>
               </li>
             ))}
           </ul>
@@ -81,7 +83,7 @@ export function QuestionRow({
         <div className="flex gap-2">
           <button
             type="button"
-            aria-label="Edit question"
+            aria-label={t("questionRow.editAria")}
             onClick={() => onEdit(question.id)}
             className="rounded-lg border border-zinc-700 bg-zinc-900 p-2 text-zinc-100 hover:bg-zinc-800"
           >
@@ -89,7 +91,7 @@ export function QuestionRow({
           </button>
           <button
             type="button"
-            aria-label="Delete question"
+            aria-label={t("questionRow.deleteAria")}
             onClick={() => onDelete(question)}
             className="rounded-lg border border-zinc-600 bg-zinc-900 p-2 text-zinc-100 hover:bg-zinc-800"
           >

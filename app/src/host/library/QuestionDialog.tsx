@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { fetchAnswers, fetchQuestion } from "../api";
+import { useI18n } from "../../i18n/I18nContext";
 import type { AnswerDraft } from "../types";
 import { Dialog } from "../ui/Dialog";
 
@@ -15,6 +16,7 @@ function emptyAnswer(): AnswerDraft {
 }
 
 export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionDialogProps) {
+  const { t } = useI18n();
   const [prompt, setPrompt] = useState("");
   const [answers, setAnswers] = useState<AnswerDraft[]>([emptyAnswer()]);
   const [saving, setSaving] = useState(false);
@@ -91,10 +93,14 @@ export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionD
   };
 
   return (
-    <Dialog open={open} title={isNew ? "New question" : "Edit question"} onClose={onClose}>
+    <Dialog
+      open={open}
+      title={isNew ? t("questionDialog.newQuestion") : t("questionDialog.editQuestion")}
+      onClose={onClose}
+    >
       <form onSubmit={(event) => void save(event)} className="flex flex-col gap-4">
         <label className="flex flex-col gap-2 text-sm text-zinc-300">
-          Question
+          {t("questionDialog.questionLabel")}
           <input
             required
             autoFocus
@@ -108,7 +114,7 @@ export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionD
           {answers.map((answer, index) => (
             <div key={answer.id} className="grid grid-cols-[1fr_6rem_auto] items-end gap-2">
               <label className="flex flex-col gap-1 text-sm text-zinc-300">
-                Answer {index + 1}
+                {t("questionDialog.answerLabel")} {index + 1}
                 <input
                   required
                   value={answer.content}
@@ -117,7 +123,7 @@ export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionD
                 />
               </label>
               <label className="flex flex-col gap-1 text-sm text-zinc-300">
-                Points
+                {t("questionDialog.pointsLabel")}
                 <input
                   required
                   type="number"
@@ -135,7 +141,7 @@ export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionD
                 }
                 className="rounded-lg border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800"
               >
-                Remove
+                {t("questionDialog.removeAnswer")}
               </button>
             </div>
           ))}
@@ -147,14 +153,14 @@ export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionD
             onClick={() => setAnswers((current) => [...current, emptyAnswer()])}
             className="rounded-lg border border-zinc-600 bg-zinc-900 px-4 py-2 text-sm text-zinc-100 hover:bg-zinc-800"
           >
-            Add answer
+            {t("questionDialog.addAnswer")}
           </button>
           <button
             type="submit"
             disabled={saving}
             className="rounded-lg bg-amber-400 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-50"
           >
-            {saving ? "Saving…" : "Save question"}
+            {saving ? t("questionDialog.saving") : t("questionDialog.saveQuestion")}
           </button>
         </div>
       </form>

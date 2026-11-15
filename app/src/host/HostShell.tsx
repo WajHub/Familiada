@@ -2,6 +2,8 @@ import { Clapperboard, ExternalLink, Library, Monitor, Redo2, Undo2 } from "luci
 import { NavLink, Outlet } from "react-router-dom";
 import { HostSessionProvider, useHostSession } from "./HostSession";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
+import { useI18n } from "../i18n/I18nContext";
+import { FlagGb, FlagPl } from "../i18n/flags";
 import "./styles/host.css";
 
 function navClass(isActive: boolean, disabled = false): string {
@@ -16,6 +18,7 @@ function navClass(isActive: boolean, disabled = false): string {
 }
 
 function HostFrame() {
+  const { t, language, setLanguage } = useI18n();
   const {
     questions,
     loading,
@@ -36,8 +39,12 @@ function HostFrame() {
   return (
     <div className="host-root fixed inset-0 flex bg-zinc-950 text-zinc-100">
       <aside className="flex w-56 shrink-0 flex-col border-r border-zinc-800 bg-zinc-900 px-4 py-5">
-        <p className="px-3 text-lg font-semibold tracking-wide text-amber-300">Familiada</p>
-        <p className="mb-6 px-3 text-xs text-zinc-500">Host control</p>
+        <p className="px-3 text-lg font-semibold tracking-wide text-amber-300">
+          {t("common.appName")}
+        </p>
+        <p className="mb-6 px-3 text-xs text-zinc-500">
+          {t("common.hostControl")}
+        </p>
         <nav className="flex flex-col gap-1">
           <NavLink
             to="/"
@@ -51,12 +58,12 @@ function HostFrame() {
             className={({ isActive }) => navClass(isActive)}
           >
             <Library size={18} />
-            Library
+            {t("sidebar.library")}
           </NavLink>
           <NavLink
             to="/show"
             aria-disabled={!canShow}
-            title={canShow ? "Open the live show" : "Add a question before starting a show"}
+            title={canShow ? t("sidebar.show") : t("sidebar.addQuestionPrompt")}
             onClick={(event) => {
               if (!canShow) {
                 event.preventDefault();
@@ -65,11 +72,11 @@ function HostFrame() {
             className={({ isActive }) => navClass(isActive, !canShow)}
           >
             <Clapperboard size={18} />
-            <span className="flex-1">Show</span>
+            <span className="flex-1">{t("sidebar.show")}</span>
             {isGameActive && (
               <span className="flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-500/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-red-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
-                Live
+                {t("sidebar.live")}
               </span>
             )}
           </NavLink>
@@ -79,39 +86,39 @@ function HostFrame() {
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
               <span className="text-xs font-semibold uppercase tracking-wider text-red-400">
-                Show in progress
+                {t("sidebar.showInProgress")}
               </span>
             </div>
             <p className="mt-1 text-xs leading-relaxed text-zinc-400">
-              Live on the scoreboard. Scores and answers are active.
+              {t("sidebar.showInProgressDesc")}
             </p>
           </div>
         )}
         {isGameActive && (
           <div className="mt-3 flex flex-col gap-1.5">
             <span className="px-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-              Game History
+              {t("sidebar.gameHistory")}
             </span>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 disabled={!canUndo}
                 onClick={undoGameAction}
-                title="Undo last game action (Ctrl+Z)"
+                title={t("sidebar.undoTooltip")}
                 className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-700 hover:bg-zinc-800/80 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <Undo2 size={15} />
-                <span>Undo</span>
+                <span>{t("sidebar.undo")}</span>
               </button>
               <button
                 type="button"
                 disabled={!canRedo}
                 onClick={redoGameAction}
-                title="Redo game action (Ctrl+Y)"
+                title={t("sidebar.redoTooltip")}
                 className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-700 hover:bg-zinc-800/80 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <Redo2 size={15} />
-                <span>Redo</span>
+                <span>{t("sidebar.redo")}</span>
               </button>
             </div>
           </div>
@@ -119,17 +126,17 @@ function HostFrame() {
         <div className="mt-5 border-t border-zinc-800/80 pt-4">
           <div className="mb-2 flex items-center justify-between px-3">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-              Audience Screen
+              {t("sidebar.audienceScreen")}
             </span>
             {isBoardOpen ? (
               <span className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                Open
+                {t("sidebar.screenOpen")}
               </span>
             ) : (
               <span className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500">
                 <span className="h-1.5 w-1.5 rounded-full bg-zinc-600" />
-                Closed
+                {t("sidebar.screenClosed")}
               </span>
             )}
           </div>
@@ -142,30 +149,65 @@ function HostFrame() {
           >
             <Monitor size={16} className={isBoardOpen ? "text-emerald-400" : "text-zinc-400"} />
             <span className="flex-1 text-left">
-              {isBoardOpen ? "Focus scoreboard" : "Open scoreboard"}
+              {isBoardOpen ? t("sidebar.focusScoreboard") : t("sidebar.openScoreboard")}
             </span>
             <ExternalLink size={13} className="text-zinc-500" />
           </button>
         </div>
         {!canShow && !loading && (
           <p className="mt-4 px-3 text-xs leading-5 text-zinc-500">
-            Add a question to the selected collection before starting a show.
+            {t("sidebar.addQuestionPrompt")}
           </p>
         )}
         {window.__familiadaPreview && (
-          <p className="mt-auto px-3 text-xs leading-5 text-zinc-500">
-            Preview data for layout. The Electron window uses your saved sets.
+          <p className="mt-4 px-3 text-xs leading-5 text-zinc-500">
+            {t("sidebar.previewNote")}
           </p>
         )}
+        <div className="mt-auto border-t border-zinc-800/80 pt-4">
+          <div className="mb-2 flex items-center justify-between px-3">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+              {t("sidebar.language")}
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 px-1">
+            <button
+              type="button"
+              onClick={() => setLanguage("en")}
+              className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition ${
+                language === "en"
+                  ? "border-amber-400/80 bg-zinc-800 text-amber-300 font-semibold shadow-sm"
+                  : "border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+              }`}
+              title="English"
+            >
+              <FlagGb className="h-3.5 w-5 rounded-xs" />
+              <span>EN</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage("pl")}
+              className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition ${
+                language === "pl"
+                  ? "border-amber-400/80 bg-zinc-800 text-amber-300 font-semibold shadow-sm"
+                  : "border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+              }`}
+              title="Polski"
+            >
+              <FlagPl className="h-3.5 w-5 rounded-xs" />
+              <span>PL</span>
+            </button>
+          </div>
+        </div>
       </aside>
       <div className="min-w-0 flex-1 overflow-hidden">
         <Outlet />
       </div>
       <ConfirmDialog
         open={confirmExitOpen}
-        title="End current game?"
-        message="A game is currently in progress. Returning to the library will end the show and clear all scores and game progress. Are you sure you want to leave?"
-        confirmLabel="End game & leave"
+        title={t("exitDialog.title")}
+        message={t("exitDialog.message")}
+        confirmLabel={t("exitDialog.confirmLabel")}
         onClose={cancelExitGame}
         onConfirm={confirmExitGame}
       />

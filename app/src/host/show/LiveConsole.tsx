@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { useHostSession } from "../HostSession";
 import type { ConsoleAnswer, TeamSide } from "../../types/window";
 import { correctAnswerSound, playSound, showAnswerSound, wrongAnswerSound } from "./sounds";
+import { useI18n } from "../../i18n/I18nContext";
 
 interface AnswerRowProps {
   answer: ConsoleAnswer;
 }
 
 function AnswerRow({ answer }: AnswerRowProps) {
+  const { t } = useI18n();
   const isAnswered = answer.status !== "hidden";
 
   const reveal = (kind: "show" | "correct") => {
@@ -36,12 +38,12 @@ function AnswerRow({ answer }: AnswerRowProps) {
       </span>
       {answer.status === "guessed" && (
         <span className="rounded-lg bg-amber-400/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-300">
-          Correct
+          {t("liveConsole.correct")}
         </span>
       )}
       {answer.status === "revealed" && (
         <span className="rounded-lg bg-zinc-700/40 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-zinc-300">
-          Exposed
+          {t("liveConsole.exposed")}
         </span>
       )}
       <button
@@ -50,7 +52,7 @@ function AnswerRow({ answer }: AnswerRowProps) {
         onClick={() => reveal("show")}
         className="min-h-11 rounded-lg border border-zinc-600 bg-zinc-900 px-4 text-sm text-zinc-100 hover:bg-zinc-800 disabled:opacity-40"
       >
-        Show
+        {t("liveConsole.showAnswer")}
       </button>
       <button
         type="button"
@@ -58,7 +60,7 @@ function AnswerRow({ answer }: AnswerRowProps) {
         onClick={() => reveal("correct")}
         className="min-h-11 rounded-lg bg-amber-400 px-4 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-40"
       >
-        Correct
+        {t("liveConsole.correct")}
       </button>
     </div>
   );
@@ -83,6 +85,7 @@ function TeamColumn({
   onStrike,
   onAward,
 }: TeamColumnProps) {
+  const { t } = useI18n();
   const teamClass =
     side === "RED"
       ? "border-red-900/80 bg-red-950/40"
@@ -95,7 +98,9 @@ function TeamColumn({
   return (
     <section className={`flex flex-col gap-3 rounded-2xl border p-4 ${teamClass}`}>
       <div>
-        <p className="text-xs uppercase tracking-wide text-zinc-400">{side === "RED" ? "Red" : "Blue"}</p>
+        <p className="text-xs uppercase tracking-wide text-zinc-400">
+          {side === "RED" ? t("liveConsole.red") : t("liveConsole.blue")}
+        </p>
         <h3 className="truncate text-2xl font-semibold text-white">{name || side}</h3>
         <p className="text-3xl font-semibold tabular-nums text-white">{points}</p>
       </div>
@@ -106,7 +111,7 @@ function TeamColumn({
         onClick={() => onStrike(side)}
         className={`min-h-12 rounded-xl px-4 text-base font-semibold ${solidClass} disabled:opacity-40 disabled:cursor-not-allowed`}
       >
-        Strike
+        {t("liveConsole.strike")}
       </button>
       <button
         type="button"
@@ -116,11 +121,13 @@ function TeamColumn({
           side === "RED" ? "bg-red-600/30" : "bg-blue-600/30"
         }`}
       >
-        Award round
+        {t("liveConsole.awardRound")}
       </button>
 
       <div className="mt-auto flex items-center justify-between rounded-xl border border-zinc-800/80 bg-zinc-950/40 px-3 py-2">
-        <span className="text-xs uppercase tracking-wide text-zinc-400">Lost chances:</span>
+        <span className="text-xs uppercase tracking-wide text-zinc-400">
+          {t("liveConsole.lostChances")}
+        </span>
         <div className="flex items-center gap-1.5">
           {[0, 1, 2].map((i) => (
             <span
@@ -143,6 +150,7 @@ function TeamColumn({
 }
 
 export function LiveConsole() {
+  const { t } = useI18n();
   const { requestExitGame } = useHostSession();
   const [question, setQuestion] = useState("");
   const [answers, setAnswers] = useState<ConsoleAnswer[]>([]);
@@ -224,10 +232,15 @@ export function LiveConsole() {
     <div className="flex h-full min-h-0 flex-col">
       <header className="flex items-start justify-between gap-4 border-b border-zinc-800 px-6 py-4">
         <div className="min-w-0">
-          <p className="text-xs uppercase tracking-wide text-zinc-500">Current question</p>
-          <h2 className="text-2xl font-semibold text-zinc-50">{question || "Waiting for the round…"}</h2>
+          <p className="text-xs uppercase tracking-wide text-zinc-500">
+            {t("liveConsole.currentQuestion")}
+          </p>
+          <h2 className="text-2xl font-semibold text-zinc-50">
+            {question || t("liveConsole.waitingForRound")}
+          </h2>
           <p className="mt-1 text-sm text-zinc-400">
-            Round points <span className="font-semibold text-amber-300">{points}</span>
+            {t("liveConsole.roundPoints")}{" "}
+            <span className="font-semibold text-amber-300">{points}</span>
           </p>
         </div>
         <div className="flex gap-2">
@@ -236,7 +249,7 @@ export function LiveConsole() {
             onClick={requestExitGame}
             className="inline-flex min-h-11 items-center rounded-lg border border-zinc-600 bg-zinc-900 px-4 text-sm text-zinc-100 hover:bg-zinc-800"
           >
-            Back to library
+            {t("liveConsole.backToLibrary")}
           </button>
           <button
             type="button"
@@ -244,7 +257,7 @@ export function LiveConsole() {
             onClick={() => window.api.prevQuestion()}
             className="min-h-11 rounded-lg border border-zinc-600 bg-zinc-900 px-4 text-sm text-zinc-100 hover:bg-zinc-800 disabled:opacity-40"
           >
-            Previous
+            {t("liveConsole.previous")}
           </button>
           <button
             type="button"
@@ -252,14 +265,16 @@ export function LiveConsole() {
             onClick={() => window.api.nextQuestion()}
             className="min-h-11 rounded-lg border border-zinc-600 bg-zinc-900 px-4 text-sm text-zinc-100 hover:bg-zinc-800 disabled:opacity-40"
           >
-            Next
+            {t("liveConsole.next")}
           </button>
         </div>
       </header>
 
       <div className="flex-1 overflow-y-auto px-6 py-4">
         {orderedAnswers.length === 0 ? (
-          <p className="text-sm text-zinc-500">Answers appear here as the round starts.</p>
+          <p className="text-sm text-zinc-500">
+            {t("liveConsole.answersPlaceholder")}
+          </p>
         ) : (
           <div className="flex flex-col gap-2">
             {orderedAnswers.map((answer) => (

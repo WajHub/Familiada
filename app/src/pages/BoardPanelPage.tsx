@@ -3,6 +3,7 @@ import Answer from "../components/BoardPanelPage/Answer";
 import Question from "../components/BoardPanelPage/Question";
 import TeamStats from "../components/BoardPanelPage/TeamStats";
 import WrongAnswerMark from "../components/BoardPanelPage/WrongAnswerMark";
+import { useI18n } from "../i18n/I18nContext";
 
 interface BoardAnswer {
   index: number;
@@ -12,6 +13,7 @@ interface BoardAnswer {
 }
 
 function BoardPanelPage() {
+  const { t } = useI18n();
   const [questionPoints, setQuestionPoints] = useState(0);
   const [redTeamName, setRedTeamName] = useState("RED");
   const [redTeamPoints, setRedTeamPoints] = useState(0);
@@ -134,7 +136,9 @@ function BoardPanelPage() {
             </div>
 
             <div className="w-full">
-              <div className="text-right">Suma {questionPoints}</div>
+              <div className="text-right">
+                {t("board.total")} {questionPoints}
+              </div>
             </div>
           </div>
 

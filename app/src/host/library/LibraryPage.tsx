@@ -1,11 +1,13 @@
 import { FormEvent, useState } from "react";
 import { useHostSession } from "../HostSession";
+import { useI18n } from "../../i18n/I18nContext";
 import type { QuestionListItem } from "../types";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { QuestionDialog } from "./QuestionDialog";
 import { QuestionRow } from "./QuestionRow";
 
 export function LibraryPage() {
+  const { t } = useI18n();
   const {
     collections,
     selectedCollectionId,
@@ -58,13 +60,13 @@ export function LibraryPage() {
     <div className="flex h-full min-h-0">
       <section className="flex w-80 shrink-0 flex-col border-r border-zinc-800 bg-zinc-950">
         <div className="border-b border-zinc-800 px-4 py-4">
-          <h1 className="text-sm font-semibold uppercase tracking-wide text-zinc-400">Collections</h1>
+          <h1 className="text-sm font-semibold uppercase tracking-wide text-zinc-400">{t("library.collections")}</h1>
         </div>
         <div className="flex-1 overflow-y-auto p-3">
-          {loading && <p className="px-2 py-3 text-sm text-zinc-400">Loading collections…</p>}
+          {loading && <p className="px-2 py-3 text-sm text-zinc-400">{t("library.loadingCollections")}</p>}
           {!loading && collections.length === 0 && (
             <p className="px-2 py-3 text-sm text-zinc-400">
-              No sets yet. Create one to start adding questions.
+              {t("library.noCollections")}
             </p>
           )}
           <ul className="flex flex-col gap-2">
@@ -91,7 +93,7 @@ export function LibraryPage() {
         </div>
         <form onSubmit={(event) => void create(event)} className="flex flex-col gap-2 border-t border-zinc-800 p-3">
           <label className="text-xs text-zinc-400" htmlFor="collection-title">
-            New collection
+            {t("library.newCollection")}
           </label>
           <input
             id="collection-title"
@@ -105,7 +107,7 @@ export function LibraryPage() {
             disabled={creating}
             className="rounded-lg bg-amber-400 px-3 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-50"
           >
-            {creating ? "Creating…" : "Create collection"}
+            {creating ? t("library.creating") : t("library.createCollection")}
           </button>
           <button
             type="button"
@@ -113,7 +115,7 @@ export function LibraryPage() {
             onClick={() => setCollectionToDelete(selectedCollectionId)}
             className="rounded-lg border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 hover:bg-zinc-800 disabled:opacity-40"
           >
-            Delete selected
+            {t("library.deleteSelected")}
           </button>
         </form>
       </section>
@@ -121,9 +123,9 @@ export function LibraryPage() {
       <section className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between gap-4 border-b border-zinc-800 px-6 py-4">
           <div>
-            <p className="text-xs uppercase tracking-wide text-zinc-500">Library</p>
+            <p className="text-xs uppercase tracking-wide text-zinc-500">{t("sidebar.library")}</p>
             <h2 className="text-xl font-semibold text-zinc-50">
-              {selected ? selected.title : "Choose a collection"}
+              {selected ? selected.title : t("library.chooseCollection")}
             </h2>
           </div>
           <button
@@ -132,7 +134,7 @@ export function LibraryPage() {
             onClick={openCreate}
             className="rounded-lg bg-amber-400 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-40"
           >
-            Add question
+            {t("library.addQuestion")}
           </button>
         </header>
         <div className="flex-1 overflow-y-auto p-6">
@@ -143,7 +145,7 @@ export function LibraryPage() {
           )}
           {selected && questions.length === 0 && (
             <p className="text-sm text-zinc-400">
-              This collection has no questions. Add the first one, then start a show from the sidebar.
+              {t("library.noQuestions")}
             </p>
           )}
           <div className="flex flex-col gap-3">
@@ -170,9 +172,9 @@ export function LibraryPage() {
       />
       <ConfirmDialog
         open={collectionToDelete !== null}
-        title="Delete collection"
-        message="Delete this collection and its questions? This cannot be undone."
-        confirmLabel="Delete collection"
+        title={t("library.deleteCollectionTitle")}
+        message={t("library.deleteCollectionMsg")}
+        confirmLabel={t("library.deleteCollectionTitle")}
         onClose={() => setCollectionToDelete(null)}
         onConfirm={async () => {
           if (collectionToDelete) {
@@ -182,13 +184,13 @@ export function LibraryPage() {
       />
       <ConfirmDialog
         open={questionToDelete !== null}
-        title="Delete question"
+        title={t("library.deleteQuestionTitle")}
         message={
           questionToDelete
-            ? `Delete “${questionToDelete.content}”?`
-            : "Delete this question?"
+            ? `${t("library.deleteQuestionTitle")} “${questionToDelete.content}”?`
+            : t("library.deleteQuestionMsg")
         }
-        confirmLabel="Delete question"
+        confirmLabel={t("library.deleteQuestionTitle")}
         onClose={() => setQuestionToDelete(null)}
         onConfirm={async () => {
           if (!questionToDelete) {
