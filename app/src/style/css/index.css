@@ -102,3 +102,25 @@
     border-collapse: collapse;
   }
 }
+
+/* Familiada Retro Scoreboard Utilities */
+.familiada-matrix-bg {
+  background-color: #08090c;
+  background-image:
+    radial-gradient(circle at center, rgba(38, 42, 54, 0.55) 26%, transparent 28%),
+    linear-gradient(rgba(8, 9, 12, 0.98), rgba(8, 9, 12, 0.98));
+  background-size: 14px 14px;
+}
+
+.familiada-led-yellow {
+  color: #ffd000;
+  text-shadow: 0 0 8px rgba(255, 208, 0, 0.65), 0 0 16px rgba(255, 180, 0, 0.35);
+}
+
+.familiada-led-dim {
+  color: #222633;
+}
+
+.familiada-strike-glow {
+  filter: drop-shadow(0 0 6px rgba(255, 210, 0, 0.85)) drop-shadow(0 0 14px rgba(255, 180, 0, 0.45));
+}

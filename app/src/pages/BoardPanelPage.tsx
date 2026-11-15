@@ -104,47 +104,60 @@ function BoardPanelPage() {
   }, []);
 
   return (
-    <div className="fixed inset-0 h-full w-full overflow-hidden bg-black font-['CustomFont',sans-serif] text-[3.2vw] font-normal text-[#ffff00]">
-      <div className="mx-auto w-full max-w-[1140px] px-4">
-        <TeamStats
-          redName={redTeamName}
-          redPoints={redTeamPoints}
-          blueName={blueTeamName}
-          bluePoints={blueTeamPoints}
-        />
-      </div>
+    <div className="fixed inset-0 flex h-full w-full flex-col justify-between overflow-hidden bg-[#050608] p-4 sm:p-6 text-[#ffd000]">
+      {/* Top Header with Team Scores & Center Round Display */}
+      <TeamStats
+        redName={redTeamName}
+        redPoints={redTeamPoints}
+        blueName={blueTeamName}
+        bluePoints={blueTeamPoints}
+        roundPoints={questionPoints}
+      />
 
-      <div className="mx-auto my-2.5 w-full max-w-[1140px] px-4">
-        <div className="grid grid-cols-12 items-stretch p-3 text-center">
-          <WrongAnswerMark team="RED" amount={wrongAnswersRed} />
+      {/* Main Electronic Matrix Board */}
+      <main className="familiada-matrix-bg relative my-2 flex min-h-0 flex-1 flex-col justify-between rounded-xl border border-zinc-800/90 bg-[#08090c] p-6 shadow-2xl">
+        <div className="grid h-full min-h-0 grid-cols-12 items-stretch gap-4">
+          {/* Red Team Strikes Column (Left) */}
+          <div className="col-span-2 flex h-full items-center justify-center">
+            <WrongAnswerMark team="RED" amount={wrongAnswersRed} />
+          </div>
 
-          <div className="col-span-8 flex flex-col items-center">
+          {/* Question & Answers Area (Center) */}
+          <div className="col-span-8 flex h-full min-h-0 flex-col justify-between">
+            {/* Question Banner */}
             <Question questionContent={question} />
 
-            <div className="w-full p-3 text-center">
-              <div className="w-full text-left" id="answerContainer">
-                {answers.map((answer) => (
-                  <Answer
-                    isVisible={answer.isVisible}
-                    content={answer.content}
-                    id={answer.idAnswer}
-                    index={answer.index}
-                    key={answer.idAnswer}
-                  />
-                ))}
-              </div>
+            {/* Answer Rows List */}
+            <div
+              id="answerContainer"
+              className="my-auto flex w-full flex-col justify-center gap-1.5 py-2"
+            >
+              {answers.map((answer) => (
+                <Answer
+                  key={answer.idAnswer}
+                  id={answer.idAnswer}
+                  index={answer.index}
+                  content={answer.content}
+                  isVisible={answer.isVisible}
+                />
+              ))}
             </div>
 
-            <div className="w-full">
-              <div className="text-right">
-                {t("board.total")} {questionPoints}
+            {/* Bottom Round Points Sum */}
+            <div className="flex w-full items-baseline justify-end pt-2">
+              <div className="flex items-baseline gap-6 font-['CustomFont',sans-serif] text-[2.6vw] tracking-wider text-[#ffd000] drop-shadow-[0_0_8px_rgba(255,208,0,0.6)]">
+                <span>{t("board.total").toUpperCase()}</span>
+                <span className="min-w-[4rem] text-right tabular-nums">{questionPoints}</span>
               </div>
             </div>
           </div>
 
-          <WrongAnswerMark team="BLUE" amount={wrongAnswersBlue} />
+          {/* Blue Team Strikes Column (Right) */}
+          <div className="col-span-2 flex h-full items-center justify-center">
+            <WrongAnswerMark team="BLUE" amount={wrongAnswersBlue} />
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

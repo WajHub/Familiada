@@ -63,3 +63,22 @@
     transform: none;
   }
 }
+
+.host-glass-card {
+  background: rgba(24, 24, 27, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.host-glow-amber {
+  box-shadow: 0 0 20px -5px rgba(251, 191, 36, 0.35);
+}
+
+.host-glow-red {
+  box-shadow: 0 0 24px -6px rgba(239, 68, 68, 0.35);
+}
+
+.host-glow-blue {
+  box-shadow: 0 0 24px -6px rgba(59, 130, 246, 0.35);
+}

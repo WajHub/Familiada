@@ -80,19 +80,22 @@ export function LibraryPage() {
                     onClick={() => selectCollection(id)}
                     className={
                       selectedRow
-                        ? "w-full rounded-xl bg-zinc-800 px-3 py-3 text-left text-zinc-50"
-                        : "w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-3 text-left text-zinc-300 hover:bg-zinc-900"
+                        ? "flex w-full items-center justify-between rounded-xl border border-amber-500/40 bg-zinc-800/90 px-3.5 py-3 text-left font-semibold text-white shadow-sm"
+                        : "flex w-full items-center justify-between rounded-xl border border-zinc-800/90 bg-zinc-950 px-3.5 py-3 text-left font-medium text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-900 hover:text-white"
                     }
                   >
-                    {collection.title}
+                    <span className="truncate">{collection.title}</span>
+                    {selectedRow && (
+                      <span className="h-2 w-2 rounded-full bg-amber-400" />
+                    )}
                   </button>
                 </li>
               );
             })}
           </ul>
         </div>
-        <form onSubmit={(event) => void create(event)} className="flex flex-col gap-2 border-t border-zinc-800 p-3">
-          <label className="text-xs text-zinc-400" htmlFor="collection-title">
+        <form onSubmit={(event) => void create(event)} className="flex flex-col gap-2.5 border-t border-zinc-800/80 p-3.5">
+          <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400" htmlFor="collection-title">
             {t("library.newCollection")}
           </label>
           <input
@@ -100,12 +103,12 @@ export function LibraryPage() {
             required
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-50 outline-none ring-amber-400 focus:ring-2"
+            className="rounded-xl border border-zinc-800 bg-zinc-900 px-3.5 py-2.5 text-sm text-white outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
           />
           <button
             type="submit"
             disabled={creating}
-            className="rounded-lg bg-amber-400 px-3 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-50"
+            className="rounded-xl bg-amber-400 px-3.5 py-2.5 text-sm font-bold text-zinc-950 shadow-sm transition hover:bg-amber-300 disabled:opacity-50"
           >
             {creating ? t("library.creating") : t("library.createCollection")}
           </button>
@@ -113,7 +116,7 @@ export function LibraryPage() {
             type="button"
             disabled={selectedCollectionId === ""}
             onClick={() => setCollectionToDelete(selectedCollectionId)}
-            className="rounded-lg border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 hover:bg-zinc-800 disabled:opacity-40"
+            className="rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-2 text-xs font-semibold text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200 disabled:opacity-30"
           >
             {t("library.deleteSelected")}
           </button>

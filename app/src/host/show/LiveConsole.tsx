@@ -3,6 +3,7 @@ import { useHostSession } from "../HostSession";
 import type { ConsoleAnswer, TeamSide } from "../../types/window";
 import { correctAnswerSound, playSound, showAnswerSound, wrongAnswerSound } from "./sounds";
 import { useI18n } from "../../i18n/I18nContext";
+import FamiliadaStrike from "../../components/BoardPanelPage/FamiliadaStrike";
 
 interface AnswerRowProps {
   answer: ConsoleAnswer;
@@ -27,22 +28,26 @@ function AnswerRow({ answer }: AnswerRowProps) {
 
   return (
     <div
-      className={`flex items-center gap-4 rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 transition-opacity duration-200 ${
-        isAnswered ? "opacity-60" : "opacity-100"
+      className={`flex items-center gap-4 rounded-xl border px-4 py-3 transition-all duration-200 ${
+        isAnswered
+          ? "border-zinc-800/80 bg-zinc-900/40 opacity-70"
+          : "border-zinc-800 bg-zinc-900/90 hover:border-zinc-700 shadow-sm"
       }`}
     >
-      <span className="w-8 text-sm font-semibold text-zinc-500">{answer.index}</span>
-      <p className="min-w-0 flex-1 text-lg font-medium text-zinc-50">{answer.content}</p>
-      <span className="rounded-md bg-zinc-800 px-2.5 py-1 text-sm font-semibold tabular-nums text-amber-300">
+      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-800 text-xs font-bold text-zinc-400">
+        {answer.index}
+      </span>
+      <p className="min-w-0 flex-1 text-base font-medium text-zinc-100">{answer.content}</p>
+      <span className="rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-sm font-bold tabular-nums text-amber-300">
         {answer.points}
       </span>
       {answer.status === "guessed" && (
-        <span className="rounded-lg bg-amber-400/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-300">
+        <span className="rounded-lg border border-amber-500/30 bg-amber-500/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-300">
           {t("liveConsole.correct")}
         </span>
       )}
       {answer.status === "revealed" && (
-        <span className="rounded-lg bg-zinc-700/40 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-zinc-300">
+        <span className="rounded-lg border border-zinc-700 bg-zinc-800/60 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-zinc-400">
           {t("liveConsole.exposed")}
         </span>
       )}
@@ -50,7 +55,7 @@ function AnswerRow({ answer }: AnswerRowProps) {
         type="button"
         disabled={isAnswered}
         onClick={() => reveal("show")}
-        className="min-h-11 rounded-lg border border-zinc-600 bg-zinc-900 px-4 text-sm text-zinc-100 hover:bg-zinc-800 disabled:opacity-40"
+        className="min-h-10 rounded-lg border border-zinc-700 bg-zinc-900 px-4 text-xs font-semibold text-zinc-200 transition hover:bg-zinc-800 hover:text-white disabled:opacity-40"
       >
         {t("liveConsole.showAnswer")}
       </button>
@@ -58,7 +63,7 @@ function AnswerRow({ answer }: AnswerRowProps) {
         type="button"
         disabled={isAnswered}
         onClick={() => reveal("correct")}
-        className="min-h-11 rounded-lg bg-amber-400 px-4 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-40"
+        className="min-h-10 rounded-lg bg-amber-400 px-4 text-xs font-semibold text-zinc-950 transition hover:bg-amber-300 disabled:opacity-40"
       >
         {t("liveConsole.correct")}
       </button>
@@ -86,62 +91,68 @@ function TeamColumn({
   onAward,
 }: TeamColumnProps) {
   const { t } = useI18n();
-  const teamClass =
-    side === "RED"
-      ? "border-red-900/80 bg-red-950/40"
-      : "border-blue-900/80 bg-blue-950/40";
-  const solidClass =
-    side === "RED"
-      ? "bg-red-600 text-white hover:bg-red-500"
-      : "bg-blue-600 text-white hover:bg-blue-500";
+  const isRed = side === "RED";
+  const teamClass = isRed
+    ? "border-red-900/60 bg-gradient-to-b from-red-950/40 to-zinc-900/80 host-glow-red"
+    : "border-blue-900/60 bg-gradient-to-b from-blue-950/40 to-zinc-900/80 host-glow-blue";
+  const solidClass = isRed
+    ? "bg-red-600 text-white shadow-lg shadow-red-900/30 hover:bg-red-500"
+    : "bg-blue-600 text-white shadow-lg shadow-blue-900/30 hover:bg-blue-500";
 
   return (
-    <section className={`flex flex-col gap-3 rounded-2xl border p-4 ${teamClass}`}>
-      <div>
-        <p className="text-xs uppercase tracking-wide text-zinc-400">
-          {side === "RED" ? t("liveConsole.red") : t("liveConsole.blue")}
-        </p>
-        <h3 className="truncate text-2xl font-semibold text-white">{name || side}</h3>
-        <p className="text-3xl font-semibold tabular-nums text-white">{points}</p>
+    <section className={`flex flex-col gap-3 rounded-2xl border p-5 backdrop-blur-md ${teamClass}`}>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+            {isRed ? t("liveConsole.red") : t("liveConsole.blue")}
+          </p>
+          <h3 className="truncate text-2xl font-bold text-white">{name || side}</h3>
+        </div>
+        <div className="flex flex-col items-end">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Points</span>
+          <p className="text-3xl font-bold tabular-nums text-white drop-shadow">{points}</p>
+        </div>
       </div>
 
-      <button
-        type="button"
-        disabled={lostChances >= 3}
-        onClick={() => onStrike(side)}
-        className={`min-h-12 rounded-xl px-4 text-base font-semibold ${solidClass} disabled:opacity-40 disabled:cursor-not-allowed`}
-      >
-        {t("liveConsole.strike")}
-      </button>
-      <button
-        type="button"
-        disabled={awardDisabled}
-        onClick={() => onAward(side)}
-        className={`min-h-12 rounded-xl border border-white/20 px-4 text-base font-semibold text-white hover:bg-white/10 disabled:opacity-40 ${
-          side === "RED" ? "bg-red-600/30" : "bg-blue-600/30"
-        }`}
-      >
-        {t("liveConsole.awardRound")}
-      </button>
+      <div className="flex flex-col gap-2 pt-2">
+        <button
+          type="button"
+          disabled={lostChances >= 3}
+          onClick={() => onStrike(side)}
+          className={`min-h-12 rounded-xl px-4 text-base font-bold transition ${solidClass} disabled:opacity-40 disabled:cursor-not-allowed`}
+        >
+          {t("liveConsole.strike")}
+        </button>
+        <button
+          type="button"
+          disabled={awardDisabled}
+          onClick={() => onAward(side)}
+          className={`min-h-11 rounded-xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:bg-white/10 disabled:opacity-40 ${
+            isRed ? "bg-red-600/30" : "bg-blue-600/30"
+          }`}
+        >
+          {t("liveConsole.awardRound")}
+        </button>
+      </div>
 
-      <div className="mt-auto flex items-center justify-between rounded-xl border border-zinc-800/80 bg-zinc-950/40 px-3 py-2">
-        <span className="text-xs uppercase tracking-wide text-zinc-400">
+      <div className="mt-auto flex items-center justify-between rounded-xl border border-zinc-800/80 bg-zinc-950/60 px-3 py-2.5">
+        <span className="text-xs uppercase tracking-wide text-zinc-400 font-medium">
           {t("liveConsole.lostChances")}
         </span>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           {[0, 1, 2].map((i) => (
-            <span
+            <div
               key={i}
-              className={`flex h-8 w-8 items-center justify-center rounded-lg border text-sm font-bold transition-all ${
+              className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-all ${
                 i < lostChances
-                  ? side === "RED"
-                    ? "border-red-500 bg-red-600 text-white shadow-md shadow-red-900/50"
-                    : "border-blue-500 bg-blue-600 text-white shadow-md shadow-blue-900/50"
-                  : "border-zinc-800 bg-zinc-900/80 text-zinc-600"
+                  ? isRed
+                    ? "border-red-500/60 bg-red-950/60 shadow-sm shadow-red-900/50"
+                    : "border-blue-500/60 bg-blue-950/60 shadow-sm shadow-blue-900/50"
+                  : "border-zinc-800/80 bg-zinc-900/40"
               }`}
             >
-              {i < lostChances ? "✕" : "·"}
-            </span>
+              <FamiliadaStrike active={i < lostChances} size={22} />
+            </div>
           ))}
         </div>
       </div>

@@ -1,21 +1,30 @@
+import FamiliadaStrike from "./FamiliadaStrike";
+
 interface WrongAnswerMarkProps {
   team: "RED" | "BLUE";
   amount: number;
 }
 
-function Strike() {
-  return (
-    <div className="whitespace-pre leading-none">
-      {"  X   X\n  X\n  X   X"}
-    </div>
-  );
-}
+export function WrongAnswerMark({ amount }: WrongAnswerMarkProps) {
+  // Slots ordered from Top to Bottom:
+  // Slot 2 (top): active when amount >= 3
+  // Slot 1 (middle): active when amount >= 2
+  // Slot 0 (bottom): active when amount >= 1
+  const strikes = [
+    { id: 2, active: amount >= 3 },
+    { id: 1, active: amount >= 2 },
+    { id: 0, active: amount >= 1 },
+  ];
 
-function WrongAnswerMark({ amount }: WrongAnswerMarkProps) {
   return (
-    <div className="col-span-2 flex h-full flex-col-reverse items-center justify-start gap-4 p-3 pb-4 text-center self-end">
-      {Array.from({ length: amount }, (_, index) => (
-        <Strike key={index} />
+    <div className="flex h-full w-full flex-col items-center justify-around py-4">
+      {strikes.map((slot) => (
+        <div key={slot.id} className="flex items-center justify-center py-2">
+          <FamiliadaStrike
+            active={slot.active}
+            className="w-[6.5vw] min-w-[80px] max-w-[160px] aspect-[54/62] h-auto drop-shadow-md"
+          />
+        </div>
       ))}
     </div>
   );

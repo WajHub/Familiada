@@ -7,14 +7,14 @@ import { FlagGb, FlagPl } from "../i18n/flags";
 import "./styles/host.css";
 
 function navClass(isActive: boolean, disabled = false): string {
-  const base = "flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium";
+  const base = "flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all";
   if (disabled) {
-    return `${base} cursor-not-allowed text-zinc-600`;
+    return `${base} cursor-not-allowed text-zinc-600 opacity-50`;
   }
   if (isActive) {
-    return `${base} bg-zinc-800 text-zinc-50`;
+    return `${base} bg-zinc-800/90 text-amber-300 shadow-sm border border-zinc-700/60`;
   }
-  return `${base} text-zinc-300 hover:bg-zinc-900 hover:text-white`;
+  return `${base} text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 border border-transparent`;
 }
 
 function HostFrame() {
@@ -38,13 +38,20 @@ function HostFrame() {
 
   return (
     <div className="host-root fixed inset-0 flex bg-zinc-950 text-zinc-100">
-      <aside className="flex w-56 shrink-0 flex-col border-r border-zinc-800 bg-zinc-900 px-4 py-5">
-        <p className="px-3 text-lg font-semibold tracking-wide text-amber-300">
-          {t("common.appName")}
-        </p>
-        <p className="mb-6 px-3 text-xs text-zinc-500">
-          {t("common.hostControl")}
-        </p>
+      <aside className="flex w-60 shrink-0 flex-col border-r border-zinc-800/80 bg-zinc-900/90 px-4 py-5 backdrop-blur-md">
+        <div className="mb-6 px-2">
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-400/20 text-xs font-black text-amber-400">
+              F
+            </span>
+            <p className="text-base font-bold tracking-wide text-white">
+              {t("common.appName")}
+            </p>
+          </div>
+          <p className="mt-0.5 text-[11px] font-medium uppercase tracking-wider text-zinc-500">
+            {t("common.hostControl")}
+          </p>
+        </div>
         <nav className="flex flex-col gap-1">
           <NavLink
             to="/"

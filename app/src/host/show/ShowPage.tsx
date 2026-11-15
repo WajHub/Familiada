@@ -33,37 +33,54 @@ function ShowSetup({ onStart }: ShowSetupProps) {
     <div className="flex h-full items-center justify-center p-8">
       <form
         onSubmit={(event) => void submit(event)}
-        className="host-fade w-full max-w-lg rounded-2xl border border-zinc-800 bg-zinc-900 p-6"
+        className="host-fade host-glass-card w-full max-w-lg rounded-3xl p-8 shadow-2xl transition-all"
       >
-        <p className="text-xs uppercase tracking-wide text-zinc-500">{t("showSetup.setupTitle")}</p>
-        <h1 className="mt-1 text-2xl font-semibold text-zinc-50">{t("showSetup.nameTeams")}</h1>
-        <p className="mt-2 text-sm text-zinc-400">
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-amber-400" />
+          <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            {t("showSetup.setupTitle")}
+          </p>
+        </div>
+        <h1 className="mt-2 text-2xl font-bold tracking-tight text-white">{t("showSetup.nameTeams")}</h1>
+        <p className="mt-1 text-sm text-zinc-400">
           {t("showSetup.setupSubtitle")}
         </p>
-        <label className="mt-6 flex flex-col gap-2 text-sm text-red-300">
-          {t("showSetup.redTeam")}
-          <input
-            required
-            autoFocus
-            value={redName}
-            onChange={(event) => setRedName(event.target.value)}
-            className="rounded-lg border border-red-900 bg-zinc-950 px-3 py-3 text-base text-zinc-50 outline-none ring-red-500 focus:ring-2"
-          />
-        </label>
-        <label className="mt-4 flex flex-col gap-2 text-sm text-blue-300">
-          {t("showSetup.blueTeam")}
-          <input
-            required
-            value={blueName}
-            onChange={(event) => setBlueName(event.target.value)}
-            className="rounded-lg border border-blue-900 bg-zinc-950 px-3 py-3 text-base text-zinc-50 outline-none ring-blue-500 focus:ring-2"
-          />
-        </label>
+
+        <div className="mt-6 flex flex-col gap-4">
+          <label className="flex flex-col gap-2 text-sm font-semibold text-red-400">
+            {t("showSetup.redTeam")}
+            <input
+              required
+              autoFocus
+              value={redName}
+              onChange={(event) => setRedName(event.target.value)}
+              className="rounded-xl border border-red-900/60 bg-zinc-950/80 px-4 py-3 text-base font-medium text-white outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+            />
+          </label>
+
+          <div className="relative my-1 flex items-center justify-center">
+            <div className="h-px w-full bg-zinc-800" />
+            <span className="absolute rounded-full border border-zinc-700 bg-zinc-900 px-3 py-1 text-[11px] font-black uppercase tracking-widest text-zinc-400">
+              VS
+            </span>
+          </div>
+
+          <label className="flex flex-col gap-2 text-sm font-semibold text-blue-400">
+            {t("showSetup.blueTeam")}
+            <input
+              required
+              value={blueName}
+              onChange={(event) => setBlueName(event.target.value)}
+              className="rounded-xl border border-blue-900/60 bg-zinc-950/80 px-4 py-3 text-base font-medium text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            />
+          </label>
+        </div>
+
         <div className="pt-8">
           <button
             type="submit"
             disabled={starting}
-            className="min-h-12 w-full rounded-xl bg-amber-400 text-base font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-50"
+            className="min-h-12 w-full rounded-xl bg-amber-400 text-base font-bold text-zinc-950 shadow-lg shadow-amber-400/20 transition hover:bg-amber-300 disabled:opacity-50"
           >
             {starting ? t("showSetup.starting") : t("showSetup.startShow")}
           </button>
