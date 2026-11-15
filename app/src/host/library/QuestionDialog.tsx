@@ -113,8 +113,25 @@ export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionD
       size="lg"
       title={isNew ? t("questionDialog.newQuestion") : t("questionDialog.editQuestion")}
       onClose={onClose}
+      headerActions={
+        <button
+          type="submit"
+          form="question-dialog-form"
+          disabled={saving || !prompt.trim()}
+          className="flex h-9 items-center gap-1.5 rounded-xl bg-amber-400 px-4 text-xs font-bold text-zinc-950 shadow-md shadow-amber-400/15 transition hover:bg-amber-300 disabled:opacity-40"
+        >
+          <Check size={15} />
+          <span>
+            {saving ? t("questionDialog.saving") : t("questionDialog.saveQuestion")}
+          </span>
+        </button>
+      }
     >
-      <form onSubmit={(event) => void save(event)} className="flex flex-col gap-5">
+      <form
+        id="question-dialog-form"
+        onSubmit={(event) => void save(event)}
+        className="flex flex-col gap-5"
+      >
         {/* Question Prompt */}
         <div className="flex flex-col gap-2">
           <label
@@ -212,8 +229,8 @@ export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionD
           </div>
         </div>
 
-        {/* Form Actions Footer */}
-        <div className="flex items-center justify-between gap-3 border-t border-zinc-800 pt-4">
+        {/* Add Answer Button */}
+        <div>
           <button
             type="button"
             onClick={addAnswer}
@@ -222,26 +239,6 @@ export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionD
             <Plus size={14} />
             <span>{t("questionDialog.addAnswer")}</span>
           </button>
-
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-zinc-300 transition hover:bg-zinc-800 hover:text-white"
-            >
-              {t("common.cancel")}
-            </button>
-            <button
-              type="submit"
-              disabled={saving || !prompt.trim()}
-              className="flex items-center gap-2 rounded-xl bg-amber-400 px-5 py-2.5 text-sm font-bold text-zinc-950 shadow-md shadow-amber-400/15 transition hover:bg-amber-300 disabled:opacity-50"
-            >
-              <Check size={16} />
-              <span>
-                {saving ? t("questionDialog.saving") : t("questionDialog.saveQuestion")}
-              </span>
-            </button>
-          </div>
         </div>
       </form>
     </Dialog>

@@ -6,11 +6,20 @@ interface DialogProps {
   title: string;
   subtitle?: string;
   size?: "md" | "lg" | "xl";
+  headerActions?: ReactNode;
   onClose: () => void;
   children: ReactNode;
 }
 
-export function Dialog({ open, title, subtitle, size = "lg", onClose, children }: DialogProps) {
+export function Dialog({
+  open,
+  title,
+  subtitle,
+  size = "lg",
+  headerActions,
+  onClose,
+  children,
+}: DialogProps) {
   useEffect(() => {
     if (!open) {
       return;
@@ -58,14 +67,17 @@ export function Dialog({ open, title, subtitle, size = "lg", onClose, children }
               <p className="mt-1 text-xs text-zinc-400 font-normal">{subtitle}</p>
             )}
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800 text-zinc-400 transition hover:border-zinc-500 hover:bg-zinc-700 hover:text-white"
-          >
-            <X size={16} />
-          </button>
+          <div className="flex items-center gap-2.5 shrink-0">
+            {headerActions}
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800 text-zinc-400 transition hover:border-zinc-500 hover:bg-zinc-700 hover:text-white"
+            >
+              <X size={16} />
+            </button>
+          </div>
         </div>
         <div className="overflow-y-auto px-6 py-5">{children}</div>
       </div>

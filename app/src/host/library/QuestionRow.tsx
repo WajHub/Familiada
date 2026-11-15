@@ -57,34 +57,36 @@ export function QuestionRow({
         </div>
 
         {/* Controls: Reorder Up/Down + Edit + Delete */}
-        <div className="flex items-center gap-2">
-          {/* Stepper buttons */}
-          <div className="flex rounded-xl border border-zinc-700/80 bg-zinc-800/80 overflow-hidden shadow-xs">
-            <button
-              type="button"
-              aria-label={t("questionRow.moveUp")}
-              disabled={index === 0}
-              onClick={() => onMove(index, -1)}
-              className="flex h-8 w-8 items-center justify-center text-zinc-400 transition hover:bg-zinc-700 hover:text-white disabled:opacity-20 disabled:hover:bg-transparent"
-            >
-              <ChevronUp size={16} />
-            </button>
-            <div className="w-px bg-zinc-700/80" />
-            <button
-              type="button"
-              aria-label={t("questionRow.moveDown")}
-              disabled={index === total - 1}
-              onClick={() => onMove(index, 1)}
-              className="flex h-8 w-8 items-center justify-center text-zinc-400 transition hover:bg-zinc-700 hover:text-white disabled:opacity-20 disabled:hover:bg-transparent"
-            >
-              <ChevronDown size={16} />
-            </button>
-          </div>
+        <div className="flex items-center gap-1.5">
+          {/* Move Up */}
+          <button
+            type="button"
+            aria-label={t("questionRow.moveUp")}
+            title={t("questionRow.moveUp")}
+            disabled={index === 0}
+            onClick={() => onMove(index, -1)}
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-700/80 bg-zinc-800/80 text-zinc-400 transition hover:border-amber-400/80 hover:bg-amber-400/10 hover:text-amber-300 disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:border-zinc-700/80 disabled:hover:bg-zinc-800/80 disabled:hover:text-zinc-400 shadow-xs"
+          >
+            <ChevronUp size={15} />
+          </button>
+
+          {/* Move Down */}
+          <button
+            type="button"
+            aria-label={t("questionRow.moveDown")}
+            title={t("questionRow.moveDown")}
+            disabled={index === total - 1}
+            onClick={() => onMove(index, 1)}
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-700/80 bg-zinc-800/80 text-zinc-400 transition hover:border-amber-400/80 hover:bg-amber-400/10 hover:text-amber-300 disabled:opacity-25 disabled:cursor-not-allowed disabled:hover:border-zinc-700/80 disabled:hover:bg-zinc-800/80 disabled:hover:text-zinc-400 shadow-xs"
+          >
+            <ChevronDown size={15} />
+          </button>
 
           {/* Edit Button */}
           <button
             type="button"
             aria-label={t("questionRow.editAria")}
+            title={t("questionRow.editAria")}
             onClick={() => onEdit(question.id)}
             className="flex h-8 items-center gap-1.5 rounded-xl border border-zinc-700/80 bg-zinc-800/80 px-3 text-xs font-semibold text-zinc-200 transition hover:border-amber-400/80 hover:bg-amber-400/10 hover:text-amber-300 shadow-xs"
           >
@@ -96,6 +98,7 @@ export function QuestionRow({
           <button
             type="button"
             aria-label={t("questionRow.deleteAria")}
+            title={t("questionRow.deleteAria")}
             onClick={() => onDelete(question)}
             className="flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-700/80 bg-zinc-800/80 text-zinc-400 transition hover:border-red-500/80 hover:bg-red-500/10 hover:text-red-400 shadow-xs"
           >
