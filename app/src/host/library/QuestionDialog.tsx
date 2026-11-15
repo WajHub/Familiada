@@ -140,16 +140,19 @@ export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionD
           >
             {t("questionDialog.questionLabel")}
           </label>
-          <textarea
-            id="question-prompt"
-            required
-            autoFocus
-            rows={2}
-            value={prompt}
-            placeholder={t("questionDialog.questionPlaceholder")}
-            onChange={(event) => setPrompt(event.target.value)}
-            className="w-full resize-none rounded-xl border-2 border-zinc-700 bg-zinc-950/80 px-4 py-3 text-base font-semibold text-white outline-none transition placeholder-zinc-500 focus:border-amber-400 focus:bg-zinc-950 focus:ring-2 focus:ring-amber-400/20"
-          />
+          <div className="grid grid-cols-[2.5rem_1fr_6rem_2.5rem] items-center gap-2.5 p-2">
+            <div />
+            <textarea
+              id="question-prompt"
+              required
+              autoFocus
+              rows={2}
+              value={prompt}
+              placeholder={t("questionDialog.questionPlaceholder")}
+              onChange={(event) => setPrompt(event.target.value)}
+              className="w-full resize-none rounded-xl border border-zinc-700 bg-zinc-950/80 px-3 py-2 text-sm font-semibold text-white outline-none transition placeholder-zinc-500 focus:border-amber-400 focus:bg-zinc-950 focus:ring-1 focus:ring-amber-400/30"
+            />
+          </div>
         </div>
 
         {/* Answers Table Section */}
@@ -167,18 +170,18 @@ export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionD
           </div>
 
           {/* Answer Rows List */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             {answers.map((answer, index) => {
               const isLast = index === answers.length - 1;
 
               return (
                 <div
                   key={answer.id}
-                  className="grid grid-cols-[2.5rem_1fr_6rem_2.5rem] items-center gap-2.5 rounded-xl border border-zinc-800 bg-zinc-900/90 p-2 shadow-xs transition-all hover:border-zinc-700"
+                  className="grid grid-cols-[2.5rem_1fr_6rem_2.5rem] items-center gap-2.5 rounded-xl bg-zinc-900/90 p-2 shadow-xs"
                 >
                   {/* Rank Badge */}
                   <div className="flex justify-center">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-700/80 bg-zinc-800 text-xs font-bold text-zinc-300 shadow-xs">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-800 text-xs font-bold text-zinc-300 shadow-xs">
                       {index + 1}
                     </span>
                   </div>

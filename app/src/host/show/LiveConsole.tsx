@@ -32,7 +32,7 @@ function AnswerRow({ answer }: AnswerRowProps) {
       className={`flex items-center gap-4 rounded-2xl border px-5 py-3 transition-all duration-200 ${
         isAnswered
           ? "border-zinc-800/60 bg-zinc-950/40 opacity-70"
-          : "border-zinc-800 bg-zinc-900/90 hover:border-zinc-700 shadow-sm"
+          : "border-zinc-800 bg-zinc-900/90 shadow-sm"
       }`}
     >
       {/* Rank Badge */}

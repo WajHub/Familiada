@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { Check, Copy, Pencil, Plus, Trash2, X, HelpCircle } from "lucide-react";
+import { Check, Copy, Folder, Pencil, Plus, Trash2, X, HelpCircle } from "lucide-react";
 import { useHostSession } from "../HostSession";
 import { useI18n } from "../../i18n/I18nContext";
 import type { QuestionListItem } from "../types";
@@ -94,10 +94,13 @@ export function LibraryPage() {
     <div className="flex h-full min-h-0">
       {/* Collections Sidebar */}
       <section className="flex w-80 shrink-0 flex-col border-r border-zinc-800 bg-zinc-950">
-        <div className="border-b border-zinc-800 px-4 py-4">
-          <h1 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-            {t("library.collections")}
-          </h1>
+        <div className="flex h-20 items-center border-b border-zinc-800 px-4">
+          <div className="flex items-center gap-2 text-zinc-400">
+            <Folder size={16} className="text-zinc-400" />
+            <h1 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+              {t("library.collections")}
+            </h1>
+          </div>
         </div>
 
         {/* Collections List */}
@@ -181,14 +184,10 @@ export function LibraryPage() {
       {/* Main Question Management Area */}
       <section className="flex min-w-0 flex-1 flex-col">
         {/* Header Bar */}
-        <header className="flex items-center justify-between gap-4 border-b border-zinc-800 bg-zinc-950/50 px-6 py-4 backdrop-blur-xs">
+        <header className="flex h-20 items-center justify-between gap-4 border-b border-zinc-800 bg-zinc-950/50 px-6 backdrop-blur-xs">
           <div className="min-w-0">
-            <p className="text-xs uppercase tracking-wide text-zinc-500">
-              {t("sidebar.library")}
-            </p>
-
             {selected && editingCollectionId === String(selected.id) ? (
-              <div className="mt-1 flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <input
                   autoFocus
                   value={editingTitle}
@@ -225,7 +224,7 @@ export function LibraryPage() {
                 </button>
               </div>
             ) : (
-              <div className="mt-1 flex items-center gap-2.5">
+              <div className="flex items-center gap-2.5">
                 <h2 className="m-0 truncate text-xl font-bold leading-7 text-white">
                   {selected ? selected.title : t("library.chooseCollection")}
                 </h2>
@@ -282,20 +281,20 @@ export function LibraryPage() {
 
           {/* Empty State */}
           {selected && questions.length === 0 && (
-            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-zinc-800 bg-zinc-900/30 p-12 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-400/10 text-amber-300">
+            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-zinc-800 bg-zinc-900/30 p-14 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-400/10 text-amber-300 mb-5">
                 <HelpCircle size={24} />
               </div>
-              <h3 className="mt-4 text-base font-bold text-white">
+              <h3 className="text-base font-bold text-white mb-3">
                 {t("library.emptyStateTitle")}
               </h3>
-              <p className="mt-1 max-w-sm text-xs text-zinc-400 leading-relaxed">
+              <p className="max-w-md text-xs text-zinc-400 leading-relaxed mb-6">
                 {t("library.emptyStateSubtitle")}
               </p>
               <button
                 type="button"
                 onClick={openCreate}
-                className="mt-5 flex items-center gap-2 rounded-xl bg-amber-400 px-4 py-2.5 text-xs font-bold text-zinc-950 transition hover:bg-amber-300 shadow-sm"
+                className="flex items-center gap-2 rounded-xl bg-amber-400 px-4 py-2.5 text-xs font-bold text-zinc-950 transition hover:bg-amber-300 shadow-sm"
               >
                 <Plus size={15} />
                 <span>{t("library.addFirstQuestion")}</span>

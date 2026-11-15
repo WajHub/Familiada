@@ -10,11 +10,14 @@
 }
 
 @layer base {
-  /* 1. Global Box Sizing (Bootstrap Reboot) */
+  /* 1. Global Box Sizing & Border Defaults (Bootstrap Reboot + Tailwind base) */
   *,
   *::before,
   *::after {
     box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: #27272a;
   }
 
   /* 2. Root & Smooth Scrolling */

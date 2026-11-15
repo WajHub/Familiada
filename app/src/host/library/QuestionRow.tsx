@@ -46,7 +46,7 @@ export function QuestionRow({
   }, [question.id]);
 
   return (
-    <article className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-md transition-all hover:border-zinc-700">
+    <article className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-md">
       {/* Header bar: Question number, Reorder & Action buttons */}
       <div className="flex items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
         <div className="flex items-center gap-2">
@@ -108,21 +108,21 @@ export function QuestionRow({
       </div>
 
       {/* Question Prompt Title */}
-      <h3 className="mt-3.5 text-lg font-bold text-white tracking-wide leading-snug">
+      <h3 className="pt-1 text-lg font-bold text-white tracking-wide leading-snug">
         {question.content}
       </h3>
 
       {/* Ranked Answers Grid (2-Column structured layout) */}
       {answers.length > 0 ? (
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-2.5">
+        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-x-2.5 gap-y-1.5">
           {answers.map((answer, answerIndex) => (
             <div
               key={answer.id}
-              className="flex items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-950/50 px-3.5 py-2 transition-all hover:border-zinc-700/80"
+              className="flex items-center justify-between gap-2 rounded-xl bg-zinc-950/50 px-3.5 py-2"
             >
               {/* Left: Rank Badge + Content */}
               <div className="flex items-center gap-2.5 min-w-0">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-zinc-700/80 bg-zinc-800 text-[11px] font-bold text-zinc-300">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-zinc-800 text-[11px] font-bold text-zinc-300">
                   {answerIndex + 1}
                 </span>
                 <span className="truncate text-sm font-semibold text-zinc-100" title={answer.content}>
@@ -131,7 +131,7 @@ export function QuestionRow({
               </div>
 
               {/* Right: Points Tag */}
-              <span className="shrink-0 rounded-lg border border-zinc-700/60 bg-zinc-800/80 px-2.5 py-0.5 text-xs font-bold tabular-nums text-zinc-300">
+              <span className="shrink-0 rounded-lg bg-zinc-800/80 px-2.5 py-0.5 text-xs font-bold tabular-nums text-zinc-300">
                 {answer.points} {t("questionRow.pts")}
               </span>
             </div>
