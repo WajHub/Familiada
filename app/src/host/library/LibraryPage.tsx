@@ -80,8 +80,8 @@ export function LibraryPage() {
                     onClick={() => selectCollection(id)}
                     className={
                       selectedRow
-                        ? "flex w-full items-center justify-between rounded-xl border border-amber-500/40 bg-zinc-800/90 px-3.5 py-3 text-left font-semibold text-white shadow-sm"
-                        : "flex w-full items-center justify-between rounded-xl border border-zinc-800/90 bg-zinc-950 px-3.5 py-3 text-left font-medium text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-900 hover:text-white"
+                        ? "flex w-full items-center justify-between rounded-xl border-2 border-amber-400 bg-zinc-800 px-3.5 py-3 text-left font-bold text-white shadow-md shadow-amber-400/10"
+                        : "flex w-full items-center justify-between rounded-xl border border-zinc-700 bg-zinc-900 px-3.5 py-3 text-left font-medium text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-800 hover:text-white"
                     }
                   >
                     <span className="truncate">{collection.title}</span>
@@ -94,8 +94,8 @@ export function LibraryPage() {
             })}
           </ul>
         </div>
-        <form onSubmit={(event) => void create(event)} className="flex flex-col gap-2.5 border-t border-zinc-800/80 p-3.5">
-          <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400" htmlFor="collection-title">
+        <form onSubmit={(event) => void create(event)} className="flex flex-col gap-2.5 border-t border-zinc-800 p-3.5">
+          <label className="text-xs font-semibold uppercase tracking-wider text-zinc-300" htmlFor="collection-title">
             {t("library.newCollection")}
           </label>
           <input
@@ -103,7 +103,7 @@ export function LibraryPage() {
             required
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            className="rounded-xl border border-zinc-800 bg-zinc-900 px-3.5 py-2.5 text-sm text-white outline-none transition focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+            className="rounded-xl border-2 border-zinc-700 bg-zinc-900 px-3.5 py-2.5 text-sm text-white outline-none transition placeholder-zinc-500 focus:border-amber-400 focus:bg-zinc-950 focus:ring-2 focus:ring-amber-400/20"
           />
           <button
             type="submit"
@@ -116,7 +116,7 @@ export function LibraryPage() {
             type="button"
             disabled={selectedCollectionId === ""}
             onClick={() => setCollectionToDelete(selectedCollectionId)}
-            className="rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-2 text-xs font-semibold text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200 disabled:opacity-30"
+            className="rounded-xl border border-zinc-700 bg-zinc-900 px-3.5 py-2.5 text-xs font-semibold text-zinc-300 transition hover:border-red-500/60 hover:bg-red-950/40 hover:text-red-200 disabled:opacity-30"
           >
             {t("library.deleteSelected")}
           </button>

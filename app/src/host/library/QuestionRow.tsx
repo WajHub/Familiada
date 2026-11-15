@@ -48,26 +48,29 @@ export function QuestionRow({
   return (
     <article className="rounded-2xl border border-zinc-800/90 bg-zinc-900/90 p-5 shadow-sm transition-all hover:border-zinc-700/80">
       <div className="flex items-start gap-4">
-        <div className="flex flex-col gap-1.5 pt-0.5">
+        {/* Reordering stepper pill */}
+        <div className="flex flex-col rounded-xl border border-zinc-700 bg-zinc-800/80 overflow-hidden shadow-xs shrink-0">
           <button
             type="button"
             aria-label={t("questionRow.moveUp")}
             disabled={index === 0}
             onClick={() => onMove(index, -1)}
-            className="rounded-lg border border-zinc-800 bg-zinc-950 p-1.5 text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white disabled:opacity-30"
+            className="flex h-7 w-7 items-center justify-center text-zinc-400 transition hover:bg-zinc-700 hover:text-white disabled:opacity-20 disabled:hover:bg-transparent"
           >
             <ChevronUp size={15} />
           </button>
+          <div className="h-px w-full bg-zinc-700/80" />
           <button
             type="button"
             aria-label={t("questionRow.moveDown")}
             disabled={index === total - 1}
             onClick={() => onMove(index, 1)}
-            className="rounded-lg border border-zinc-800 bg-zinc-950 p-1.5 text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white disabled:opacity-30"
+            className="flex h-7 w-7 items-center justify-center text-zinc-400 transition hover:bg-zinc-700 hover:text-white disabled:opacity-20 disabled:hover:bg-transparent"
           >
             <ChevronDown size={15} />
           </button>
         </div>
+
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="flex h-5 items-center justify-center rounded-md bg-amber-400/10 px-2 text-[11px] font-bold tracking-wider text-amber-300">
@@ -78,26 +81,28 @@ export function QuestionRow({
             </span>
           </div>
           <h3 className="mt-1.5 text-base font-semibold text-white">{question.content}</h3>
-          <ul className="mt-3 flex flex-wrap gap-2">
+          <ul className="mt-3 flex flex-wrap gap-2.5">
             {answers.map((answer) => (
               <li
                 key={answer.id}
-                className="flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-950/80 px-2.5 py-1 text-xs text-zinc-300"
+                className="flex items-center gap-2.5 rounded-xl border border-zinc-700/80 bg-zinc-800/90 px-3 py-1.5 text-xs shadow-sm"
               >
-                <span>{answer.content}</span>
-                <span className="rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] font-bold text-amber-300">
+                <span className="font-semibold text-white">{answer.content}</span>
+                <span className="flex items-center rounded-md bg-amber-400 px-2 py-0.5 text-[11px] font-black tabular-nums text-zinc-950 shadow-xs">
                   {answer.points} {t("questionRow.pts")}
                 </span>
               </li>
             ))}
           </ul>
         </div>
-        <div className="flex gap-2 pt-0.5">
+
+        {/* Edit and Delete Actions */}
+        <div className="flex items-center gap-2 pt-0.5 shrink-0">
           <button
             type="button"
             aria-label={t("questionRow.editAria")}
             onClick={() => onEdit(question.id)}
-            className="rounded-xl border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-300 transition hover:border-amber-400/80 hover:bg-amber-400/10 hover:text-amber-300 shadow-xs"
           >
             <Pencil size={15} />
           </button>
@@ -105,7 +110,7 @@ export function QuestionRow({
             type="button"
             aria-label={t("questionRow.deleteAria")}
             onClick={() => onDelete(question)}
-            className="rounded-xl border border-zinc-800 bg-zinc-950 p-2.5 text-zinc-300 transition hover:border-red-900/60 hover:bg-red-950/40 hover:text-red-300"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800/80 text-zinc-400 transition hover:border-red-500/80 hover:bg-red-500/10 hover:text-red-400 shadow-xs"
           >
             <Trash2 size={15} />
           </button>

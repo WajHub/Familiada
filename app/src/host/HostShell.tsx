@@ -103,7 +103,7 @@ function HostFrame() {
         )}
         {isGameActive && (
           <div className="mt-3 flex flex-col gap-1.5">
-            <span className="px-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+            <span className="px-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
               {t("sidebar.gameHistory")}
             </span>
             <div className="grid grid-cols-2 gap-2">
@@ -112,7 +112,7 @@ function HostFrame() {
                 disabled={!canUndo}
                 onClick={undoGameAction}
                 title={t("sidebar.undoTooltip")}
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-700 hover:bg-zinc-800/80 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-800 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <Undo2 size={15} />
                 <span>{t("sidebar.undo")}</span>
@@ -122,7 +122,7 @@ function HostFrame() {
                 disabled={!canRedo}
                 onClick={redoGameAction}
                 title={t("sidebar.redoTooltip")}
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-700 hover:bg-zinc-800/80 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-800 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <Redo2 size={15} />
                 <span>{t("sidebar.redo")}</span>
@@ -132,7 +132,7 @@ function HostFrame() {
         )}
         <div className="mt-5 border-t border-zinc-800/80 pt-4">
           <div className="mb-2 flex items-center justify-between px-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
               {t("sidebar.audienceScreen")}
             </span>
             {isBoardOpen ? (
@@ -152,13 +152,13 @@ function HostFrame() {
             onClick={() => {
               void openBoard();
             }}
-            className="flex w-full items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:border-zinc-700 hover:bg-zinc-800/80 hover:text-white"
+            className="flex w-full items-center gap-2.5 rounded-xl border border-zinc-700 bg-zinc-900 px-3.5 py-2.5 text-xs font-semibold text-zinc-100 transition hover:border-zinc-500 hover:bg-zinc-800 hover:text-white"
           >
             <Monitor size={16} className={isBoardOpen ? "text-emerald-400" : "text-zinc-400"} />
             <span className="flex-1 text-left">
               {isBoardOpen ? t("sidebar.focusScoreboard") : t("sidebar.openScoreboard")}
             </span>
-            <ExternalLink size={13} className="text-zinc-500" />
+            <ExternalLink size={14} className="text-zinc-400" />
           </button>
         </div>
         {!canShow && !loading && (
@@ -173,7 +173,7 @@ function HostFrame() {
         )}
         <div className="mt-auto border-t border-zinc-800/80 pt-4">
           <div className="mb-2 flex items-center justify-between px-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
               {t("sidebar.language")}
             </span>
           </div>
@@ -181,10 +181,10 @@ function HostFrame() {
             <button
               type="button"
               onClick={() => setLanguage("en")}
-              className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition ${
+              className={`flex items-center justify-center gap-2 rounded-xl border-2 px-3 py-2 text-xs font-semibold transition ${
                 language === "en"
-                  ? "border-amber-400/80 bg-zinc-800 text-amber-300 font-semibold shadow-sm"
-                  : "border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                  ? "border-amber-400 bg-zinc-800 text-amber-300 shadow-sm"
+                  : "border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-zinc-500 hover:text-white"
               }`}
               title="English"
             >
@@ -194,10 +194,10 @@ function HostFrame() {
             <button
               type="button"
               onClick={() => setLanguage("pl")}
-              className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition ${
+              className={`flex items-center justify-center gap-2 rounded-xl border-2 px-3 py-2 text-xs font-semibold transition ${
                 language === "pl"
-                  ? "border-amber-400/80 bg-zinc-800 text-amber-300 font-semibold shadow-sm"
-                  : "border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                  ? "border-amber-400 bg-zinc-800 text-amber-300 shadow-sm"
+                  : "border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-zinc-500 hover:text-white"
               }`}
               title="Polski"
             >

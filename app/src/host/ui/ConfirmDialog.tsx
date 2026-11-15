@@ -38,7 +38,7 @@ export function ConfirmDialog({
           type="button"
           onClick={onClose}
           disabled={pending}
-          className="rounded-lg border border-zinc-600 bg-zinc-900 px-4 py-2 text-sm text-zinc-100 hover:bg-zinc-800 disabled:opacity-50"
+          className="rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-semibold text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-700 hover:text-white disabled:opacity-50"
         >
           Cancel
         </button>
@@ -48,7 +48,7 @@ export function ConfirmDialog({
             void confirm();
           }}
           disabled={pending}
-          className="rounded-lg border border-amber-700 bg-amber-500/10 px-4 py-2 text-sm font-medium text-amber-200 hover:bg-amber-500/20 disabled:opacity-50"
+          className="rounded-xl border border-red-500/80 bg-red-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-red-500 disabled:opacity-50"
         >
           {pending ? "Working…" : confirmLabel}
         </button>

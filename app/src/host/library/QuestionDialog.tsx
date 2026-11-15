@@ -99,30 +99,30 @@ export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionD
       onClose={onClose}
     >
       <form onSubmit={(event) => void save(event)} className="flex flex-col gap-4">
-        <label className="flex flex-col gap-2 text-sm text-zinc-300">
+        <label className="flex flex-col gap-2 text-sm font-semibold text-zinc-300">
           {t("questionDialog.questionLabel")}
           <input
             required
             autoFocus
             value={prompt}
             onChange={(event) => setPrompt(event.target.value)}
-            className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-base text-zinc-50 outline-none ring-amber-400 focus:ring-2"
+            className="rounded-xl border-2 border-zinc-700 bg-zinc-900 px-3.5 py-2.5 text-base font-medium text-white outline-none transition focus:border-amber-400 focus:bg-zinc-950 focus:ring-2 focus:ring-amber-400/20"
           />
         </label>
 
         <div className="flex flex-col gap-3">
           {answers.map((answer, index) => (
-            <div key={answer.id} className="grid grid-cols-[1fr_6rem_auto] items-end gap-2">
-              <label className="flex flex-col gap-1 text-sm text-zinc-300">
+            <div key={answer.id} className="grid grid-cols-[1fr_6rem_auto] items-end gap-2.5">
+              <label className="flex flex-col gap-1 text-xs font-semibold text-zinc-300">
                 {t("questionDialog.answerLabel")} {index + 1}
                 <input
                   required
                   value={answer.content}
                   onChange={(event) => updateAnswer(answer.id, "content", event.target.value)}
-                  className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-zinc-50 outline-none ring-amber-400 focus:ring-2"
+                  className="rounded-xl border-2 border-zinc-700 bg-zinc-900 px-3 py-2 text-sm font-medium text-white outline-none transition focus:border-amber-400 focus:bg-zinc-950 focus:ring-2 focus:ring-amber-400/20"
                 />
               </label>
-              <label className="flex flex-col gap-1 text-sm text-zinc-300">
+              <label className="flex flex-col gap-1 text-xs font-semibold text-zinc-300">
                 {t("questionDialog.pointsLabel")}
                 <input
                   required
@@ -131,7 +131,7 @@ export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionD
                   max={100}
                   value={answer.points}
                   onChange={(event) => updateAnswer(answer.id, "points", event.target.value)}
-                  className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-zinc-50 outline-none ring-amber-400 focus:ring-2"
+                  className="rounded-xl border-2 border-zinc-700 bg-zinc-900 px-3 py-2 text-sm font-bold text-amber-300 outline-none transition focus:border-amber-400 focus:bg-zinc-950 focus:ring-2 focus:ring-amber-400/20"
                 />
               </label>
               <button
@@ -139,7 +139,7 @@ export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionD
                 onClick={() =>
                   setAnswers((current) => current.filter((item) => item.id !== answer.id))
                 }
-                className="rounded-lg border border-zinc-600 bg-zinc-900 px-3 py-2 text-sm text-zinc-200 hover:bg-zinc-800"
+                className="rounded-xl border border-zinc-700 bg-zinc-800 px-3.5 py-2 text-xs font-semibold text-zinc-300 transition hover:border-red-500/60 hover:bg-red-950/40 hover:text-red-200"
               >
                 {t("questionDialog.removeAnswer")}
               </button>
@@ -147,18 +147,18 @@ export function QuestionDialog({ open, questionId, onClose, onSaved }: QuestionD
           ))}
         </div>
 
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 pt-2">
           <button
             type="button"
             onClick={() => setAnswers((current) => [...current, emptyAnswer()])}
-            className="rounded-lg border border-zinc-600 bg-zinc-900 px-4 py-2 text-sm text-zinc-100 hover:bg-zinc-800"
+            className="rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-semibold text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-700 hover:text-white"
           >
             {t("questionDialog.addAnswer")}
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="rounded-lg bg-amber-400 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-50"
+            className="rounded-xl bg-amber-400 px-5 py-2 text-sm font-bold text-zinc-950 shadow-sm transition hover:bg-amber-300 disabled:opacity-50"
           >
             {saving ? t("questionDialog.saving") : t("questionDialog.saveQuestion")}
           </button>
