@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, ChevronUp, GripHorizontal, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, GripVertical, Pencil, Trash2 } from "lucide-react";
 import { fetchAnswers } from "../api";
 import { useI18n } from "../../i18n/I18nContext";
 import type { AnswerSummary, QuestionListItem } from "../types";
@@ -85,17 +85,10 @@ export function QuestionRow({
             : "border-zinc-800 bg-zinc-900/90 shadow-md"
         } p-5`}
       >
-        {/* Header bar: Question number, Drag Handle & Action buttons */}
+        {/* Header bar: Left controls (Drag Handle + Question badge) & Right action buttons */}
         <div className="flex items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
-          {/* Left: Question / Round Number Badge */}
+          {/* Left: Drag Handle + Question / Round Number Badge */}
           <div className="flex items-center gap-2">
-            <span className="flex items-center rounded-lg bg-amber-400 px-2.5 py-1 text-xs font-black tracking-wide text-zinc-950 shadow-xs">
-              {t("questionRow.questionNumber")} {index + 1}
-            </span>
-          </div>
-
-          {/* Center: Drag Handler (placed in the middle as requested) */}
-          <div className="flex flex-1 items-center justify-center">
             <div
               role="button"
               tabIndex={total > 1 ? 0 : -1}
@@ -103,8 +96,7 @@ export function QuestionRow({
               onDragStart={(e) => {
                 if (total <= 1) return;
                 if (cardRef.current) {
-                  const rect = cardRef.current.getBoundingClientRect();
-                  e.dataTransfer.setDragImage(cardRef.current, rect.width / 2, 24);
+                  e.dataTransfer.setDragImage(cardRef.current, 24, 24);
                 }
                 e.dataTransfer.effectAllowed = "move";
                 e.dataTransfer.setData("text/plain", String(index));
@@ -117,12 +109,12 @@ export function QuestionRow({
               aria-label={t("questionRow.dragHandleTooltip")}
               className={
                 total > 1
-                  ? "group flex h-8 w-16 items-center justify-center rounded-xl border border-zinc-700/80 bg-zinc-800/80 text-zinc-400 shadow-xs transition hover:border-amber-400/80 hover:bg-amber-400/10 hover:text-amber-300 cursor-grab active:cursor-grabbing select-none"
-                  : "flex h-8 w-16 items-center justify-center rounded-xl border border-zinc-800/60 bg-zinc-800/30 text-zinc-600 opacity-40 cursor-not-allowed select-none"
+                  ? "group flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-700/80 bg-zinc-800/80 text-zinc-400 shadow-xs transition hover:border-amber-400/80 hover:bg-amber-400/10 hover:text-amber-300 cursor-grab active:cursor-grabbing select-none"
+                  : "flex h-8 w-8 items-center justify-center rounded-xl border border-zinc-800/60 bg-zinc-800/30 text-zinc-600 opacity-40 cursor-not-allowed select-none"
               }
             >
-              <GripHorizontal
-                size={18}
+              <GripVertical
+                size={16}
                 className={
                   total > 1
                     ? "text-zinc-500 transition group-hover:text-amber-400"
@@ -130,6 +122,10 @@ export function QuestionRow({
                 }
               />
             </div>
+
+            <span className="flex items-center rounded-lg bg-amber-400 px-2.5 py-1 text-xs font-black tracking-wide text-zinc-950 shadow-xs">
+              {t("questionRow.questionNumber")} {index + 1}
+            </span>
           </div>
 
           {/* Right Controls: Reorder Up/Down + Edit + Delete */}

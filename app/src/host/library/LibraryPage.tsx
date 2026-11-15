@@ -485,22 +485,22 @@ export function LibraryPage() {
 
           {/* Empty State */}
           {selected && questions.length === 0 && (
-            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-zinc-800 bg-zinc-900/30 p-14 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-400/10 text-amber-300 mb-5">
-                <HelpCircle size={24} />
+            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-zinc-800 bg-zinc-900/30 py-20 px-8 text-center min-h-[380px]">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-400/10 text-amber-400 ring-1 ring-amber-400/20 mb-6 shadow-sm">
+                <HelpCircle size={32} strokeWidth={2.2} />
               </div>
-              <h3 className="text-base font-bold text-white mb-3">
+              <h3 className="text-xl font-bold text-white tracking-wide mb-3">
                 {t("library.emptyStateTitle")}
               </h3>
-              <p className="max-w-md text-xs text-zinc-400 leading-relaxed mb-6">
+              <p className="p-3 max-w-lg text-sm text-zinc-300 leading-relaxed mb-8">
                 {t("library.emptyStateSubtitle")}
               </p>
               <button
                 type="button"
                 onClick={openCreate}
-                className="flex items-center gap-2 rounded-xl bg-amber-400 px-4 py-2.5 text-xs font-bold text-zinc-950 transition hover:bg-amber-300 shadow-sm"
+                className="flex items-center gap-2.5 rounded-xl bg-amber-400 px-6 py-3 text-sm font-bold text-zinc-950 shadow-md shadow-amber-400/20 transition hover:bg-amber-300 hover:scale-[1.02] active:scale-[0.98]"
               >
-                <Plus size={15} />
+                <Plus size={18} strokeWidth={2.5} />
                 <span>{t("library.addFirstQuestion")}</span>
               </button>
             </div>
