@@ -11,8 +11,8 @@ const API = {
     return () => ipcRenderer.removeListener("displayQuestion", subscription);
   },
   onDisplayQuestionMain: (callback) => {
-    const subscription = (_event, content, first, last) =>
-      callback(content, first, last);
+    const subscription = (_event, content, first, last, roundPoints, isRoundWon) =>
+      callback(content, first, last, roundPoints, isRoundWon);
     ipcRenderer.on("displayQuestionMain", subscription);
     return () =>
       ipcRenderer.removeListener("displayQuestionMain", subscription);
@@ -41,6 +41,24 @@ const API = {
     ipcRenderer.on("wrongAnswer", subscription);
     return () => ipcRenderer.removeListener("wrongAnswer", subscription);
   },
+  onDisplayLostChances: (callback) => {
+    const subscription = (_event, red, blue) => callback(red, blue);
+    ipcRenderer.on("displayLostChances", subscription);
+    return () =>
+      ipcRenderer.removeListener("displayLostChances", subscription);
+  },
+  onSyncRoundAnswers: (callback) => {
+    const subscription = (_event, answers) => callback(answers);
+    ipcRenderer.on("syncRoundAnswers", subscription);
+    return () =>
+      ipcRenderer.removeListener("syncRoundAnswers", subscription);
+  },
+  onSyncBoardAnswers: (callback) => {
+    const subscription = (_event, answers) => callback(answers);
+    ipcRenderer.on("syncBoardAnswers", subscription);
+    return () =>
+      ipcRenderer.removeListener("syncBoardAnswers", subscription);
+  },
   onStatsTeam: (callback) => {
     const subscription = (_event, redName, blueName, redPoints, bluePoints) =>
       callback(redName, blueName, redPoints, bluePoints);
@@ -63,6 +81,12 @@ const API = {
     const subscription = (_event, isOpen) => callback(isOpen);
     ipcRenderer.on("boardWindowState", subscription);
     return () => ipcRenderer.removeListener("boardWindowState", subscription);
+  },
+  onUndoRedoState: (callback) => {
+    const subscription = (_event, canUndo, canRedo) =>
+      callback(canUndo, canRedo);
+    ipcRenderer.on("undoRedoState", subscription);
+    return () => ipcRenderer.removeListener("undoRedoState", subscription);
   },
 
   // Renderer <---> Main (invokes)
@@ -102,6 +126,8 @@ const API = {
   wrongAnswer: (team) => ipcRenderer.send("wrongAnswer", team),
   win: (team) => ipcRenderer.send("win", team),
   deleteCurrentCollection: () => ipcRenderer.send("deleteCurrentCollection"),
+  undoGameAction: () => ipcRenderer.send("undoGameAction"),
+  redoGameAction: () => ipcRenderer.send("redoGameAction"),
 };
 
 contextBridge.exposeInMainWorld("api", API);

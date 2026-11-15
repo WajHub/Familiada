@@ -27,10 +27,26 @@ export interface TeamColorPayload {
   teamColor: TeamSide;
 }
 
+export type AnswerStatus = "hidden" | "revealed" | "guessed";
+
+export interface ConsoleAnswer {
+  id: number;
+  content: string;
+  points: number;
+  index: number;
+  status: AnswerStatus;
+}
+
 export interface FamiliadaApi {
   onDisplayQuestion: (callback: (question: string) => void) => () => void;
   onDisplayQuestionMain: (
-    callback: (content: string, first: boolean, last: boolean) => void
+    callback: (
+      content: string,
+      first: boolean,
+      last: boolean,
+      roundPoints?: number,
+      isRoundWon?: boolean
+    ) => void
   ) => () => void;
   onDisplayAnswer: (
     callback: (value: string, idAnswer: number, index: number) => void
@@ -40,6 +56,15 @@ export interface FamiliadaApi {
   ) => () => void;
   onDisplayPointsForQuestion: (callback: (points: number) => void) => () => void;
   onWrongAnswer: (callback: (team: string) => void) => () => void;
+  onDisplayLostChances: (
+    callback: (red: number, blue: number) => void
+  ) => () => void;
+  onSyncRoundAnswers: (
+    callback: (answers: ConsoleAnswer[]) => void
+  ) => () => void;
+  onSyncBoardAnswers: (
+    callback: (answers: ConsoleAnswer[]) => void
+  ) => () => void;
   onStatsTeam: (
     callback: (
       redName: string,
@@ -53,6 +78,9 @@ export interface FamiliadaApi {
   ) => () => void;
   onUpdateAnswers: (callback: () => void) => () => void;
   onBoardWindowState: (callback: (isOpen: boolean) => void) => () => void;
+  onUndoRedoState: (
+    callback: (canUndo: boolean, canRedo: boolean) => void
+  ) => () => void;
   getCollections: () => Promise<WithDataValues<CollectionRecord>[]>;
   getQuestions: () => Promise<WithDataValues<QuestionRecord>[] | undefined>;
   getQuestion: (id: number) => Promise<WithDataValues<QuestionRecord>>;
@@ -92,6 +120,8 @@ export interface FamiliadaApi {
   isGameActive: () => Promise<boolean>;
   isBoardOpen: () => Promise<boolean>;
   openBoardWindow: () => Promise<boolean>;
+  undoGameAction: () => void;
+  redoGameAction: () => void;
 }
 
 declare global {

@@ -1,21 +1,19 @@
 import { useEffect, useState } from "react";
 import { useHostSession } from "../HostSession";
-import type { RevealedAnswer } from "../types";
-import type { TeamSide } from "../../types/window";
+import type { ConsoleAnswer, TeamSide } from "../../types/window";
 import { correctAnswerSound, playSound, showAnswerSound, wrongAnswerSound } from "./sounds";
 
 interface AnswerRowProps {
-  answer: RevealedAnswer;
+  answer: ConsoleAnswer;
 }
 
 function AnswerRow({ answer }: AnswerRowProps) {
-  const [answered, setAnswered] = useState(false);
+  const isAnswered = answer.status !== "hidden";
 
   const reveal = (kind: "show" | "correct") => {
-    if (answered) {
+    if (isAnswered) {
       return;
     }
-    setAnswered(true);
     if (kind === "correct") {
       playSound(correctAnswerSound);
       window.api.guessAnswer(answer.id);
@@ -28,14 +26,27 @@ function AnswerRow({ answer }: AnswerRowProps) {
   return (
     <div
       className={`flex items-center gap-4 rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-3 transition-opacity duration-200 ${
-        answered ? "opacity-50" : "opacity-100"
+        isAnswered ? "opacity-60" : "opacity-100"
       }`}
     >
       <span className="w-8 text-sm font-semibold text-zinc-500">{answer.index}</span>
       <p className="min-w-0 flex-1 text-lg font-medium text-zinc-50">{answer.content}</p>
+      <span className="rounded-md bg-zinc-800 px-2.5 py-1 text-sm font-semibold tabular-nums text-amber-300">
+        {answer.points}
+      </span>
+      {answer.status === "guessed" && (
+        <span className="rounded-lg bg-amber-400/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-300">
+          Correct
+        </span>
+      )}
+      {answer.status === "revealed" && (
+        <span className="rounded-lg bg-zinc-700/40 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-zinc-300">
+          Exposed
+        </span>
+      )}
       <button
         type="button"
-        disabled={answered}
+        disabled={isAnswered}
         onClick={() => reveal("show")}
         className="min-h-11 rounded-lg border border-zinc-600 bg-zinc-900 px-4 text-sm text-zinc-100 hover:bg-zinc-800 disabled:opacity-40"
       >
@@ -43,7 +54,7 @@ function AnswerRow({ answer }: AnswerRowProps) {
       </button>
       <button
         type="button"
-        disabled={answered}
+        disabled={isAnswered}
         onClick={() => reveal("correct")}
         className="min-h-11 rounded-lg bg-amber-400 px-4 text-sm font-semibold text-zinc-950 hover:bg-amber-300 disabled:opacity-40"
       >
@@ -57,12 +68,21 @@ interface TeamColumnProps {
   side: TeamSide;
   name: string;
   points: number;
+  lostChances: number;
   awardDisabled: boolean;
   onStrike: (side: TeamSide) => void;
   onAward: (side: TeamSide) => void;
 }
 
-function TeamColumn({ side, name, points, awardDisabled, onStrike, onAward }: TeamColumnProps) {
+function TeamColumn({
+  side,
+  name,
+  points,
+  lostChances,
+  awardDisabled,
+  onStrike,
+  onAward,
+}: TeamColumnProps) {
   const teamClass =
     side === "RED"
       ? "border-red-900/80 bg-red-950/40"
@@ -79,10 +99,12 @@ function TeamColumn({ side, name, points, awardDisabled, onStrike, onAward }: Te
         <h3 className="truncate text-2xl font-semibold text-white">{name || side}</h3>
         <p className="text-3xl font-semibold tabular-nums text-white">{points}</p>
       </div>
+
       <button
         type="button"
+        disabled={lostChances >= 3}
         onClick={() => onStrike(side)}
-        className={`min-h-12 rounded-xl px-4 text-base font-semibold ${solidClass}`}
+        className={`min-h-12 rounded-xl px-4 text-base font-semibold ${solidClass} disabled:opacity-40 disabled:cursor-not-allowed`}
       >
         Strike
       </button>
@@ -96,6 +118,26 @@ function TeamColumn({ side, name, points, awardDisabled, onStrike, onAward }: Te
       >
         Award round
       </button>
+
+      <div className="mt-auto flex items-center justify-between rounded-xl border border-zinc-800/80 bg-zinc-950/40 px-3 py-2">
+        <span className="text-xs uppercase tracking-wide text-zinc-400">Lost chances:</span>
+        <div className="flex items-center gap-1.5">
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              className={`flex h-8 w-8 items-center justify-center rounded-lg border text-sm font-bold transition-all ${
+                i < lostChances
+                  ? side === "RED"
+                    ? "border-red-500 bg-red-600 text-white shadow-md shadow-red-900/50"
+                    : "border-blue-500 bg-blue-600 text-white shadow-md shadow-blue-900/50"
+                  : "border-zinc-800 bg-zinc-900/80 text-zinc-600"
+              }`}
+            >
+              {i < lostChances ? "✕" : "·"}
+            </span>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
@@ -103,7 +145,7 @@ function TeamColumn({ side, name, points, awardDisabled, onStrike, onAward }: Te
 export function LiveConsole() {
   const { requestExitGame } = useHostSession();
   const [question, setQuestion] = useState("");
-  const [answers, setAnswers] = useState<RevealedAnswer[]>([]);
+  const [answers, setAnswers] = useState<ConsoleAnswer[]>([]);
   const [points, setPoints] = useState(0);
   const [redName, setRedName] = useState("");
   const [blueName, setBlueName] = useState("");
@@ -112,15 +154,23 @@ export function LiveConsole() {
   const [isFirstQuestion, setIsFirstQuestion] = useState(true);
   const [isLastQuestion, setIsLastQuestion] = useState(true);
   const [isRoundWon, setIsRoundWon] = useState(false);
+  const [lostChancesRed, setLostChancesRed] = useState(0);
+  const [lostChancesBlue, setLostChancesBlue] = useState(0);
 
   useEffect(() => {
     const unsubscribeDisplayQuestion = window.api.onDisplayQuestionMain(
-      (nextQuestion, first, last) => {
+      (nextQuestion, first, last, roundPoints, isAwarded) => {
         setQuestion(nextQuestion);
-        setAnswers([]);
         setIsFirstQuestion(first);
         setIsLastQuestion(last);
-        setIsRoundWon(false);
+        if (typeof roundPoints === "number") {
+          setPoints(roundPoints);
+        }
+        if (typeof isAwarded === "boolean") {
+          setIsRoundWon(isAwarded);
+        } else {
+          setIsRoundWon(false);
+        }
       }
     );
     const unsubscribeDisplayAnswer = window.api.onDisplayAnswer((content, answerId, index) => {
@@ -128,8 +178,18 @@ export function LiveConsole() {
         if (current.some((answer) => answer.id === answerId)) {
           return current;
         }
-        return [...current, { content, id: answerId, index }];
+        return [
+          ...current,
+          { content, id: answerId, index, points: 0, status: "hidden" },
+        ];
       });
+    });
+    const unsubscribeSyncRoundAnswers = window.api.onSyncRoundAnswers((nextAnswers) => {
+      setAnswers(nextAnswers);
+    });
+    const unsubscribeDisplayLostChances = window.api.onDisplayLostChances((red, blue) => {
+      setLostChancesRed(red);
+      setLostChancesBlue(blue);
     });
     const unsubscribeDisplayPoints = window.api.onDisplayPointsForQuestion((nextPoints) => {
       setPoints(nextPoints);
@@ -142,11 +202,12 @@ export function LiveConsole() {
     });
 
     window.api.startGame();
-    // playSound(startRoundSound);
 
     return () => {
       unsubscribeDisplayQuestion();
       unsubscribeDisplayAnswer();
+      unsubscribeSyncRoundAnswers();
+      unsubscribeDisplayLostChances();
       unsubscribeDisplayPoints();
       unsubscribeStatsTeam();
     };
@@ -213,6 +274,7 @@ export function LiveConsole() {
           side="RED"
           name={redName}
           points={redPoints}
+          lostChances={lostChancesRed}
           awardDisabled={isRoundWon}
           onStrike={(side) => {
             playSound(wrongAnswerSound);
@@ -224,6 +286,7 @@ export function LiveConsole() {
           side="BLUE"
           name={blueName}
           points={bluePoints}
+          lostChances={lostChancesBlue}
           awardDisabled={isRoundWon}
           onStrike={(side) => {
             playSound(wrongAnswerSound);

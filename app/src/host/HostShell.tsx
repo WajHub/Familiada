@@ -1,4 +1,4 @@
-import { Clapperboard, ExternalLink, Library, Monitor } from "lucide-react";
+import { Clapperboard, ExternalLink, Library, Monitor, Redo2, Undo2 } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { HostSessionProvider, useHostSession } from "./HostSession";
 import { ConfirmDialog } from "./ui/ConfirmDialog";
@@ -26,6 +26,10 @@ function HostFrame() {
     confirmExitGame,
     isBoardOpen,
     openBoard,
+    canUndo,
+    canRedo,
+    undoGameAction,
+    redoGameAction,
   } = useHostSession();
   const canShow = !loading && questions.length > 0;
 
@@ -81,6 +85,35 @@ function HostFrame() {
             <p className="mt-1 text-xs leading-relaxed text-zinc-400">
               Live on the scoreboard. Scores and answers are active.
             </p>
+          </div>
+        )}
+        {isGameActive && (
+          <div className="mt-3 flex flex-col gap-1.5">
+            <span className="px-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+              Game History
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                disabled={!canUndo}
+                onClick={undoGameAction}
+                title="Undo last game action (Ctrl+Z)"
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-700 hover:bg-zinc-800/80 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <Undo2 size={15} />
+                <span>Undo</span>
+              </button>
+              <button
+                type="button"
+                disabled={!canRedo}
+                onClick={redoGameAction}
+                title="Redo game action (Ctrl+Y)"
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-700 hover:bg-zinc-800/80 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <Redo2 size={15} />
+                <span>Redo</span>
+              </button>
+            </div>
           </div>
         )}
         <div className="mt-5 border-t border-zinc-800/80 pt-4">

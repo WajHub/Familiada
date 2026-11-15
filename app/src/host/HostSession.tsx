@@ -26,6 +26,10 @@ interface HostSessionValue {
   confirmExitGame: () => void;
   isBoardOpen: boolean;
   openBoard: () => Promise<void>;
+  canUndo: boolean;
+  canRedo: boolean;
+  undoGameAction: () => void;
+  redoGameAction: () => void;
   selectCollection: (id: string) => void;
   createCollection: (title: string) => Promise<void>;
   deleteCollection: (id: string) => Promise<void>;
@@ -99,6 +103,63 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
     await window.api.openBoardWindow();
     setIsBoardOpen(true);
   }, []);
+
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = window.api.onUndoRedoState(
+      (nextCanUndo, nextCanRedo) => {
+        setCanUndo(nextCanUndo);
+        setCanRedo(nextCanRedo);
+      }
+    );
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const undoGameAction = useCallback(() => {
+    window.api.undoGameAction();
+  }, []);
+
+  const redoGameAction = useCallback(() => {
+    window.api.redoGameAction();
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isGameActive) return;
+      const target = event.target as HTMLElement;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
+        if (event.shiftKey) {
+          event.preventDefault();
+          if (canRedo) redoGameAction();
+        } else {
+          event.preventDefault();
+          if (canUndo) undoGameAction();
+        }
+      } else if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === "y"
+      ) {
+        event.preventDefault();
+        if (canRedo) redoGameAction();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isGameActive, canUndo, canRedo, undoGameAction, redoGameAction]);
 
   const loadQuestions = useCallback(async (collectionId: string) => {
     if (collectionId === "") {
@@ -246,6 +307,10 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
       confirmExitGame,
       isBoardOpen,
       openBoard,
+      canUndo,
+      canRedo,
+      undoGameAction,
+      redoGameAction,
       selectCollection,
       createCollection,
       deleteCollection,
@@ -267,6 +332,10 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
       confirmExitGame,
       isBoardOpen,
       openBoard,
+      canUndo,
+      canRedo,
+      undoGameAction,
+      redoGameAction,
       selectCollection,
       createCollection,
       deleteCollection,

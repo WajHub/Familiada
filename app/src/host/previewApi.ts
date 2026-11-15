@@ -1,8 +1,10 @@
 import type {
   AnswerRecord,
   CollectionRecord,
+  ConsoleAnswer,
   FamiliadaApi,
   QuestionRecord,
+  TeamColorPayload,
   TeamSide,
   WithDataValues,
 } from "../types/window";
@@ -180,31 +182,49 @@ function createPreviewApi(): FamiliadaApi {
   let bluePoints = 0;
   let gameIdle = true;
 
-  const questionListeners = new Set<(content: string, first: boolean, last: boolean) => void>();
+  const questionListeners = new Set<(content: string, first: boolean, last: boolean, roundPoints?: number, isRoundWon?: boolean) => void>();
   const answerListeners = new Set<(value: string, idAnswer: number, index: number) => void>();
   const pointListeners = new Set<(points: number) => void>();
   const teamListeners = new Set<
     (red: string, blue: string, redScore: number, blueScore: number) => void
   >();
   const updateListeners = new Set<() => void>();
+  const lostChancesListeners = new Set<(red: number, blue: number) => void>();
+  const syncRoundAnswersListeners = new Set<(answers: ConsoleAnswer[]) => void>();
+  const syncBoardAnswersListeners = new Set<(answers: ConsoleAnswer[]) => void>();
+  const undoRedoListeners = new Set<(canUndo: boolean, canRedo: boolean) => void>();
+  let redLostChances = 0;
+  let blueLostChances = 0;
   let previewBoardWindow: Window | null = null;
   const boardStateListeners = new Set<(isOpen: boolean) => void>();
 
   const publishRound = () => {
     const question = questions.find((item) => item.id === roundIds[roundIndex]);
     const lastIndex = Math.max(roundIds.length - 1, 0);
-    questionListeners.forEach((listener) =>
-      listener(question?.content ?? "", roundIndex === 0, roundIndex === lastIndex)
-    );
     roundPoints = 0;
+    redLostChances = 0;
+    blueLostChances = 0;
+    questionListeners.forEach((listener) =>
+      listener(question?.content ?? "", roundIndex === 0, roundIndex === lastIndex, roundPoints, false)
+    );
     pointListeners.forEach((listener) => listener(0));
     teamListeners.forEach((listener) => listener(redName, blueName, redPoints, bluePoints));
+    lostChancesListeners.forEach((listener) => listener(redLostChances, blueLostChances));
     const ranked = answers
       .filter((answer) => answer.questionId === question?.id)
       .sort((left, right) => right.points - left.points);
     ranked.forEach((answer, index) => {
       answerListeners.forEach((listener) => listener(answer.content, answer.id, index + 1));
     });
+    const roundAnswers: ConsoleAnswer[] = ranked.map((a, idx) => ({
+      id: a.id,
+      content: a.content,
+      points: a.points,
+      index: idx + 1,
+      status: "hidden",
+    }));
+    syncRoundAnswersListeners.forEach((listener) => listener(roundAnswers));
+    syncBoardAnswersListeners.forEach((listener) => listener(roundAnswers));
   };
 
   return {
@@ -223,6 +243,18 @@ function createPreviewApi(): FamiliadaApi {
       return () => pointListeners.delete(callback);
     },
     onWrongAnswer: () => () => undefined,
+    onDisplayLostChances: (callback) => {
+      lostChancesListeners.add(callback);
+      return () => lostChancesListeners.delete(callback);
+    },
+    onSyncRoundAnswers: (callback) => {
+      syncRoundAnswersListeners.add(callback);
+      return () => syncRoundAnswersListeners.delete(callback);
+    },
+    onSyncBoardAnswers: (callback) => {
+      syncBoardAnswersListeners.add(callback);
+      return () => syncBoardAnswersListeners.delete(callback);
+    },
     onStatsTeam: (callback) => {
       teamListeners.add(callback);
       return () => teamListeners.delete(callback);
@@ -236,6 +268,12 @@ function createPreviewApi(): FamiliadaApi {
       boardStateListeners.add(callback);
       return () => boardStateListeners.delete(callback);
     },
+    onUndoRedoState: (callback) => {
+      undoRedoListeners.add(callback);
+      return () => undoRedoListeners.delete(callback);
+    },
+    undoGameAction: () => undefined,
+    redoGameAction: () => undefined,
     getCollections: async () => collections.map((collection) => model(collection)),
     getQuestions: async () =>
       questions
@@ -388,7 +426,16 @@ function createPreviewApi(): FamiliadaApi {
       roundPoints += answer?.points ?? 0;
       pointListeners.forEach((listener) => listener(roundPoints));
     },
-    wrongAnswer: () => undefined,
+    wrongAnswer: (team?: TeamColorPayload) => {
+      if (team && team.teamColor === "RED") {
+        redLostChances = Math.min(3, redLostChances + 1);
+      } else {
+        blueLostChances = Math.min(3, blueLostChances + 1);
+      }
+      lostChancesListeners.forEach((listener) =>
+        listener(redLostChances, blueLostChances)
+      );
+    },
     win: (team: TeamSide) => {
       if (team === "RED") {
         redPoints += roundPoints;

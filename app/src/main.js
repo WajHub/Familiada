@@ -3,10 +3,18 @@ const path = require("node:path");
 const sequelize = require(path.join(__dirname, "../database/sequelize"));
 const Service = require("./service");
 const gameLogic = require("./gameLogic");
+const {
+  GameSession,
+  GuessAnswerCommand,
+  ExposeAnswerCommand,
+  StrikeCommand,
+  AwardRoundCommand,
+} = require("./gameSession");
 
 let mainWindow = null;
 let boardWindow = null;
 let isQuitting = false;
+let currentSession = null;
 
 // GAME STATE
 const GAME_STATUS = Object.freeze({
@@ -57,40 +65,13 @@ async function syncBoardGameState() {
     return;
   }
 
-  if (
-    gameState.status === GAME_STATUS.ACTIVE &&
-    gameState.questions.length > 0
-  ) {
-    const question = gameState.questions[gameState.index];
-    if (question) {
-      safeSend(boardWindow, "displayQuestion", question.content);
-      safeSend(boardWindow, "displayPointsForQuestion", pointsForQuestion);
-      safeSend(
-        boardWindow,
-        "statsTeam",
-        gameLogic.getTeamRed(),
-        gameLogic.getTeamBlue(),
-        gameLogic.getRedPoints(),
-        gameLogic.getBluePoints()
-      );
-
-      try {
-        const answers = await Service.getAnswers(question.id);
-        if (!boardWindow || boardWindow.isDestroyed()) {
-          return;
-        }
-        const sorted = answers.sort(sortAnswersByPoints);
-        sorted.forEach((answer, idx) => {
-          const id = answer.dataValues ? answer.dataValues.id : answer.id;
-          safeSend(boardWindow, "displayHiddenAnswer", idx + 1, id);
-        });
-      } catch (err) {
-        console.error("Error syncing answers to newly opened board", err);
-      }
-    }
+  if (currentSession && gameState.status === GAME_STATUS.ACTIVE) {
+    renderCurrentRound();
   } else {
     safeSend(boardWindow, "displayQuestion", "");
     safeSend(boardWindow, "displayPointsForQuestion", 0);
+    safeSend(boardWindow, "displayLostChances", 0, 0);
+    safeSend(boardWindow, "syncBoardAnswers", []);
     safeSend(boardWindow, "statsTeam", "RED", "BLUE", 0, 0);
   }
 }
@@ -333,6 +314,10 @@ ipcMain.handle("getAnswers", async (_event, id) => {
   return await Service.getAnswers(id);
 });
 ipcMain.handle("setGameData", async (_event, team1, team2, questionsId) => {
+  currentSession = null;
+  gameState.status = GAME_STATUS.IDLE;
+  gameState.renderVersion++;
+  safeSend(mainWindow, "undoRedoState", false, false);
   await gameLogic.setGameData(team1, team2, questionsId);
   return true;
 });
@@ -370,63 +355,79 @@ ipcMain.handle("reorderQuestions", async (_event, questionIds) => {
 // IPC handles for GamePanel
 ipcMain.on("startGame", startGame);
 ipcMain.on("nextQuestion", () => {
-  navigateQuestion(1);
+  if (currentSession) {
+    currentSession.navigate(1);
+    gameState.index = currentSession.currentIndex;
+    renderCurrentRound();
+  }
 });
 ipcMain.on("prevQuestion", () => {
-  navigateQuestion(-1);
+  if (currentSession) {
+    currentSession.navigate(-1);
+    gameState.index = currentSession.currentIndex;
+    renderCurrentRound();
+  }
 });
 ipcMain.on("guessAnswer", async (_event, id) => {
-  const answer = await Service.getAnswer(id);
-  if (answer) {
-    const content = answer.dataValues ? answer.dataValues.content : answer.content;
-    const points = answer.dataValues ? answer.dataValues.points : answer.points;
-    const answerId = answer.dataValues ? answer.dataValues.id : answer.id;
-
-    safeSend(boardWindow, "exposeAnswerOnBoard", content + " " + points, answerId, points);
-    pointsForQuestion += points;
-    safeSend(boardWindow, "displayPointsForQuestion", pointsForQuestion);
-    safeSend(mainWindow, "displayPointsForQuestion", pointsForQuestion);
+  if (currentSession) {
+    currentSession.executeCommand(new GuessAnswerCommand(id));
+    const round = currentSession.getCurrentRound();
+    const ans = round && round.answers.find((a) => a.id === id);
+    if (ans) {
+      safeSend(
+        boardWindow,
+        "exposeAnswerOnBoard",
+        ans.content + " " + ans.points,
+        ans.id,
+        ans.points
+      );
+    }
+    renderCurrentRound();
   }
 });
 ipcMain.on("exposeAnswer", async (_event, id) => {
-  const answer = await Service.getAnswer(id);
-  if (answer) {
-    const content = answer.dataValues ? answer.dataValues.content : answer.content;
-    const points = answer.dataValues ? answer.dataValues.points : answer.points;
-    const answerId = answer.dataValues ? answer.dataValues.id : answer.id;
-
-    safeSend(boardWindow, "exposeAnswerOnBoard", content + " " + points, answerId);
+  if (currentSession) {
+    currentSession.executeCommand(new ExposeAnswerCommand(id));
+    const round = currentSession.getCurrentRound();
+    const ans = round && round.answers.find((a) => a.id === id);
+    if (ans) {
+      safeSend(
+        boardWindow,
+        "exposeAnswerOnBoard",
+        ans.content + " " + ans.points,
+        ans.id
+      );
+    }
+    renderCurrentRound();
   }
 });
 ipcMain.on("wrongAnswer", (_event, team) => {
-  if (team && team.teamColor === "RED") {
-    safeSend(boardWindow, "wrongAnswer", "red");
-  } else {
-    safeSend(boardWindow, "wrongAnswer", "blue");
+  if (currentSession) {
+    const side = team && team.teamColor === "BLUE" ? "BLUE" : "RED";
+    currentSession.executeCommand(new StrikeCommand(side));
+    safeSend(boardWindow, "wrongAnswer", side.toLowerCase());
+    renderCurrentRound();
   }
 });
 ipcMain.on("win", (_event, team) => {
-  if (team === "RED") {
-    gameLogic.addPointsToRed(pointsForQuestion);
-  } else {
-    gameLogic.addPointsToBlue(pointsForQuestion);
+  if (currentSession) {
+    currentSession.executeCommand(new AwardRoundCommand(team));
+    renderCurrentRound();
   }
-  safeSend(
-    mainWindow,
-    "statsTeam",
-    gameLogic.getTeamRed(),
-    gameLogic.getTeamBlue(),
-    gameLogic.getRedPoints(),
-    gameLogic.getBluePoints()
-  );
-  safeSend(
-    boardWindow,
-    "statsTeam",
-    gameLogic.getTeamRed(),
-    gameLogic.getTeamBlue(),
-    gameLogic.getRedPoints(),
-    gameLogic.getBluePoints()
-  );
+});
+ipcMain.on("undoGameAction", () => {
+  if (currentSession && gameState.status === GAME_STATUS.ACTIVE) {
+    currentSession.undo();
+    gameState.index = currentSession.currentIndex;
+    renderCurrentRound();
+  }
+});
+ipcMain.on("redoGameAction", () => {
+  if (currentSession && gameState.status === GAME_STATUS.ACTIVE) {
+    currentSession.redo();
+    gameState.index = currentSession.currentIndex;
+    renderCurrentRound();
+  }
 });
 ipcMain.on("deleteCurrentCollection", () => {
   gameState.status = GAME_STATUS.IDLE;
@@ -434,14 +435,19 @@ ipcMain.on("deleteCurrentCollection", () => {
   gameState.index = 0;
   gameState.renderVersion++;
   pointsForQuestion = 0;
+  currentSession = null;
   gameLogic.clearData();
+  safeSend(mainWindow, "undoRedoState", false, false);
   safeSend(boardWindow, "displayQuestion", "");
   safeSend(boardWindow, "displayPointsForQuestion", 0);
+  safeSend(boardWindow, "displayLostChances", 0, 0);
+  safeSend(boardWindow, "syncBoardAnswers", []);
   safeSend(boardWindow, "statsTeam", "RED", "BLUE", 0, 0);
 });
 
 async function startGame() {
-  if (gameState.status === GAME_STATUS.ACTIVE) {
+  if (gameState.status === GAME_STATUS.ACTIVE && currentSession) {
+    renderCurrentRound();
     return;
   }
 
@@ -463,108 +469,107 @@ async function startGame() {
       return;
     }
 
+    const questionsWithAnswers = [];
+    for (const q of questions) {
+      const qId = q.dataValues ? q.dataValues.id : q.id;
+      const qContent = q.dataValues ? q.dataValues.content : q.content;
+      const rawAnswers = await Service.getAnswers(qId);
+      const sorted = rawAnswers.sort(sortAnswersByPoints).map((a) => ({
+        id: a.dataValues ? a.dataValues.id : a.id,
+        content: a.dataValues ? a.dataValues.content : a.content,
+        points: a.dataValues ? a.dataValues.points : a.points,
+      }));
+      questionsWithAnswers.push({
+        id: qId,
+        content: qContent,
+        answers: sorted,
+      });
+    }
+
+    currentSession = new GameSession(
+      gameLogic.getTeamRed(),
+      gameLogic.getTeamBlue(),
+      questionsWithAnswers
+    );
+
     gameState.status = GAME_STATUS.ACTIVE;
-    renderCurrentQuestion();
+    renderCurrentRound();
   } catch (error) {
     gameState.status = GAME_STATUS.IDLE;
     console.error("Unable to start game", error);
   }
 }
 
-function navigateQuestion(direction) {
-  if (
-    gameState.status !== GAME_STATUS.ACTIVE ||
-    gameState.questions.length === 0
-  ) {
+function renderCurrentRound() {
+  if (!currentSession) {
     return;
   }
 
-  const lastIndex = gameState.questions.length - 1;
-  const nextIndex = Math.max(
-    0,
-    Math.min(lastIndex, gameState.index + direction)
-  );
-
-  if (nextIndex === gameState.index) {
+  const round = currentSession.getCurrentRound();
+  if (!round) {
     return;
   }
 
-  gameState.index = nextIndex;
-  renderCurrentQuestion();
-}
+  const isFirst = currentSession.currentIndex === 0;
+  const isLast =
+    currentSession.currentIndex === currentSession.rounds.length - 1;
+  const isAwarded = round.winner !== null;
 
-function renderCurrentQuestion() {
-  const question = gameState.questions[gameState.index];
-  const renderVersion = ++gameState.renderVersion;
-
-  sendQuestionsPointsTeamsToRender(
-    question,
-    gameState.questions.length,
-    gameState.index
-  );
-  sendAnswersToRender(question.id, renderVersion);
-}
-
-// Send Data to Render
-function sendQuestionsPointsTeamsToRender(question, length, index) {
-  pointsForQuestion = 0;
-
-  safeSend(boardWindow, "displayQuestion", question.content);
-  safeSend(boardWindow, "displayPointsForQuestion", pointsForQuestion);
-
-  safeSend(mainWindow, "displayPointsForQuestion", pointsForQuestion);
-
+  // 1. Host Console
   safeSend(
     mainWindow,
     "displayQuestionMain",
-    question.content,
-    index === 0,
-    index === length - 1
+    round.content,
+    isFirst,
+    isLast,
+    round.roundPoints,
+    isAwarded
+  );
+  safeSend(mainWindow, "displayPointsForQuestion", round.roundPoints);
+  safeSend(mainWindow, "syncRoundAnswers", round.answers);
+  safeSend(
+    mainWindow,
+    "displayLostChances",
+    round.lostChances.RED,
+    round.lostChances.BLUE
   );
   safeSend(
     mainWindow,
     "statsTeam",
-    gameLogic.getTeamRed(),
-    gameLogic.getTeamBlue(),
-    gameLogic.getRedPoints(),
-    gameLogic.getBluePoints()
+    currentSession.teams.RED.name,
+    currentSession.teams.BLUE.name,
+    currentSession.teams.RED.points,
+    currentSession.teams.BLUE.points
+  );
+  safeSend(
+    mainWindow,
+    "undoRedoState",
+    currentSession.canUndo(),
+    currentSession.canRedo()
+  );
+
+  // 2. Audience Scoreboard
+  safeSend(boardWindow, "displayQuestion", round.content);
+  safeSend(boardWindow, "displayPointsForQuestion", round.roundPoints);
+  safeSend(boardWindow, "syncBoardAnswers", round.answers);
+  safeSend(
+    boardWindow,
+    "displayLostChances",
+    round.lostChances.RED,
+    round.lostChances.BLUE
   );
   safeSend(
     boardWindow,
     "statsTeam",
-    gameLogic.getTeamRed(),
-    gameLogic.getTeamBlue(),
-    gameLogic.getRedPoints(),
-    gameLogic.getBluePoints()
+    currentSession.teams.RED.name,
+    currentSession.teams.BLUE.name,
+    currentSession.teams.RED.points,
+    currentSession.teams.BLUE.points
   );
-}
-
-async function sendAnswersToRender(questionId, renderVersion) {
-  let index = 0;
-  try {
-    const answers = await Service.getAnswers(questionId);
-
-    if (renderVersion !== gameState.renderVersion) {
-      return;
-    }
-
-    const sortedAnswers = answers.sort(sortAnswersByPoints);
-
-    for (const answer of sortedAnswers) {
-      index++;
-      const content = answer.dataValues ? answer.dataValues.content : answer.content;
-      const id = answer.dataValues ? answer.dataValues.id : answer.id;
-
-      safeSend(mainWindow, "displayAnswer", content, id, index);
-      safeSend(boardWindow, "displayHiddenAnswer", index, id);
-    }
-  } catch (error) {
-    console.error("Unable to load answers for question", error);
-  }
 }
 
 function sortAnswersByPoints(a, b) {
   const pointsA = a.dataValues ? a.dataValues.points : a.points;
   const pointsB = b.dataValues ? b.dataValues.points : b.points;
-  return pointsB - pointsA;
+  return Number(pointsB) - Number(pointsA);
 }

@@ -70,6 +70,24 @@ function BoardPanelPage() {
         setWrongAnswersBlue((prev) => prev + 1);
       }
     });
+    const unsubscribeDisplayLostChances = window.api.onDisplayLostChances(
+      (red, blue) => {
+        setWrongAnswersRed(red);
+        setWrongAnswersBlue(blue);
+      }
+    );
+    const unsubscribeSyncBoardAnswers = window.api.onSyncBoardAnswers(
+      (roundAnswers) => {
+        setAnswers(
+          roundAnswers.map((a) => ({
+            index: a.index,
+            idAnswer: a.id,
+            content: a.status === "hidden" ? "" : `${a.content} ${a.points}`,
+            isVisible: a.status !== "hidden",
+          }))
+        );
+      }
+    );
 
     return () => {
       unsubscribeStatsTeam();
@@ -78,6 +96,8 @@ function BoardPanelPage() {
       unsubscribeExposeAnswer();
       unsubscribeDisplayPoints();
       unsubscribeWrongAnswer();
+      unsubscribeDisplayLostChances();
+      unsubscribeSyncBoardAnswers();
     };
   }, []);
 
@@ -93,7 +113,7 @@ function BoardPanelPage() {
       </div>
 
       <div className="mx-auto my-2.5 w-full max-w-[1140px] px-4">
-        <div className="grid grid-cols-12 items-start p-3 text-center">
+        <div className="grid grid-cols-12 items-stretch p-3 text-center">
           <WrongAnswerMark team="RED" amount={wrongAnswersRed} />
 
           <div className="col-span-8 flex flex-col items-center">
