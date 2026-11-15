@@ -52,6 +52,7 @@ export interface FamiliadaApi {
     callback: (answer: string, idAnswer: number, points?: number) => void
   ) => () => void;
   onUpdateAnswers: (callback: () => void) => () => void;
+  onBoardWindowState: (callback: (isOpen: boolean) => void) => () => void;
   getCollections: () => Promise<WithDataValues<CollectionRecord>[]>;
   getQuestions: () => Promise<WithDataValues<QuestionRecord>[] | undefined>;
   getQuestion: (id: number) => Promise<WithDataValues<QuestionRecord>>;
@@ -88,6 +89,9 @@ export interface FamiliadaApi {
   wrongAnswer: (team: TeamColorPayload) => void;
   win: (team: TeamSide) => void;
   deleteCurrentCollection: () => void;
+  isGameActive: () => Promise<boolean>;
+  isBoardOpen: () => Promise<boolean>;
+  openBoardWindow: () => Promise<boolean>;
 }
 
 declare global {

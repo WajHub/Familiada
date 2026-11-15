@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchCollections, fetchQuestions } from "./api";
 import type { CollectionSummary, QuestionListItem } from "./types";
 
@@ -17,6 +18,14 @@ interface HostSessionValue {
   questions: QuestionListItem[];
   loading: boolean;
   errorMessage: string | null;
+  isGameActive: boolean;
+  setIsGameActive: (active: boolean) => void;
+  confirmExitOpen: boolean;
+  requestExitGame: () => void;
+  cancelExitGame: () => void;
+  confirmExitGame: () => void;
+  isBoardOpen: boolean;
+  openBoard: () => Promise<void>;
   selectCollection: (id: string) => void;
   createCollection: (title: string) => Promise<void>;
   deleteCollection: (id: string) => Promise<void>;
@@ -39,6 +48,57 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
   questionsRef.current = questions;
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isGameActive, setIsGameActive] = useState(false);
+  const [confirmExitOpen, setConfirmExitOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const requestExitGame = useCallback(() => {
+    if (isGameActive) {
+      setConfirmExitOpen(true);
+    } else {
+      navigate("/");
+    }
+  }, [isGameActive, navigate]);
+
+  const cancelExitGame = useCallback(() => {
+    setConfirmExitOpen(false);
+  }, []);
+
+  const confirmExitGame = useCallback(() => {
+    setConfirmExitOpen(false);
+    setIsGameActive(false);
+    window.api.deleteCurrentCollection();
+    navigate("/");
+  }, [navigate]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (isGameActive) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isGameActive]);
+
+  const [isBoardOpen, setIsBoardOpen] = useState(false);
+
+  useEffect(() => {
+    window.api.isBoardOpen().then(setIsBoardOpen).catch(() => undefined);
+    const unsubscribe = window.api.onBoardWindowState((isOpen) => {
+      setIsBoardOpen(isOpen);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const openBoard = useCallback(async () => {
+    await window.api.openBoardWindow();
+    setIsBoardOpen(true);
+  }, []);
 
   const loadQuestions = useCallback(async (collectionId: string) => {
     if (collectionId === "") {
@@ -178,6 +238,14 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
       questions,
       loading,
       errorMessage,
+      isGameActive,
+      setIsGameActive,
+      confirmExitOpen,
+      requestExitGame,
+      cancelExitGame,
+      confirmExitGame,
+      isBoardOpen,
+      openBoard,
       selectCollection,
       createCollection,
       deleteCollection,
@@ -191,6 +259,14 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
       questions,
       loading,
       errorMessage,
+      isGameActive,
+      setIsGameActive,
+      confirmExitOpen,
+      requestExitGame,
+      cancelExitGame,
+      confirmExitGame,
+      isBoardOpen,
+      openBoard,
       selectCollection,
       createCollection,
       deleteCollection,

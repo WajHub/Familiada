@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import { useHostSession } from "../HostSession";
 import { LiveConsole } from "./LiveConsole";
@@ -72,14 +72,7 @@ function ShowSetup({ onStart }: ShowSetupProps) {
 }
 
 export function ShowPage() {
-  const { questions } = useHostSession();
-  const [live, setLive] = useState(false);
-
-  useEffect(() => {
-    return () => {
-      window.api.deleteCurrentCollection();
-    };
-  }, []);
+  const { questions, isGameActive, setIsGameActive } = useHostSession();
 
   if (questions.length === 0) {
     return (
@@ -98,7 +91,7 @@ export function ShowPage() {
     );
   }
 
-  if (!live) {
+  if (!isGameActive) {
     return (
       <ShowSetup
         onStart={async (redName, blueName) => {
@@ -107,7 +100,7 @@ export function ShowPage() {
             blueName,
             questions.map((question) => question.id)
           );
-          setLive(true);
+          setIsGameActive(true);
         }}
       />
     );

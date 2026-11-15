@@ -187,6 +187,8 @@ function createPreviewApi(): FamiliadaApi {
     (red: string, blue: string, redScore: number, blueScore: number) => void
   >();
   const updateListeners = new Set<() => void>();
+  let previewBoardWindow: Window | null = null;
+  const boardStateListeners = new Set<(isOpen: boolean) => void>();
 
   const publishRound = () => {
     const question = questions.find((item) => item.id === roundIds[roundIndex]);
@@ -229,6 +231,10 @@ function createPreviewApi(): FamiliadaApi {
     onUpdateAnswers: (callback) => {
       updateListeners.add(callback);
       return () => updateListeners.delete(callback);
+    },
+    onBoardWindowState: (callback) => {
+      boardStateListeners.add(callback);
+      return () => boardStateListeners.delete(callback);
     },
     getCollections: async () => collections.map((collection) => model(collection)),
     getQuestions: async () =>
@@ -396,6 +402,17 @@ function createPreviewApi(): FamiliadaApi {
       roundIds = [];
       roundIndex = 0;
       roundPoints = 0;
+    },
+    isGameActive: async () => !gameIdle,
+    isBoardOpen: async () => Boolean(previewBoardWindow && !previewBoardWindow.closed),
+    openBoardWindow: async () => {
+      if (previewBoardWindow && !previewBoardWindow.closed) {
+        previewBoardWindow.focus();
+      } else {
+        previewBoardWindow = window.open("#/BoardPanel", "_blank", "width=800,height=600");
+        boardStateListeners.forEach((listener) => listener(true));
+      }
+      return true;
     },
   };
 }

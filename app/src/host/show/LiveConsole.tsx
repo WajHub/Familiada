@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useHostSession } from "../HostSession";
 import type { RevealedAnswer } from "../types";
 import type { TeamSide } from "../../types/window";
 import { correctAnswerSound, playSound, showAnswerSound, wrongAnswerSound } from "./sounds";
@@ -101,6 +101,7 @@ function TeamColumn({ side, name, points, awardDisabled, onStrike, onAward }: Te
 }
 
 export function LiveConsole() {
+  const { requestExitGame } = useHostSession();
   const [question, setQuestion] = useState("");
   const [answers, setAnswers] = useState<RevealedAnswer[]>([]);
   const [points, setPoints] = useState(0);
@@ -169,12 +170,13 @@ export function LiveConsole() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Link
-            to="/"
+          <button
+            type="button"
+            onClick={requestExitGame}
             className="inline-flex min-h-11 items-center rounded-lg border border-zinc-600 bg-zinc-900 px-4 text-sm text-zinc-100 hover:bg-zinc-800"
           >
             Back to library
-          </Link>
+          </button>
           <button
             type="button"
             disabled={isFirstQuestion}

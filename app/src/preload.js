@@ -59,6 +59,11 @@ const API = {
     ipcRenderer.on("updateAnswers", subscription);
     return () => ipcRenderer.removeListener("updateAnswers", subscription);
   },
+  onBoardWindowState: (callback) => {
+    const subscription = (_event, isOpen) => callback(isOpen);
+    ipcRenderer.on("boardWindowState", subscription);
+    return () => ipcRenderer.removeListener("boardWindowState", subscription);
+  },
 
   // Renderer <---> Main (invokes)
   getCollections: () => ipcRenderer.invoke("getCollections"),
@@ -84,6 +89,9 @@ const API = {
   deleteQuestion: (id) => ipcRenderer.invoke("deleteQuestion", id),
   reorderQuestions: (questionIds) =>
     ipcRenderer.invoke("reorderQuestions", questionIds),
+  isGameActive: () => ipcRenderer.invoke("isGameActive"),
+  isBoardOpen: () => ipcRenderer.invoke("isBoardOpen"),
+  openBoardWindow: () => ipcRenderer.invoke("openBoardWindow"),
 
   // Renderer ---> Main (sends)
   startGame: () => ipcRenderer.send("startGame"),
