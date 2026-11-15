@@ -1,34 +1,41 @@
 # Familiada
 
-## Installation
+## Installation & Setup
 
-1.  Install **NPM** **Node.js**
+1. Install **Node.js** and **npm**.
 
-2.  In folder _app_ install modules:
+2. Go to the `app` directory and install dependencies:
 
-    ```bash
-    npm install
-    ```
+   ```bash
+   cd app
+   npm install
+   ```
 
-3.  Start Server
+3. Run database migrations (required to create the local SQLite database schema):
 
-    ```bash
-    npm start
-    ```
+   ```bash
+   npx sequelize db:migrate
+   ```
 
-    - Dev
+4. Start the application in development mode (requires two terminals):
 
-      ```bash
-      npm run electron
-      ```
+   - **Terminal 1: Webpack Dev Server**
+     ```bash
+     npm start
+     ```
 
-    - Prod
+   - **Terminal 2: Electron runtime**
+     ```bash
+     npm run electron
+     ```
 
-      ```bash
-      npm run make
-      ```
+5. Build for Production:
 
-      Launch App in folder out.
+   ```bash
+   npm run make
+   ```
+
+   The packaged app will be available in the `app/out/` directory.
 
 ## Technologies
 
@@ -36,4 +43,5 @@
 - Sequelize
 - SQLite
 - React
-- Bootstrap
+- Tailwind CSS
+- Lucide Icons

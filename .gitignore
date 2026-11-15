@@ -113,7 +113,10 @@ Carthage/Build
 Dependencies/
 
 
-.sqlite
+# SQLite database
+*.sqlite
+*.sqlite3
+*.db
 
 .vscode
 
