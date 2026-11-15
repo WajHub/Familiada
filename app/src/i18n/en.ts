@@ -51,6 +51,7 @@ export const en = {
     deleteQuestionTitle: "Delete question",
     deleteQuestionMsg: "Delete this question? This cannot be undone.",
     editCollection: "Rename collection",
+    copyCollection: "Copy collection",
     saveCollectionName: "Save name",
     cancelEdit: "Cancel",
   },

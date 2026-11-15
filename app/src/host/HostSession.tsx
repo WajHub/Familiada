@@ -33,6 +33,7 @@ interface HostSessionValue {
   redoGameAction: () => void;
   selectCollection: (id: string) => void;
   createCollection: (title: string) => Promise<void>;
+  copyCollection: (id: string) => Promise<void>;
   updateCollectionTitle: (id: string, title: string) => Promise<void>;
   deleteCollection: (id: string) => Promise<void>;
   refreshQuestions: () => Promise<void>;
@@ -250,6 +251,17 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
     setSelectedCollectionId(String(createdId ?? fallback?.id ?? ""));
   }, []);
 
+  const copyCollection = useCallback(async (id: string) => {
+    const copied = await window.api.copyCollection(id);
+    const nextCollections = await fetchCollections();
+    setCollections(nextCollections);
+    const createdId =
+      (copied as { id?: number; dataValues?: { id?: number } })?.id ??
+      (copied as { id?: number; dataValues?: { id?: number } })?.dataValues?.id;
+    const fallback = nextCollections[nextCollections.length - 1];
+    setSelectedCollectionId(String(createdId ?? fallback?.id ?? ""));
+  }, []);
+
   const updateCollectionTitle = useCallback(async (id: string, title: string) => {
     const trimmed = title.trim();
     if (!trimmed) {
@@ -332,6 +344,7 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
       redoGameAction,
       selectCollection,
       createCollection,
+      copyCollection,
       updateCollectionTitle,
       deleteCollection,
       refreshQuestions,
@@ -359,6 +372,7 @@ export function HostSessionProvider({ children }: HostSessionProviderProps) {
       redoGameAction,
       selectCollection,
       createCollection,
+      copyCollection,
       updateCollectionTitle,
       deleteCollection,
       refreshQuestions,

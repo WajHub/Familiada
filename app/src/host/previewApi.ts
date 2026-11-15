@@ -328,6 +328,37 @@ function createPreviewApi(): FamiliadaApi {
       collections.push(created);
       return model(created);
     },
+    copyCollection: async (id) => {
+      const numericId = Number(id);
+      const source = collections.find((item) => item.id === numericId);
+      const newTitle = source ? `${source.title}-copy` : "Kolekcja-copy";
+      const created = { id: nextId, title: newTitle };
+      nextId += 1;
+      collections.push(created);
+      const sourceQuestions = questions.filter((q) => q.collectionId === numericId);
+      for (const sq of sourceQuestions) {
+        const newQId = nextId;
+        nextId += 1;
+        questions.push({
+          id: newQId,
+          content: sq.content,
+          collectionId: created.id,
+          order: sq.order,
+        });
+        const sourceAnswers = answers.filter((a) => a.questionId === sq.id);
+        for (const sa of sourceAnswers) {
+          const newAId = nextId;
+          nextId += 1;
+          answers.push({
+            id: newAId,
+            content: sa.content,
+            points: sa.points,
+            questionId: newQId,
+          });
+        }
+      }
+      return model(created);
+    },
     updateCollection: async (id, title) => {
       const numericId = Number(id);
       const collection = collections.find((item) => item.id === numericId);

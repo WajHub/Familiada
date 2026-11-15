@@ -215,6 +215,57 @@ async function reorderQuestions(questionIds) {
   });
 }
 
+async function copyCollection(eventOrId, maybeId) {
+  const id = maybeId !== undefined ? maybeId : eventOrId;
+  return await sequelize.transaction(async (t) => {
+    const source = await Collection.findOne({
+      where: { id: id },
+      transaction: t,
+    });
+    if (!source) {
+      throw new Error("Collection not found with id: " + id);
+    }
+    const newTitle = `${source.title}-copy`;
+    const newCollection = await Collection.create(
+      { title: newTitle },
+      { transaction: t }
+    );
+    const questions = await Question.findAll({
+      where: { collectionId: id },
+      order: [
+        ["order", "ASC"],
+        ["id", "ASC"],
+      ],
+      transaction: t,
+    });
+    for (const q of questions) {
+      const newQuestion = await Question.create(
+        {
+          content: q.content,
+          collectionId: newCollection.id,
+          order: q.order,
+        },
+        { transaction: t }
+      );
+      const answers = await Answer.findAll({
+        where: { questionId: q.id },
+        transaction: t,
+      });
+      for (const a of answers) {
+        await Answer.create(
+          {
+            content: a.content,
+            points: a.points,
+            questionId: newQuestion.id,
+          },
+          { transaction: t }
+        );
+      }
+    }
+    return newCollection.get({ plain: true });
+  });
+}
+
 module.exports = {
   getCollections,
   getCollection,
@@ -231,4 +282,5 @@ module.exports = {
   updateCollection,
   updateQuestion,
   reorderQuestions,
+  copyCollection,
 };

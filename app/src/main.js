@@ -294,6 +294,9 @@ ipcMain.handle("getCollections", Service.getCollections);
 ipcMain.handle("saveCollection", async (_event, title) => {
   return await Service.saveCollection(title);
 });
+ipcMain.handle("copyCollection", async (_event, id) => {
+  return await Service.copyCollection(id);
+});
 ipcMain.handle("deleteCollection", async (_event, id) => {
   return await Service.deleteCollection(id);
 });

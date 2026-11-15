@@ -96,6 +96,9 @@ export interface FamiliadaApi {
     questionsId: number[]
   ) => Promise<boolean>;
   saveCollection: (title: string) => Promise<WithDataValues<CollectionRecord>>;
+  copyCollection: (
+    id: string | number
+  ) => Promise<WithDataValues<CollectionRecord> | CollectionRecord>;
   updateQuestion: (
     id: number,
     questionContent: string,

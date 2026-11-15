@@ -53,6 +53,7 @@ export const pl: Translations = {
     deleteQuestionTitle: "Usuń pytanie",
     deleteQuestionMsg: "Usunąć to pytanie? Tej operacji nie można cofnąć.",
     editCollection: "Zmień nazwę zestawu",
+    copyCollection: "Kopiuj zestaw",
     saveCollectionName: "Zapisz nazwę",
     cancelEdit: "Anuluj",
   },

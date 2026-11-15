@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { Check, Pencil, X } from "lucide-react";
+import { Check, Copy, Pencil, X } from "lucide-react";
 import { useHostSession } from "../HostSession";
 import { useI18n } from "../../i18n/I18nContext";
 import type { QuestionListItem } from "../types";
@@ -17,6 +17,7 @@ export function LibraryPage() {
     errorMessage,
     selectCollection,
     createCollection,
+    copyCollection,
     updateCollectionTitle,
     deleteCollection,
     refreshQuestions,
@@ -33,6 +34,7 @@ export function LibraryPage() {
   const [editingCollectionId, setEditingCollectionId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
   const [savingTitle, setSavingTitle] = useState(false);
+  const [copying, setCopying] = useState(false);
 
   const selected = collections.find((collection) => String(collection.id) === selectedCollectionId);
 
@@ -203,14 +205,32 @@ export function LibraryPage() {
                   {selected ? selected.title : t("library.chooseCollection")}
                 </h2>
                 {selected && (
-                  <button
-                    type="button"
-                    title={t("library.editCollection")}
-                    onClick={() => startEditCollection(String(selected.id), selected.title)}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800/80 text-zinc-400 transition hover:border-amber-400/80 hover:bg-amber-400/10 hover:text-amber-300 shadow-xs"
-                  >
-                    <Pencil size={14} />
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      title={t("library.editCollection")}
+                      onClick={() => startEditCollection(String(selected.id), selected.title)}
+                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800/80 text-zinc-400 transition hover:border-amber-400/80 hover:bg-amber-400/10 hover:text-amber-300 shadow-xs"
+                    >
+                      <Pencil size={14} />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={copying}
+                      title={t("library.copyCollection")}
+                      onClick={async () => {
+                        setCopying(true);
+                        try {
+                          await copyCollection(String(selected.id));
+                        } finally {
+                          setCopying(false);
+                        }
+                      }}
+                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-800/80 text-zinc-400 transition hover:border-amber-400/80 hover:bg-amber-400/10 hover:text-amber-300 shadow-xs disabled:opacity-40"
+                    >
+                      <Copy size={14} />
+                    </button>
+                  </div>
                 )}
               </div>
             )}
