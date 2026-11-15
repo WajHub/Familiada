@@ -1,0 +1,100 @@
+@tailwind components;
+@tailwind utilities;
+
+.host-root *,
+.host-root *::before,
+.host-root *::after {
+  border-style: solid;
+}
+
+.host-root button {
+  margin: 0;
+  cursor: pointer;
+  appearance: none;
+}
+
+.host-root p,
+.host-root h1,
+.host-root h2,
+.host-root h3,
+.host-root h4,
+.host-root h5,
+.host-root h6 {
+  margin: 0;
+}
+
+.host-root ul,
+.host-root ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.host-root button:disabled {
+  cursor: not-allowed;
+}
+
+.host-root,
+.host-root * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+}
+
+.host-root::-webkit-scrollbar,
+.host-root *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.host-root::-webkit-scrollbar-track,
+.host-root *::-webkit-scrollbar-track,
+.host-root::-webkit-scrollbar-corner,
+.host-root *::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.host-root::-webkit-scrollbar-thumb,
+.host-root *::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+}
+
+.host-root::-webkit-scrollbar-thumb:hover,
+.host-root *::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.42);
+}
+
+.host-fade {
+  animation: host-fade 160ms ease-out;
+}
+
+@keyframes host-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.host-glass-card {
+  background: rgba(24, 24, 27, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.host-glow-amber {
+  box-shadow: 0 0 20px -5px rgba(251, 191, 36, 0.35);
+}
+
+.host-glow-red {
+  box-shadow: 0 0 24px -6px rgba(239, 68, 68, 0.35);
+}
+
+.host-glow-blue {
+  box-shadow: 0 0 24px -6px rgba(59, 130, 246, 0.35);
+}

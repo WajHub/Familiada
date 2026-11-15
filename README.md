@@ -1,40 +1,41 @@
 # Familiada
 
-Familiada is a project created for Dj Dave who uses it in events as fan with guests. It is a Game in imitation of popular program "Familiada".
+## Installation & Setup
 
-Presenter can create Collections, and in it can create Questions with answers and points. Before starting he can set sequence of questions. You can edit and delete all of contents, which is saved in locally database.
+1. Install **Node.js** and **npm**.
 
-Once the game starts, one screen displays a window for the instructor to control the game (displaying answers, assigning points, etc.). The other window displays the scoreboard for the players.
+2. Go to the `app` directory and install dependencies:
 
-## Installation
+   ```bash
+   cd app
+   npm install
+   ```
 
-1.  Install **NPM** **Node.js**
+3. Run database migrations (required to create the local SQLite database schema):
 
-2.  In folder _app_ install modules:
+   ```bash
+   npx sequelize db:migrate
+   ```
 
-    ```bash
-    npm install
-    ```
+4. Start the application in development mode (requires two terminals):
 
-3.  Start Server
+   - **Terminal 1: Webpack Dev Server**
+     ```bash
+     npm start
+     ```
 
-    ```bash
-    npm start
-    ```
+   - **Terminal 2: Electron runtime**
+     ```bash
+     npm run electron
+     ```
 
-    - Dev
+5. Build for Production:
 
-      ```bash
-      npm run electron
-      ```
+   ```bash
+   npm run make
+   ```
 
-    - Prod
-
-      ```bash
-      npm run make
-      ```
-
-      Launch App in folder out.
+   The packaged app will be available in the `app/out/` directory.
 
 ## Technologies
 
@@ -42,12 +43,5 @@ Once the game starts, one screen displays a window for the instructor to control
 - Sequelize
 - SQLite
 - React
-- Bootstrap
-
-## Preview
-
-![Preview](Preview/Preview1.png)
-![Preview](Preview/Preview2.png)
-![Preview](Preview/Preview3.png)
-![Preview](Preview/Preview4.png)
-![Preview](Preview/Preview5.png)
+- Tailwind CSS
+- Lucide Icons

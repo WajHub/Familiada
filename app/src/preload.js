@@ -5,54 +5,104 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 const API = {
   // Main ---> Renderer (callbacks)
-  onDisplayQuestion: (callback) =>
-    ipcRenderer.on("displayQuestion", (_event, value) => callback(value)),
-  onDisplayQuestionMain: (callback) =>
-    ipcRenderer.on("displayQuestionMain", (_event, content, last, first) =>
-      callback(content, last, first)
-    ),
-  onDisplayAnswer: (callback) =>
-    ipcRenderer.on("displayAnswer", (_event, value, idAnswer, index) =>
-      callback(value, idAnswer, index)
-    ),
-  onDisplayHiddenAnswer: (callback) =>
-    ipcRenderer.on("displayHiddenAnswer", (_event, index, idAnswer) =>
-      callback(index, idAnswer)
-    ),
-  onDisplayPointsForQuestion: (callback) =>
-    ipcRenderer.on("displayPointsForQuestion", (_event, points) =>
-      callback(points)
-    ),
-  onWrongAnswer: (callback) =>
-    ipcRenderer.on("wrongAnswer", (_event, team) => callback(team)),
-  onStatsTeam: (callback) =>
-    ipcRenderer.on(
-      "statsTeam",
-      (_event, redName, blueName, redPoints, bluePoints) =>
-        callback(redName, blueName, redPoints, bluePoints)
-    ),
-  onExposeAnswerOnBoard: (callback) =>
-    ipcRenderer.on("exposeAnswerOnBoard", (_event, answer, idAnswer, points) =>
-      callback(answer, idAnswer, points)
-    ),
-  onUpdateAnswers: (callback) =>
-    ipcRenderer.on("updateAnswers", (_event) => callback()),
+  onDisplayQuestion: (callback) => {
+    const subscription = (_event, value) => callback(value);
+    ipcRenderer.on("displayQuestion", subscription);
+    return () => ipcRenderer.removeListener("displayQuestion", subscription);
+  },
+  onDisplayQuestionMain: (callback) => {
+    const subscription = (_event, content, first, last, roundPoints, isRoundWon) =>
+      callback(content, first, last, roundPoints, isRoundWon);
+    ipcRenderer.on("displayQuestionMain", subscription);
+    return () =>
+      ipcRenderer.removeListener("displayQuestionMain", subscription);
+  },
+  onDisplayAnswer: (callback) => {
+    const subscription = (_event, value, idAnswer, index) =>
+      callback(value, idAnswer, index);
+    ipcRenderer.on("displayAnswer", subscription);
+    return () => ipcRenderer.removeListener("displayAnswer", subscription);
+  },
+  onDisplayHiddenAnswer: (callback) => {
+    const subscription = (_event, index, idAnswer) =>
+      callback(index, idAnswer);
+    ipcRenderer.on("displayHiddenAnswer", subscription);
+    return () =>
+      ipcRenderer.removeListener("displayHiddenAnswer", subscription);
+  },
+  onDisplayPointsForQuestion: (callback) => {
+    const subscription = (_event, points) => callback(points);
+    ipcRenderer.on("displayPointsForQuestion", subscription);
+    return () =>
+      ipcRenderer.removeListener("displayPointsForQuestion", subscription);
+  },
+  onWrongAnswer: (callback) => {
+    const subscription = (_event, team) => callback(team);
+    ipcRenderer.on("wrongAnswer", subscription);
+    return () => ipcRenderer.removeListener("wrongAnswer", subscription);
+  },
+  onDisplayLostChances: (callback) => {
+    const subscription = (_event, red, blue) => callback(red, blue);
+    ipcRenderer.on("displayLostChances", subscription);
+    return () =>
+      ipcRenderer.removeListener("displayLostChances", subscription);
+  },
+  onSyncRoundAnswers: (callback) => {
+    const subscription = (_event, answers) => callback(answers);
+    ipcRenderer.on("syncRoundAnswers", subscription);
+    return () =>
+      ipcRenderer.removeListener("syncRoundAnswers", subscription);
+  },
+  onSyncBoardAnswers: (callback) => {
+    const subscription = (_event, answers) => callback(answers);
+    ipcRenderer.on("syncBoardAnswers", subscription);
+    return () =>
+      ipcRenderer.removeListener("syncBoardAnswers", subscription);
+  },
+  onStatsTeam: (callback) => {
+    const subscription = (_event, redName, blueName, redPoints, bluePoints) =>
+      callback(redName, blueName, redPoints, bluePoints);
+    ipcRenderer.on("statsTeam", subscription);
+    return () => ipcRenderer.removeListener("statsTeam", subscription);
+  },
+  onExposeAnswerOnBoard: (callback) => {
+    const subscription = (_event, answer, idAnswer, points) =>
+      callback(answer, idAnswer, points);
+    ipcRenderer.on("exposeAnswerOnBoard", subscription);
+    return () =>
+      ipcRenderer.removeListener("exposeAnswerOnBoard", subscription);
+  },
+  onUpdateAnswers: (callback) => {
+    const subscription = (_event) => callback();
+    ipcRenderer.on("updateAnswers", subscription);
+    return () => ipcRenderer.removeListener("updateAnswers", subscription);
+  },
+  onBoardWindowState: (callback) => {
+    const subscription = (_event, isOpen) => callback(isOpen);
+    ipcRenderer.on("boardWindowState", subscription);
+    return () => ipcRenderer.removeListener("boardWindowState", subscription);
+  },
+  onUndoRedoState: (callback) => {
+    const subscription = (_event, canUndo, canRedo) =>
+      callback(canUndo, canRedo);
+    ipcRenderer.on("undoRedoState", subscription);
+    return () => ipcRenderer.removeListener("undoRedoState", subscription);
+  },
 
   // Renderer <---> Main (invokes)
   getCollections: () => ipcRenderer.invoke("getCollections"),
-  get_questions: () => ipcRenderer.invoke("get_questions"),
-  getQuestions: (_event, id) => ipcRenderer.invoke("getQuestion", _event, id),
-  get_answers: (id) => ipcRenderer.invoke("get_answers", id),
-  get_title: () => ipcRenderer.invoke("getCollectionTitle"),
+  getQuestions: () => ipcRenderer.invoke("getQuestions"),
+  getQuestion: (id) => ipcRenderer.invoke("getQuestion", id),
+  getAnswers: (id) => ipcRenderer.invoke("getAnswers", id),
+  getCollectionTitle: () => ipcRenderer.invoke("getCollectionTitle"),
   deleteCollection: (id) => ipcRenderer.invoke("deleteCollection", id),
   setGameData: (team1, team2, questionsId) =>
     ipcRenderer.invoke("setGameData", team1, team2, questionsId),
-
-  // Renderer ---> Main (sends)
-  startGame: () => ipcRenderer.send("startGame"),
-  saveCollection: (title) => ipcRenderer.send("saveCollection", title),
+  saveCollection: (title) => ipcRenderer.invoke("saveCollection", title),
+  copyCollection: (id) => ipcRenderer.invoke("copyCollection", id),
+  updateCollection: (id, title) => ipcRenderer.invoke("updateCollection", id, title),
   updateQuestion: (id, questionContent, answersContent, answersPoints) =>
-    ipcRenderer.send(
+    ipcRenderer.invoke(
       "updateQuestion",
       id,
       questionContent,
@@ -60,8 +110,17 @@ const API = {
       answersPoints
     ),
   addNewQuestion: (question, answers, points) =>
-    ipcRenderer.send("addNewQuestion", question, answers, points),
-  setCurrentCollection: (id) => ipcRenderer.send("setCurrentCollection", id),
+    ipcRenderer.invoke("addNewQuestion", question, answers, points),
+  setCurrentCollection: (id) => ipcRenderer.invoke("setCurrentCollection", id),
+  deleteQuestion: (id) => ipcRenderer.invoke("deleteQuestion", id),
+  reorderQuestions: (questionIds) =>
+    ipcRenderer.invoke("reorderQuestions", questionIds),
+  isGameActive: () => ipcRenderer.invoke("isGameActive"),
+  isBoardOpen: () => ipcRenderer.invoke("isBoardOpen"),
+  openBoardWindow: () => ipcRenderer.invoke("openBoardWindow"),
+
+  // Renderer ---> Main (sends)
+  startGame: () => ipcRenderer.send("startGame"),
   nextQuestion: () => ipcRenderer.send("nextQuestion"),
   prevQuestion: () => ipcRenderer.send("prevQuestion"),
   exposeAnswer: (id) => ipcRenderer.send("exposeAnswer", id),
@@ -69,8 +128,8 @@ const API = {
   wrongAnswer: (team) => ipcRenderer.send("wrongAnswer", team),
   win: (team) => ipcRenderer.send("win", team),
   deleteCurrentCollection: () => ipcRenderer.send("deleteCurrentCollection"),
-  deleteQuestion: (_event, id) =>
-    ipcRenderer.send("deleteQuestion", _event, id),
+  undoGameAction: () => ipcRenderer.send("undoGameAction"),
+  redoGameAction: () => ipcRenderer.send("redoGameAction"),
 };
 
 contextBridge.exposeInMainWorld("api", API);

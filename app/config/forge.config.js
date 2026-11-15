@@ -3,10 +3,7 @@ const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 
 module.exports = {
   packagerConfig: {
-    asar: true,
-    extraResource: [
-      "../node_modules", // Ścieżka do modułu lub zasobów
-    ],
+    asar: true
   },
   rebuildConfig: {},
   makers: [
